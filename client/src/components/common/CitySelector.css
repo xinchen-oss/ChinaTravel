@@ -1,0 +1,25 @@
+.city-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.city-selector__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-light);
+}
+
+.city-selector__select {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.city-selector__select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
