@@ -18,6 +18,7 @@ import cultureRoutes from './routes/culture.js';
 import submissionRoutes from './routes/submission.js';
 import uploadRoutes from './routes/upload.js';
 import userRoutes from './routes/user.js';
+import forumRoutes from './routes/forum.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +53,7 @@ app.use('/api/pedidos', orderRoutes);
 app.use('/api/cultura', cultureRoutes);
 app.use('/api/solicitudes', submissionRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/foro', forumRoutes);
 
 // Error handler
 app.use(errorHandler);

@@ -28,6 +28,11 @@ import GuideCustomizePage from './features/guides/GuideCustomizePage';
 import CulturePage from './features/culture/CulturePage';
 import CultureDetailPage from './features/culture/CultureDetailPage';
 
+// Forum
+import ForumPage from './features/forum/ForumPage';
+import ForumDetailPage from './features/forum/ForumDetailPage';
+
+
 // Checkout
 import CheckoutPage from './features/checkout/CheckoutPage';
 import OrderConfirmationPage from './features/checkout/OrderConfirmationPage';
@@ -63,6 +68,8 @@ export default function App() {
             <Route path="guias/:id" element={<GuideDetailPage />} />
             <Route path="cultura" element={<CulturePage />} />
             <Route path="cultura/:id" element={<CultureDetailPage />} />
+            <Route path="foro" element={<ForumPage />} />
+            <Route path="foro/:id" element={<ForumDetailPage />} />
             <Route path="sobre-nosotros" element={<AboutPage />} />
             <Route path="politica-de-privacidad" element={<PrivacyPolicyPage />} />
 
