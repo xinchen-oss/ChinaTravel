@@ -144,6 +144,29 @@
   cursor: not-allowed;
 }
 
+.navbar__cart {
+  position: relative;
+  font-size: 1.3rem;
+  text-decoration: none;
+}
+
+.navbar__cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
 @media (max-width: 768px) {
   .navbar__links {
     display: none;

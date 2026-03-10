@@ -9,8 +9,12 @@ const orderSchema = new mongoose.Schema(
     hotel: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' },
     vuelo: { type: mongoose.Schema.Types.ObjectId, ref: 'Flight' },
     precioTotal: { type: Number, required: true },
+    descuento: { type: Number, default: 0 },
+    cupon: { type: String },
     estado: { type: String, enum: Object.values(ORDER_STATUS), default: ORDER_STATUS.CONFIRMADO },
     tipsPdfUrl: { type: String },
+    motivoCancelacion: { type: String },
+    fechaCancelacion: { type: Date },
   },
   { timestamps: true }
 );

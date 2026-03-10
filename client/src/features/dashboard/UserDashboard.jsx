@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice, formatDate } from '../../utils/formatters';
+import { getImageUrl, handleImageError } from '../../utils/imageHelper';
 import './Dashboard.css';
 
 const PAISES = [
@@ -20,6 +21,8 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('orders');
   const [expandedOrder, setExpandedOrder] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const [cancellingId, setCancellingId] = useState(null);
 
   // Profile form
   const [profileData, setProfileData] = useState({
@@ -37,6 +40,9 @@ export default function UserDashboard() {
       .then((res) => setOrders(res.data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
+    api.get('/pedidos/recomendaciones')
+      .then((res) => setRecommendations(res.data.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -93,6 +99,21 @@ export default function UserDashboard() {
     setExpandedOrder(expandedOrder === id ? null : id);
   };
 
+  const handleCancel = async (orderId) => {
+    const motivo = prompt('¿Por qué quieres cancelar este pedido?');
+    if (!motivo) return;
+    setCancellingId(orderId);
+    try {
+      const res = await api.put(`/pedidos/${orderId}/cancelar`, { motivo });
+      alert(res.data.mensaje);
+      setOrders((prev) => prev.map((o) => o._id === orderId ? { ...o, estado: res.data.data.estado } : o));
+    } catch (err) {
+      alert(err.response?.data?.error || 'Error al cancelar');
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   const getItinerary = (order) => {
     if (order.guiaPersonalizada?.length) return order.guiaPersonalizada;
     return order.guia?.dias || [];
@@ -116,6 +137,12 @@ export default function UserDashboard() {
             onClick={() => setActiveTab('profile')}
           >
             Mi perfil
+          </button>
+          <button
+            className={`dashboard-tab ${activeTab === 'recommendations' ? 'dashboard-tab--active' : ''}`}
+            onClick={() => setActiveTab('recommendations')}
+          >
+            Recomendaciones
           </button>
         </div>
 
@@ -149,6 +176,15 @@ export default function UserDashboard() {
                             <a href={order.tipsPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn--primary btn--sm" onClick={(e) => e.stopPropagation()}>
                               PDF Tips
                             </a>
+                          )}
+                          {order.estado === 'CONFIRMADO' && (
+                            <button
+                              className="btn btn--outline btn--sm"
+                              onClick={(e) => { e.stopPropagation(); handleCancel(order._id); }}
+                              disabled={cancellingId === order._id}
+                            >
+                              {cancellingId === order._id ? '...' : 'Cancelar'}
+                            </button>
                           )}
                           <span className="order-card__toggle">{isExpanded ? '▲' : '▼'}</span>
                         </div>
@@ -306,6 +342,32 @@ export default function UserDashboard() {
               </button>
             </form>
           </div>
+        )}
+
+        {activeTab === 'recommendations' && (
+          <>
+            <h2 className="section-title">Circuitos recomendados para ti</h2>
+            {recommendations.length === 0 ? (
+              <div className="empty-state">
+                <h3>Aún no tenemos recomendaciones</h3>
+                <p>Explora nuestros <Link to="/guias">circuitos</Link> para empezar</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                {recommendations.map((g) => (
+                  <Link to={`/guias/${g._id}`} key={g._id} className="order-card-full" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div style={{ padding: '16px' }}>
+                      <h3 style={{ marginBottom: '4px' }}>{g.titulo}</h3>
+                      <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '8px' }}>
+                        {g.ciudad?.nombre} · {g.duracionDias} días
+                      </p>
+                      <span className="order-card__price">{formatPrice(g.precio)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

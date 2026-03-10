@@ -32,7 +32,10 @@ export default function AdminLayout() {
                 <NavLink to="/admin/cultura" className={linkClass}>Cultura</NavLink>
                 <div className="admin-sidebar__section">Ventas</div>
                 <NavLink to="/admin/pedidos" className={linkClass}>Pedidos</NavLink>
+                <NavLink to="/admin/cupones" className={linkClass}>Cupones</NavLink>
+                <div className="admin-sidebar__section">Moderación</div>
                 <NavLink to="/admin/aprobaciones" className={linkClass}>Aprobaciones</NavLink>
+                <NavLink to="/admin/resenas" className={linkClass}>Reseñas</NavLink>
               </>
             )}
             {!isAdmin && (

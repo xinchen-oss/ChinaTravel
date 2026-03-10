@@ -19,6 +19,9 @@ import submissionRoutes from './routes/submission.js';
 import uploadRoutes from './routes/upload.js';
 import userRoutes from './routes/user.js';
 import chatRoutes from './routes/chat.js';
+import reviewRoutes from './routes/review.js';
+import couponRoutes from './routes/coupon.js';
+import notificationRoutes from './routes/notification.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,6 +57,9 @@ app.use('/api/cultura', cultureRoutes);
 app.use('/api/solicitudes', submissionRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/resenas', reviewRoutes);
+app.use('/api/cupones', couponRoutes);
+app.use('/api/notificaciones', notificationRoutes);
 
 // Serve React frontend in production
 const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');

@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ReviewSection from '../../components/common/ReviewSection';
 import { formatPrice } from '../../utils/formatters';
 import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../context/CartContext';
 import { getImageUrl } from '../../utils/imageHelper';
 import './Guides.css';
 
 export default function GuideDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { addItem, isInCart } = useCart();
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -153,6 +156,21 @@ export default function GuideDetailPage() {
                   <div className="booking-card__actions">
                     <Link to={`/guias/${id}/personalizar`} className="btn btn--primary" style={{ width: '100%' }}>Personalizar itinerario</Link>
                     <Link to={`/checkout/${id}`} className="btn btn--secondary" style={{ width: '100%' }}>Reservar ahora</Link>
+                    <button
+                      className="btn btn--outline"
+                      style={{ width: '100%' }}
+                      disabled={isInCart(id)}
+                      onClick={() => addItem({
+                        guideId: id,
+                        titulo: guide.titulo,
+                        ciudad: guide.ciudad?.nombre,
+                        precio: guide.precio,
+                        duracionDias: guide.duracionDias,
+                        imagen: guide.imagen || guide.ciudad?.imagenPortada,
+                      })}
+                    >
+                      {isInCart(id) ? '✓ En el carrito' : '🛒 Añadir al carrito'}
+                    </button>
                   </div>
                 ) : (
                   <Link to="/login" className="btn btn--primary" style={{ width: '100%' }}>Inicia sesión para reservar</Link>
@@ -160,6 +178,9 @@ export default function GuideDetailPage() {
               </div>
             </aside>
           </div>
+
+          {/* Reviews */}
+          <ReviewSection tipo="GUIA" referenciaId={id} />
         </div>
       </div>
     </>

@@ -8,6 +8,10 @@ const flightSchema = new mongoose.Schema(
     ciudadDestino: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true },
     precio: { type: Number, required: true },
     duracionHoras: { type: Number },
+    accesibilidad: {
+      sillasRuedas: { type: Boolean, default: false },
+      asistenciaEspecial: { type: Boolean, default: false },
+    },
     creadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     isApproved: { type: Boolean, default: true },
   },

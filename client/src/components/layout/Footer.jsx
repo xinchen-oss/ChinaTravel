@@ -18,8 +18,8 @@ export default function Footer() {
         <div className="footer__links">
           <h4>Información</h4>
           <Link to="/sobre-nosotros">Sobre nosotros</Link>
-          <Link to="/login">Iniciar sesión</Link>
-          <Link to="/registro">Crear cuenta</Link>
+          <Link to="/ayuda">Centro de ayuda</Link>
+          <Link to="/politica-cancelacion">Cancelación y reembolsos</Link>
           <Link to="/politica-de-privacidad">Política de privacidad</Link>
         </div>
         <div className="footer__bottom">

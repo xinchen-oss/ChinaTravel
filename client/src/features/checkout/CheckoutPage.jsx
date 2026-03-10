@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
+import { useCart } from '../../context/CartContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice } from '../../utils/formatters';
 import './Checkout.css';
@@ -9,6 +10,7 @@ export default function CheckoutPage() {
   const { guideId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { removeItem } = useCart();
   const customizations = location.state?.customizations || {};
 
   const [guide, setGuide] = useState(null);
@@ -19,6 +21,14 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Coupon
+  const [couponCode, setCouponCode] = useState('');
+  const [couponData, setCouponData] = useState(null);
+  const [couponError, setCouponError] = useState('');
+
+  // Accessibility filters
+  const [filterAccessible, setFilterAccessible] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -35,7 +45,15 @@ export default function CheckoutPage() {
       .finally(() => setLoading(false));
   }, [guideId]);
 
-  const calcTotal = () => {
+  const filteredHotels = filterAccessible
+    ? hotels.filter((h) => h.accesibilidad?.sillasRuedas || h.accesibilidad?.ascensor || h.accesibilidad?.habitacionAdaptada)
+    : hotels;
+
+  const filteredFlights = filterAccessible
+    ? flights.filter((f) => f.accesibilidad?.sillasRuedas || f.accesibilidad?.asistenciaEspecial)
+    : flights;
+
+  const calcSubtotal = () => {
     let total = guide?.precio || 0;
     if (selectedHotel) {
       const hotel = hotels.find((h) => h._id === selectedHotel);
@@ -48,6 +66,21 @@ export default function CheckoutPage() {
     return total;
   };
 
+  const descuento = couponData?.descuento || 0;
+  const calcTotal = () => Math.max(0, calcSubtotal() - descuento);
+
+  const applyCoupon = async () => {
+    setCouponError('');
+    setCouponData(null);
+    if (!couponCode.trim()) return;
+    try {
+      const res = await api.post('/cupones/validar', { codigo: couponCode, total: calcSubtotal() });
+      setCouponData(res.data.data);
+    } catch (err) {
+      setCouponError(err.response?.data?.error || 'Cupón inválido');
+    }
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     setError('');
@@ -58,7 +91,10 @@ export default function CheckoutPage() {
         hotelId: selectedHotel || undefined,
         vueloId: selectedFlight || undefined,
         precioTotal: calcTotal(),
+        descuento,
+        cupon: couponData?.codigo || undefined,
       });
+      removeItem(guideId);
       navigate(`/pedido-confirmado/${res.data.data._id}`);
     } catch (err) {
       setError(err.response?.data?.error || 'Error al procesar el pedido');
@@ -78,7 +114,7 @@ export default function CheckoutPage() {
         <div className="checkout-layout">
           <div className="checkout-options">
             <div className="checkout-section">
-              <h2>Tu guía</h2>
+              <h2>Tu circuito</h2>
               <div className="checkout-item">
                 <span>{guide.titulo} ({guide.duracionDias} días)</span>
                 <span>{formatPrice(guide.precio)}</span>
@@ -89,12 +125,19 @@ export default function CheckoutPage() {
             </div>
 
             <div className="checkout-section">
-              <h2>Hotel (opcional)</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <h2>Hotel (opcional)</h2>
+                <label style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <input type="checkbox" checked={filterAccessible} onChange={(e) => setFilterAccessible(e.target.checked)} />
+                  ♿ Accesible
+                </label>
+              </div>
               <select value={selectedHotel} onChange={(e) => setSelectedHotel(e.target.value)} className="checkout-select">
                 <option value="">Sin hotel</option>
-                {hotels.map((hotel) => (
+                {filteredHotels.map((hotel) => (
                   <option key={hotel._id} value={hotel._id}>
                     {hotel.nombre} ({'★'.repeat(hotel.estrellas)}) - {formatPrice(hotel.precioPorNoche)}/noche
+                    {hotel.accesibilidad?.sillasRuedas ? ' ♿' : ''}
                   </option>
                 ))}
               </select>
@@ -104,19 +147,41 @@ export default function CheckoutPage() {
               <h2>Vuelo (opcional)</h2>
               <select value={selectedFlight} onChange={(e) => setSelectedFlight(e.target.value)} className="checkout-select">
                 <option value="">Sin vuelo</option>
-                {flights.map((flight) => (
+                {filteredFlights.map((flight) => (
                   <option key={flight._id} value={flight._id}>
                     {flight.aerolinea} ({flight.origen} → {flight.destino}) - {formatPrice(flight.precio)}
+                    {flight.accesibilidad?.sillasRuedas ? ' ♿' : ''}
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="checkout-section">
+              <h2>Cupón de descuento</h2>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="Introduce tu código"
+                  className="checkout-select"
+                  style={{ flex: 1, textTransform: 'uppercase' }}
+                />
+                <button onClick={applyCoupon} className="btn btn--outline btn--sm">Aplicar</button>
+              </div>
+              {couponError && <p style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{couponError}</p>}
+              {couponData && (
+                <p style={{ color: 'var(--color-success)', fontSize: '0.8rem', marginTop: '4px' }}>
+                  ✓ {couponData.descripcion || couponData.codigo}: -{formatPrice(couponData.descuento)}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="checkout-summary">
             <h2>Resumen</h2>
             <div className="checkout-item">
-              <span>Guía</span>
+              <span>Circuito</span>
               <span>{formatPrice(guide.precio)}</span>
             </div>
             {selectedHotel && (() => {
@@ -137,6 +202,12 @@ export default function CheckoutPage() {
                 </div>
               ) : null;
             })()}
+            {descuento > 0 && (
+              <div className="checkout-item" style={{ color: 'var(--color-success)' }}>
+                <span>Descuento ({couponData.codigo})</span>
+                <span>-{formatPrice(descuento)}</span>
+              </div>
+            )}
             <div className="checkout-total">
               <span>Total</span>
               <span>{formatPrice(calcTotal())}</span>
@@ -145,7 +216,10 @@ export default function CheckoutPage() {
             <button onClick={handleSubmit} className="btn btn--primary btn--lg" disabled={submitting} style={{ width: '100%' }}>
               {submitting ? 'Procesando...' : 'Confirmar pago (simulado)'}
             </button>
-            <p className="checkout-disclaimer">Este es un pago simulado. No se realizará ningún cargo.</p>
+            <p className="checkout-disclaimer">
+              Este es un pago simulado. No se realizará ningún cargo.
+              <br /><Link to="/politica-cancelacion" style={{ fontSize: '0.75rem' }}>Ver política de cancelación</Link>
+            </p>
           </div>
         </div>
       </div>

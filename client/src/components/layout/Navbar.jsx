@@ -1,10 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../context/CartContext';
 import { ROLES } from '../../utils/constants';
+import NotificationBell from '../common/NotificationBell';
 import './Navbar.css';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { count: cartCount } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -25,11 +28,16 @@ export default function Navbar() {
           <Link to="/guias">Circuitos</Link>
           <Link to="/cultura">Cultura</Link>
           <Link to="/sobre-nosotros">Sobre nosotros</Link>
+          <Link to="/ayuda">Ayuda</Link>
         </div>
 
         <div className="navbar__auth">
+          <Link to="/carrito" className="navbar__cart">
+            🛒{cartCount > 0 && <span className="navbar__cart-badge">{cartCount}</span>}
+          </Link>
           {user ? (
             <>
+              <NotificationBell />
               {user.role === ROLES.ADMIN && (
                 <Link to="/admin" className="navbar__role-link">Admin</Link>
               )}

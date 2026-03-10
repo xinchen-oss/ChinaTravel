@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import PrivateRoute from './components/guards/PrivateRoute';
@@ -13,6 +14,9 @@ import CityDetailPage from './pages/CityDetailPage';
 import AboutPage from './pages/AboutPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import FAQPage from './pages/FAQPage';
+import CancellationPolicyPage from './pages/CancellationPolicyPage';
+import CartPage from './pages/CartPage';
 
 // Auth
 import LoginPage from './features/auth/LoginPage';
@@ -44,6 +48,8 @@ import ManageActivitiesPage from './features/admin/ManageActivitiesPage';
 import ManageCulturePage from './features/admin/ManageCulturePage';
 import ManageOrdersPage from './features/admin/ManageOrdersPage';
 import ApprovalQueuePage from './features/admin/ApprovalQueuePage';
+import ManageCouponsPage from './features/admin/ManageCouponsPage';
+import ManageReviewsPage from './features/admin/ManageReviewsPage';
 
 // Comercial
 import ComercialDashboard from './features/comercial/ComercialDashboard';
@@ -55,55 +61,62 @@ import ChatWidget from './components/chat/ChatWidget';
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            {/* Public */}
-            <Route index element={<HomePage />} />
-            <Route path="ciudades" element={<CitiesPage />} />
-            <Route path="ciudades/:slug" element={<CityDetailPage />} />
-            <Route path="guias" element={<GuidesListPage />} />
-            <Route path="guias/:id" element={<GuideDetailPage />} />
-            <Route path="cultura" element={<CulturePage />} />
-            <Route path="cultura/:id" element={<CultureDetailPage />} />
-            <Route path="sobre-nosotros" element={<AboutPage />} />
-            <Route path="politica-de-privacidad" element={<PrivacyPolicyPage />} />
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              {/* Public */}
+              <Route index element={<HomePage />} />
+              <Route path="ciudades" element={<CitiesPage />} />
+              <Route path="ciudades/:slug" element={<CityDetailPage />} />
+              <Route path="guias" element={<GuidesListPage />} />
+              <Route path="guias/:id" element={<GuideDetailPage />} />
+              <Route path="cultura" element={<CulturePage />} />
+              <Route path="cultura/:id" element={<CultureDetailPage />} />
+              <Route path="sobre-nosotros" element={<AboutPage />} />
+              <Route path="politica-de-privacidad" element={<PrivacyPolicyPage />} />
+              <Route path="ayuda" element={<FAQPage />} />
+              <Route path="politica-cancelacion" element={<CancellationPolicyPage />} />
+              <Route path="carrito" element={<CartPage />} />
 
-            {/* Auth */}
-            <Route path="login" element={<LoginPage />} />
-            <Route path="registro" element={<RegisterPage />} />
-            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+              {/* Auth */}
+              <Route path="login" element={<LoginPage />} />
+              <Route path="registro" element={<RegisterPage />} />
+              <Route path="forgot-password" element={<ForgotPasswordPage />} />
 
-            {/* Private */}
-            <Route path="guias/:id/personalizar" element={<PrivateRoute><GuideCustomizePage /></PrivateRoute>} />
-            <Route path="checkout/:guideId" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
-            <Route path="pedido-confirmado/:id" element={<PrivateRoute><OrderConfirmationPage /></PrivateRoute>} />
-            <Route path="dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
+              {/* Private */}
+              <Route path="guias/:id/personalizar" element={<PrivateRoute><GuideCustomizePage /></PrivateRoute>} />
+              <Route path="checkout/:guideId" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+              <Route path="pedido-confirmado/:id" element={<PrivateRoute><OrderConfirmationPage /></PrivateRoute>} />
+              <Route path="dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
 
-            {/* 404 */}
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
+              {/* 404 */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
 
-          {/* Admin - with sidebar layout */}
-          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="usuarios" element={<ManageUsersPage />} />
-            <Route path="ciudades" element={<ManageCitiesPage />} />
-            <Route path="guias" element={<ManageGuidesPage />} />
-            <Route path="actividades" element={<ManageActivitiesPage />} />
-            <Route path="cultura" element={<ManageCulturePage />} />
-            <Route path="pedidos" element={<ManageOrdersPage />} />
-            <Route path="aprobaciones" element={<ApprovalQueuePage />} />
-          </Route>
+            {/* Admin - with sidebar layout */}
+            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="usuarios" element={<ManageUsersPage />} />
+              <Route path="ciudades" element={<ManageCitiesPage />} />
+              <Route path="guias" element={<ManageGuidesPage />} />
+              <Route path="actividades" element={<ManageActivitiesPage />} />
+              <Route path="cultura" element={<ManageCulturePage />} />
+              <Route path="pedidos" element={<ManageOrdersPage />} />
+              <Route path="aprobaciones" element={<ApprovalQueuePage />} />
+              <Route path="cupones" element={<ManageCouponsPage />} />
+              <Route path="resenas" element={<ManageReviewsPage />} />
+            </Route>
 
-          {/* Comercial - with sidebar layout */}
-          <Route path="/comercial" element={<ComercialRoute><AdminLayout /></ComercialRoute>}>
-            <Route index element={<ComercialDashboard />} />
-            <Route path="nueva-solicitud" element={<SubmitContentPage />} />
-          </Route>
-        </Routes>
-        <ChatWidget />
-      </BrowserRouter>
+            {/* Comercial - with sidebar layout */}
+            <Route path="/comercial" element={<ComercialRoute><AdminLayout /></ComercialRoute>}>
+              <Route index element={<ComercialDashboard />} />
+              <Route path="nueva-solicitud" element={<SubmitContentPage />} />
+            </Route>
+          </Routes>
+          <ChatWidget />
+        </BrowserRouter>
+      </CartProvider>
     </AuthProvider>
   );
 }
