@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/layout/Layout';
+import AdminLayout from './components/layout/AdminLayout';
 import PrivateRoute from './components/guards/PrivateRoute';
 import AdminRoute from './components/guards/AdminRoute';
 import ComercialRoute from './components/guards/ComercialRoute';
@@ -76,22 +77,26 @@ export default function App() {
             <Route path="pedido-confirmado/:id" element={<PrivateRoute><OrderConfirmationPage /></PrivateRoute>} />
             <Route path="dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
 
-            {/* Admin */}
-            <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="admin/usuarios" element={<AdminRoute><ManageUsersPage /></AdminRoute>} />
-            <Route path="admin/ciudades" element={<AdminRoute><ManageCitiesPage /></AdminRoute>} />
-            <Route path="admin/guias" element={<AdminRoute><ManageGuidesPage /></AdminRoute>} />
-            <Route path="admin/actividades" element={<AdminRoute><ManageActivitiesPage /></AdminRoute>} />
-            <Route path="admin/cultura" element={<AdminRoute><ManageCulturePage /></AdminRoute>} />
-            <Route path="admin/pedidos" element={<AdminRoute><ManageOrdersPage /></AdminRoute>} />
-            <Route path="admin/aprobaciones" element={<AdminRoute><ApprovalQueuePage /></AdminRoute>} />
-
-            {/* Comercial */}
-            <Route path="comercial" element={<ComercialRoute><ComercialDashboard /></ComercialRoute>} />
-            <Route path="comercial/nueva-solicitud" element={<ComercialRoute><SubmitContentPage /></ComercialRoute>} />
-
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
+          </Route>
+
+          {/* Admin - with sidebar layout */}
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="usuarios" element={<ManageUsersPage />} />
+            <Route path="ciudades" element={<ManageCitiesPage />} />
+            <Route path="guias" element={<ManageGuidesPage />} />
+            <Route path="actividades" element={<ManageActivitiesPage />} />
+            <Route path="cultura" element={<ManageCulturePage />} />
+            <Route path="pedidos" element={<ManageOrdersPage />} />
+            <Route path="aprobaciones" element={<ApprovalQueuePage />} />
+          </Route>
+
+          {/* Comercial - with sidebar layout */}
+          <Route path="/comercial" element={<ComercialRoute><AdminLayout /></ComercialRoute>}>
+            <Route index element={<ComercialDashboard />} />
+            <Route path="nueva-solicitud" element={<SubmitContentPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -53,6 +53,33 @@ export const getMe = asyncHandler(async (req, res) => {
   });
 });
 
+export const updateProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('+password');
+  if (!user) throw new ApiError(404, 'Usuario no encontrado');
+
+  const { nombre, email, password, currentPassword } = req.body;
+
+  if (nombre) user.nombre = nombre;
+  if (email && email !== user.email) {
+    const exists = await User.findOne({ email });
+    if (exists) throw new ApiError(400, 'El email ya está en uso');
+    user.email = email;
+  }
+  if (password) {
+    if (!currentPassword) throw new ApiError(400, 'Debes proporcionar tu contraseña actual');
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) throw new ApiError(400, 'Contraseña actual incorrecta');
+    user.password = password;
+  }
+
+  await user.save();
+
+  res.json({
+    ok: true,
+    user: { id: user._id, nombre: user.nombre, email: user.email, role: user.role },
+  });
+});
+
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });

@@ -52,8 +52,7 @@ export default function ManageCitiesPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Gestionar ciudades</h1>
 
         <form onSubmit={handleSubmit} className="submission-form" style={{ marginBottom: 'var(--space-xl)' }}>
@@ -117,7 +116,6 @@ export default function ManageCitiesPage() {
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }

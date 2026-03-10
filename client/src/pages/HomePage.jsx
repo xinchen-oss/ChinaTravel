@@ -5,6 +5,7 @@ import { useGuides } from '../hooks/useGuides';
 import Card from '../components/common/Card';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { formatPrice } from '../utils/formatters';
+import { getImageUrl, handleImageError } from '../utils/imageHelper';
 import './HomePage.css';
 
 const heroSlides = [
@@ -119,7 +120,7 @@ export default function HomePage() {
               {guides.slice(0, 6).map((guide) => (
                 <Link to={`/guias/${guide._id}`} className="guide-card" key={guide._id}>
                   <div className="guide-card__image">
-                    <img src={guide.imagen || guide.ciudad?.imagenPortada || 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80'} alt={guide.titulo} />
+                    <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada)} alt={guide.titulo} onError={handleImageError} />
                     <span className="guide-card__duration">{guide.duracionDias} días</span>
                   </div>
                   <div className="guide-card__body">
@@ -159,7 +160,7 @@ export default function HomePage() {
               {cities.map((city) => (
                 <Link to={`/ciudades/${city.slug}`} className="city-card" key={city._id}>
                   <div className="city-card__image">
-                    <img src={city.imagenPortada || 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80'} alt={city.nombre} />
+                    <img src={getImageUrl(city.imagenPortada)} alt={city.nombre} onError={handleImageError} />
                     <div className="city-card__overlay" />
                     <div className="city-card__info">
                       <span className="city-card__chinese">{city.nombreChino}</span>

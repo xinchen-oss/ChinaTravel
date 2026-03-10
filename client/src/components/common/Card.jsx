@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { getImageUrl, handleImageError } from '../../utils/imageHelper';
 import './Card.css';
 
 export default function Card({ to, image, title, subtitle, badge, children, className = '' }) {
@@ -7,12 +8,10 @@ export default function Card({ to, image, title, subtitle, badge, children, clas
 
   return (
     <Wrapper className={`card ${className}`} {...props}>
-      {image && (
-        <div className="card__image">
-          <img src={image} alt={title} />
-          {badge && <span className="card__badge">{badge}</span>}
-        </div>
-      )}
+      <div className="card__image">
+        <img src={getImageUrl(image)} alt={title} onError={handleImageError} />
+        {badge && <span className="card__badge">{badge}</span>}
+      </div>
       <div className="card__body">
         {title && <h3 className="card__title">{title}</h3>}
         {subtitle && <p className="card__subtitle">{subtitle}</p>}

@@ -11,7 +11,14 @@ export const placeOrder = asyncHandler(async (req, res) => {
 
 export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ usuario: req.user._id })
-    .populate('guia', 'titulo ciudad duracionDias precio imagen')
+    .populate({
+      path: 'guia',
+      select: 'titulo ciudad duracionDias precio imagen dias',
+      populate: [
+        { path: 'ciudad', select: 'nombre' },
+        { path: 'dias.actividades.actividad', select: 'nombre descripcion categoria duracionHoras' },
+      ],
+    })
     .populate('hotel', 'nombre estrellas precioPorNoche')
     .populate('vuelo', 'aerolinea origen destino precio')
     .sort('-createdAt');
@@ -20,7 +27,13 @@ export const getMyOrders = asyncHandler(async (req, res) => {
 
 export const getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
-    .populate('guia')
+    .populate({
+      path: 'guia',
+      populate: [
+        { path: 'ciudad', select: 'nombre' },
+        { path: 'dias.actividades.actividad' },
+      ],
+    })
     .populate('hotel')
     .populate('vuelo')
     .populate('usuario', 'nombre email');

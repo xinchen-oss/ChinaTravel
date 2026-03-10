@@ -25,8 +25,7 @@ export default function ComercialDashboard() {
   };
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Panel comercial</h1>
         <p className="page-subtitle">Hola, {user?.nombre}</p>
 
@@ -56,7 +55,6 @@ export default function ComercialDashboard() {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatDate } from '../../utils/formatters';
+import { getImageUrl, handleImageError } from '../../utils/imageHelper';
 import './Culture.css';
 
 export default function CultureDetailPage() {
@@ -31,7 +32,7 @@ export default function CultureDetailPage() {
             {article.ciudad && <p className="culture-article__city">{article.ciudad.nombre}</p>}
             <time>{formatDate(article.createdAt)}</time>
           </header>
-          {article.imagen && <img src={article.imagen} alt={article.titulo} className="culture-article__image" />}
+          {article.imagen && <img src={getImageUrl(article.imagen)} alt={article.titulo} className="culture-article__image" onError={handleImageError} />}
           <div className="culture-article__content" dangerouslySetInnerHTML={{ __html: article.contenido }} />
         </article>
       </div>

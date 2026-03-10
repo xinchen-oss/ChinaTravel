@@ -36,8 +36,7 @@ export default function ManageUsersPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Gestionar usuarios</h1>
         <table className="data-table">
           <thead>
@@ -78,7 +77,6 @@ export default function ManageUsersPage() {
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }

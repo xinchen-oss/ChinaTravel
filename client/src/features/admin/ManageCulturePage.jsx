@@ -29,8 +29,7 @@ export default function ManageCulturePage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Gestionar cultura</h1>
         <table className="data-table">
           <thead>
@@ -56,7 +55,6 @@ export default function ManageCulturePage() {
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }

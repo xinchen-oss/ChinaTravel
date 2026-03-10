@@ -4,6 +4,7 @@ import { useGuides } from '../../hooks/useGuides';
 import CitySelector from '../../components/common/CitySelector';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice } from '../../utils/formatters';
+import { getImageUrl, handleImageError } from '../../utils/imageHelper';
 import './Guides.css';
 
 export default function GuidesListPage() {
@@ -45,7 +46,7 @@ export default function GuidesListPage() {
               {guides.map((guide) => (
                 <div className="guide-list-card" key={guide._id}>
                   <div className="guide-list-card__image">
-                    <img src={guide.imagen || guide.ciudad?.imagenPortada || 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80'} alt={guide.titulo} />
+                    <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada)} alt={guide.titulo} onError={handleImageError} />
                     <span className="guide-list-card__duration">{guide.duracionDias} días</span>
                   </div>
                   <div className="guide-list-card__body">

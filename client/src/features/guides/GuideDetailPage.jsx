@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice } from '../../utils/formatters';
 import { useAuth } from '../../hooks/useAuth';
+import { getImageUrl } from '../../utils/imageHelper';
 import './Guides.css';
 
 export default function GuideDetailPage() {
@@ -27,7 +28,7 @@ export default function GuideDetailPage() {
       {/* Banner con imagen */}
       <section
         className="guide-banner"
-        style={{ backgroundImage: `url(${guide.imagen || guide.ciudad?.imagenPortada || 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&q=80'})` }}
+        style={{ backgroundImage: `url(${getImageUrl(guide.imagen || guide.ciudad?.imagenPortada)})` }}
       >
         <div className="guide-banner__overlay" />
         <div className="container guide-banner__content">

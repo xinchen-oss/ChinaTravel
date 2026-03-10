@@ -40,8 +40,7 @@ export default function SubmitContentPage() {
   };
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Nueva solicitud de contenido</h1>
 
         <div className="submission-form">
@@ -154,7 +153,6 @@ export default function SubmitContentPage() {
             </button>
           </form>
         </div>
-      </div>
     </div>
   );
 }

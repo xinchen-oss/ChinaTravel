@@ -30,8 +30,7 @@ export default function ManageActivitiesPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Gestionar actividades</h1>
         <table className="data-table">
           <thead>
@@ -59,7 +58,6 @@ export default function ManageActivitiesPage() {
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }

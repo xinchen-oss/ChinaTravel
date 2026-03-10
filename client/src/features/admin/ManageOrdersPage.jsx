@@ -18,8 +18,7 @@ export default function ManageOrdersPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Gestionar pedidos</h1>
         <table className="data-table">
           <thead>
@@ -47,7 +46,6 @@ export default function ManageOrdersPage() {
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }

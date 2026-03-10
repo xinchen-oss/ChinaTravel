@@ -41,8 +41,7 @@ export default function ApprovalQueuePage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="page">
-      <div className="container">
+    <div>
         <h1 className="page-title">Cola de aprobaciones</h1>
 
         {submissions.length === 0 ? (
@@ -80,7 +79,6 @@ export default function ApprovalQueuePage() {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 }
