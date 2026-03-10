@@ -27,6 +27,7 @@ export default function Navbar() {
           <Link to="/ciudades">Ciudades</Link>
           <Link to="/guias">Circuitos</Link>
           <Link to="/cultura">Cultura</Link>
+          <Link to="/foro">Foro</Link>
           <Link to="/sobre-nosotros">Sobre nosotros</Link>
           <Link to="/ayuda">Ayuda</Link>
         </div>

@@ -22,6 +22,8 @@ import chatRoutes from './routes/chat.js';
 import reviewRoutes from './routes/review.js';
 import couponRoutes from './routes/coupon.js';
 import notificationRoutes from './routes/notification.js';
+import forumRoutes from './routes/forum.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,7 +62,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/resenas', reviewRoutes);
 app.use('/api/cupones', couponRoutes);
 app.use('/api/notificaciones', notificationRoutes);
-
+app.use('/api/foro', forumRoutes);
 // Serve React frontend in production
 const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
 app.use(express.static(clientDist));
@@ -71,6 +73,9 @@ app.get('*', (req, res, next) => {
   }
   res.sendFile(path.join(clientDist, 'index.html'));
 });
+
+
+
 
 // Error handler
 app.use(errorHandler);

@@ -32,6 +32,11 @@ import GuideCustomizePage from './features/guides/GuideCustomizePage';
 import CulturePage from './features/culture/CulturePage';
 import CultureDetailPage from './features/culture/CultureDetailPage';
 
+// Forum
+import ForumPage from './features/forum/ForumPage';
+import ForumDetailPage from './features/forum/ForumDetailPage';
+
+
 // Checkout
 import CheckoutPage from './features/checkout/CheckoutPage';
 import OrderConfirmationPage from './features/checkout/OrderConfirmationPage';
@@ -62,20 +67,22 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              {/* Public */}
-              <Route index element={<HomePage />} />
-              <Route path="ciudades" element={<CitiesPage />} />
-              <Route path="ciudades/:slug" element={<CityDetailPage />} />
-              <Route path="guias" element={<GuidesListPage />} />
-              <Route path="guias/:id" element={<GuideDetailPage />} />
-              <Route path="cultura" element={<CulturePage />} />
-              <Route path="cultura/:id" element={<CultureDetailPage />} />
-              <Route path="sobre-nosotros" element={<AboutPage />} />
-              <Route path="politica-de-privacidad" element={<PrivacyPolicyPage />} />
-              <Route path="ayuda" element={<FAQPage />} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            {/* Public */}
+            <Route index element={<HomePage />} />
+            <Route path="ciudades" element={<CitiesPage />} />
+            <Route path="ciudades/:slug" element={<CityDetailPage />} />
+            <Route path="guias" element={<GuidesListPage />} />
+            <Route path="guias/:id" element={<GuideDetailPage />} />
+            <Route path="cultura" element={<CulturePage />} />
+            <Route path="cultura/:id" element={<CultureDetailPage />} />
+            <Route path="sobre-nosotros" element={<AboutPage />} />
+            <Route path="politica-de-privacidad" element={<PrivacyPolicyPage />} />
+             <Route path="foro" element={<ForumPage />} />
+            <Route path="foro/:id" element={<ForumDetailPage />} />
+             <Route path="ayuda" element={<FAQPage />} />
               <Route path="politica-cancelacion" element={<CancellationPolicyPage />} />
               <Route path="carrito" element={<CartPage />} />
 
