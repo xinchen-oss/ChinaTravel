@@ -160,7 +160,31 @@
 
 /* Profile */
 .profile-section {
-  max-width: 500px;
+  max-width: 650px;
+}
+
+.profile-form--wide {
+  max-width: 100%;
+}
+
+.profile-form__section-title {
+  font-size: 1rem;
+  margin: 20px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  color: var(--color-text);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .profile-form {

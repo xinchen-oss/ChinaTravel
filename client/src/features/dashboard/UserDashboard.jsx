@@ -6,6 +6,14 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice, formatDate } from '../../utils/formatters';
 import './Dashboard.css';
 
+const PAISES = [
+  'España', 'México', 'Argentina', 'Colombia', 'Chile', 'Perú', 'Venezuela',
+  'Ecuador', 'Guatemala', 'Cuba', 'Bolivia', 'Rep. Dominicana', 'Honduras',
+  'Paraguay', 'El Salvador', 'Nicaragua', 'Costa Rica', 'Panamá', 'Uruguay',
+  'Puerto Rico', 'China', 'Estados Unidos', 'Francia', 'Alemania', 'Italia',
+  'Portugal', 'Reino Unido', 'Japón', 'Corea del Sur', 'Otro',
+];
+
 export default function UserDashboard() {
   const { user, updateProfile } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -15,10 +23,10 @@ export default function UserDashboard() {
 
   // Profile form
   const [profileData, setProfileData] = useState({
-    nombre: user?.nombre || '',
-    email: user?.email || '',
-    currentPassword: '',
-    password: '',
+    nombre: '', apellidos: '', email: '', telefono: '',
+    fechaNacimiento: '', genero: '', nacionalidad: '', pasaporte: '',
+    direccion: { calle: '', ciudad: '', codigoPostal: '', pais: '' },
+    currentPassword: '', password: '',
   });
   const [profileMsg, setProfileMsg] = useState('');
   const [profileError, setProfileError] = useState('');
@@ -33,9 +41,31 @@ export default function UserDashboard() {
 
   useEffect(() => {
     if (user) {
-      setProfileData((prev) => ({ ...prev, nombre: user.nombre, email: user.email }));
+      setProfileData((prev) => ({
+        ...prev,
+        nombre: user.nombre || '',
+        apellidos: user.apellidos || '',
+        email: user.email || '',
+        telefono: user.telefono || '',
+        fechaNacimiento: user.fechaNacimiento ? user.fechaNacimiento.substring(0, 10) : '',
+        genero: user.genero || '',
+        nacionalidad: user.nacionalidad || '',
+        pasaporte: user.pasaporte || '',
+        direccion: {
+          calle: user.direccion?.calle || '',
+          ciudad: user.direccion?.ciudad || '',
+          codigoPostal: user.direccion?.codigoPostal || '',
+          pais: user.direccion?.pais || '',
+        },
+      }));
     }
   }, [user]);
+
+  const set = (field) => (e) => setProfileData({ ...profileData, [field]: e.target.value });
+  const setDir = (field) => (e) => setProfileData({
+    ...profileData,
+    direccion: { ...profileData.direccion, [field]: e.target.value },
+  });
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -43,10 +73,11 @@ export default function UserDashboard() {
     setProfileMsg('');
     setProfileError('');
     try {
-      const data = { nombre: profileData.nombre, email: profileData.email };
-      if (profileData.password) {
-        data.password = profileData.password;
-        data.currentPassword = profileData.currentPassword;
+      const { currentPassword, password, ...rest } = profileData;
+      const data = { ...rest };
+      if (password) {
+        data.password = password;
+        data.currentPassword = currentPassword;
       }
       await updateProfile(data);
       setProfileMsg('Perfil actualizado correctamente');
@@ -71,7 +102,7 @@ export default function UserDashboard() {
     <div className="page">
       <div className="container">
         <h1 className="page-title">Mi cuenta</h1>
-        <p className="page-subtitle">Hola, {user?.nombre}</p>
+        <p className="page-subtitle">Hola, {user?.nombre} {user?.apellidos}</p>
 
         <div className="dashboard-tabs">
           <button
@@ -175,48 +206,101 @@ export default function UserDashboard() {
 
         {activeTab === 'profile' && (
           <div className="profile-section">
-            <form onSubmit={handleProfileSubmit} className="profile-form">
-              <h2>Editar perfil</h2>
+            <form onSubmit={handleProfileSubmit} className="profile-form profile-form--wide">
+              <h2>Datos personales</h2>
               {profileMsg && <div className="profile-success">{profileMsg}</div>}
               {profileError && <div className="auth-error">{profileError}</div>}
 
-              <div className="form-group">
-                <label>Nombre</label>
-                <input
-                  type="text"
-                  value={profileData.nombre}
-                  onChange={(e) => setProfileData({ ...profileData, nombre: e.target.value })}
-                  required
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Nombre</label>
+                  <input type="text" value={profileData.nombre} onChange={set('nombre')} required />
+                </div>
+                <div className="form-group">
+                  <label>Apellidos</label>
+                  <input type="text" value={profileData.apellidos} onChange={set('apellidos')} />
+                </div>
               </div>
+
               <div className="form-group">
                 <label>Email</label>
-                <input
-                  type="email"
-                  value={profileData.email}
-                  onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                  required
-                />
+                <input type="email" value={profileData.email} onChange={set('email')} required />
               </div>
-              <hr style={{ margin: '20px 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
-              <h3 style={{ fontSize: '1rem', marginBottom: '12px' }}>Cambiar contraseña (opcional)</h3>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Teléfono</label>
+                  <input type="tel" value={profileData.telefono} onChange={set('telefono')} placeholder="+34 600 000 000" />
+                </div>
+                <div className="form-group">
+                  <label>Fecha de nacimiento</label>
+                  <input type="date" value={profileData.fechaNacimiento} onChange={set('fechaNacimiento')} />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Género</label>
+                  <select value={profileData.genero} onChange={set('genero')}>
+                    <option value="">Prefiero no decir</option>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMENINO">Femenino</option>
+                    <option value="OTRO">Otro</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Nacionalidad</label>
+                  <select value={profileData.nacionalidad} onChange={set('nacionalidad')}>
+                    <option value="">Seleccionar</option>
+                    {PAISES.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div className="form-group">
-                <label>Contraseña actual</label>
-                <input
-                  type="password"
-                  value={profileData.currentPassword}
-                  onChange={(e) => setProfileData({ ...profileData, currentPassword: e.target.value })}
-                />
+                <label>N° Pasaporte / DNI</label>
+                <input type="text" value={profileData.pasaporte} onChange={set('pasaporte')} placeholder="Número de documento" />
+              </div>
+
+              <h3 className="profile-form__section-title">Dirección</h3>
+              <div className="form-group">
+                <label>Calle y número</label>
+                <input type="text" value={profileData.direccion.calle} onChange={setDir('calle')} placeholder="Calle, número, piso" />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Ciudad</label>
+                  <input type="text" value={profileData.direccion.ciudad} onChange={setDir('ciudad')} />
+                </div>
+                <div className="form-group">
+                  <label>Código postal</label>
+                  <input type="text" value={profileData.direccion.codigoPostal} onChange={setDir('codigoPostal')} />
+                </div>
               </div>
               <div className="form-group">
-                <label>Nueva contraseña</label>
-                <input
-                  type="password"
-                  value={profileData.password}
-                  onChange={(e) => setProfileData({ ...profileData, password: e.target.value })}
-                  minLength={6}
-                />
+                <label>País</label>
+                <select value={profileData.direccion.pais} onChange={setDir('pais')}>
+                  <option value="">Seleccionar</option>
+                  {PAISES.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
               </div>
+
+              <h3 className="profile-form__section-title">Cambiar contraseña</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Contraseña actual</label>
+                  <input type="password" value={profileData.currentPassword} onChange={set('currentPassword')} />
+                </div>
+                <div className="form-group">
+                  <label>Nueva contraseña</label>
+                  <input type="password" value={profileData.password} onChange={set('password')} minLength={6} />
+                </div>
+              </div>
+
               <button type="submit" className="btn btn--primary" disabled={saving}>
                 {saving ? 'Guardando...' : 'Guardar cambios'}
               </button>

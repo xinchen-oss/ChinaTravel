@@ -49,6 +49,9 @@ import ApprovalQueuePage from './features/admin/ApprovalQueuePage';
 import ComercialDashboard from './features/comercial/ComercialDashboard';
 import SubmitContentPage from './features/comercial/SubmitContentPage';
 
+// Chat
+import ChatWidget from './components/chat/ChatWidget';
+
 export default function App() {
   return (
     <AuthProvider>
@@ -99,6 +102,7 @@ export default function App() {
             <Route path="nueva-solicitud" element={<SubmitContentPage />} />
           </Route>
         </Routes>
+        <ChatWidget />
       </BrowserRouter>
     </AuthProvider>
   );

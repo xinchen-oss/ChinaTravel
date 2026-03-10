@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: chinatravel
+    runtime: node
+    buildCommand: npm install && cd server && npm install && cd ../client && npm install && npm run build
+    startCommand: cd server && node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+      - key: CLIENT_URL
+        sync: false

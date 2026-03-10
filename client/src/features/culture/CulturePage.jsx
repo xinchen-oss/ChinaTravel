@@ -4,6 +4,7 @@ import CitySelector from '../../components/common/CitySelector';
 import Card from '../../components/common/Card';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { CULTURE_CATEGORIES } from '../../utils/constants';
+import { getCultureImageUrl } from '../../utils/imageHelper';
 import './Culture.css';
 
 export default function CulturePage() {
@@ -43,11 +44,11 @@ export default function CulturePage() {
           </div>
         ) : (
           <div className="grid grid-3">
-            {articles.map((article) => (
+            {articles.map((article, index) => (
               <Card
                 key={article._id}
                 to={`/cultura/${article._id}`}
-                image={article.imagen}
+                image={getCultureImageUrl(article.imagen, article.categoria, index)}
                 title={article.titulo}
                 badge={article.categoria}
               >

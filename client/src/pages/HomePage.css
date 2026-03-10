@@ -71,6 +71,38 @@
   color: white;
 }
 
+/* Hero Arrows */
+.hero__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.35);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.hero__arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.hero__arrow--left {
+  left: var(--space-lg);
+}
+
+.hero__arrow--right {
+  right: var(--space-lg);
+}
+
 .hero__dots {
   position: absolute;
   bottom: var(--space-xl);
@@ -273,7 +305,7 @@
 /* ===== CITY CARDS ===== */
 .cities-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
 }
 
@@ -415,6 +447,20 @@
 
   .hero__title {
     font-size: 2.2rem;
+  }
+
+  .hero__arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .hero__arrow--left {
+    left: var(--space-sm);
+  }
+
+  .hero__arrow--right {
+    right: var(--space-sm);
   }
 
   .advantages__grid,

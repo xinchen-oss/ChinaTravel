@@ -18,6 +18,7 @@ import cultureRoutes from './routes/culture.js';
 import submissionRoutes from './routes/submission.js';
 import uploadRoutes from './routes/upload.js';
 import userRoutes from './routes/user.js';
+import chatRoutes from './routes/chat.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +53,18 @@ app.use('/api/pedidos', orderRoutes);
 app.use('/api/cultura', cultureRoutes);
 app.use('/api/solicitudes', submissionRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/chat', chatRoutes);
+
+// Serve React frontend in production
+const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+app.use(express.static(clientDist));
+app.get('*', (req, res, next) => {
+  // Don't catch API routes or uploads
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return next();
+  }
+  res.sendFile(path.join(clientDist, 'index.html'));
+});
 
 // Error handler
 app.use(errorHandler);

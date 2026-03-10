@@ -22,7 +22,7 @@ export default function Navbar() {
         <div className="navbar__links">
           <Link to="/">Inicio</Link>
           <Link to="/ciudades">Ciudades</Link>
-          <Link to="/guias">Guías</Link>
+          <Link to="/guias">Circuitos</Link>
           <Link to="/cultura">Cultura</Link>
           <Link to="/sobre-nosotros">Sobre nosotros</Link>
         </div>

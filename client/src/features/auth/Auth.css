@@ -98,3 +98,19 @@
 .auth-links p {
   margin-top: var(--space-sm);
 }
+
+.auth-card--wide {
+  max-width: 580px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

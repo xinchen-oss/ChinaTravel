@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useCities } from '../hooks/useCities';
 import { useGuides } from '../hooks/useGuides';
@@ -20,23 +20,33 @@ const heroSlides = [
     subtitle: 'La ciudad donde el futuro se encuentra con la tradición',
   },
   {
-    image: 'https://images.unsplash.com/photo-1529921879218-f99546d03a27?w=1600&q=80',
+    image: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=1600&q=80',
     title: 'Templos de Pekín',
     subtitle: 'Sumérgete en la cultura milenaria china',
   },
 ];
+
+// Representative cities to feature on homepage (by slug)
+const FEATURED_SLUGS = ['pekin', 'shanghai', 'chengdu', 'xian', 'guilin', 'hangzhou'];
 
 export default function HomePage() {
   const { cities, loading: citiesLoading } = useCities(true);
   const { guides, loading: guidesLoading } = useGuides(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
+  const goToSlide = useCallback((dir) => {
+    setCurrentSlide((prev) => (prev + dir + heroSlides.length) % heroSlides.length);
   }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => goToSlide(1), 5000);
+    return () => clearInterval(timer);
+  }, [goToSlide]);
+
+  // Filter to show only representative cities
+  const featuredCities = FEATURED_SLUGS.length
+    ? FEATURED_SLUGS.map((slug) => cities.find((c) => c.slug === slug)).filter(Boolean)
+    : cities.slice(0, 6);
 
   return (
     <>
@@ -50,6 +60,8 @@ export default function HomePage() {
           />
         ))}
         <div className="hero__overlay" />
+        <button className="hero__arrow hero__arrow--left" onClick={() => goToSlide(-1)} aria-label="Anterior">&#10094;</button>
+        <button className="hero__arrow hero__arrow--right" onClick={() => goToSlide(1)} aria-label="Siguiente">&#10095;</button>
         <div className="container hero__content">
           <h1 className="hero__title">{heroSlides[currentSlide].title}</h1>
           <p className="hero__subtitle">{heroSlides[currentSlide].subtitle}</p>
@@ -157,7 +169,7 @@ export default function HomePage() {
             <LoadingSpinner />
           ) : (
             <div className="cities-grid">
-              {cities.map((city) => (
+              {featuredCities.map((city) => (
                 <Link to={`/ciudades/${city.slug}`} className="city-card" key={city._id}>
                   <div className="city-card__image">
                     <img src={getImageUrl(city.imagenPortada)} alt={city.nombre} onError={handleImageError} />
