@@ -54,7 +54,7 @@ export default function CartPage() {
               <span>{formatPrice(total)}</span>
             </div>
             <Link to="/checkout-all" className="btn btn--primary" style={{ width: '100%', marginTop: '12px', textAlign: 'center', display: 'block' }}>
-              Comprar todo junto
+              Continuar
             </Link>
             <p className="cart-summary__note" style={{ marginTop: '12px' }}>Hotel y vuelo se seleccionan en el checkout</p>
             <button className="btn btn--outline btn--sm" onClick={clearCart} style={{ width: '100%', marginTop: '12px' }}>

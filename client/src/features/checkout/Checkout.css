@@ -206,6 +206,216 @@
   margin-top: 4px;
 }
 
+/* Steps indicator */
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-lg) 0;
+}
+
+.checkout-steps__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.checkout-steps__step--active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.checkout-steps__num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.checkout-steps__step--active .checkout-steps__num {
+  background: var(--color-primary);
+  color: white;
+}
+
+.checkout-steps__line {
+  width: 80px;
+  height: 2px;
+  background: var(--color-border);
+  margin: 0 var(--space-md);
+}
+
+/* Payment methods */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-method:hover {
+  border-color: var(--color-primary);
+  background: #fef7f7;
+}
+
+.payment-method--active {
+  border-color: var(--color-primary);
+  background: #fef7f7;
+}
+
+.payment-method input[type="radio"] {
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+}
+
+.payment-method__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+}
+
+.payment-method__icons {
+  display: flex;
+  gap: 6px;
+}
+
+.payment-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.payment-icon--visa {
+  background: #1a1f71;
+  color: white;
+}
+
+.payment-icon--mc {
+  background: #eb001b;
+  color: white;
+}
+
+.payment-icon--amex {
+  background: #006fcf;
+  color: white;
+}
+
+.payment-icon--paypal {
+  background: #003087;
+  color: white;
+}
+
+.payment-icon--bizum {
+  background: #05c3dd;
+  color: white;
+}
+
+/* Card form */
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.card-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-form__field label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.card-form__number-wrap {
+  position: relative;
+}
+
+.card-form__number-wrap input {
+  padding-right: 60px;
+}
+
+.card-brand {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.card-brand--visa {
+  background: #1a1f71;
+  color: white;
+}
+
+.card-brand--mastercard {
+  background: #eb001b;
+  color: white;
+}
+
+.card-brand--amex {
+  background: #006fcf;
+  color: white;
+}
+
+.card-form__row {
+  display: flex;
+  gap: var(--space-xl);
+}
+
+.card-form__error {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+}
+
+.checkout-select--error {
+  border-color: var(--color-error) !important;
+}
+
+.card-form__secure {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: #f0fdf4;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-xs);
+  color: #166534;
+}
+
 @media (max-width: 768px) {
   .checkout-layout {
     grid-template-columns: 1fr;
@@ -214,5 +424,14 @@
   .itinerary-slot {
     flex-direction: column;
     gap: var(--space-xs);
+  }
+
+  .card-form__row {
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .checkout-steps__line {
+    width: 40px;
   }
 }
