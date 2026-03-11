@@ -39,9 +39,6 @@ export default function CartPage() {
                   <span className="cart-item__price">{formatPrice(item.precio)}</span>
                 </div>
                 <div className="cart-item__actions">
-                  <Link to={`/checkout/${item.guideId}`} state={{ customizations: item.customizations || {} }} className="btn btn--primary btn--sm">
-                    Comprar
-                  </Link>
                   <button className="btn btn--outline btn--sm" onClick={() => removeItem(item.guideId)}>
                     Eliminar
                   </button>
@@ -56,7 +53,10 @@ export default function CartPage() {
               <span>{items.length} circuito{items.length > 1 ? 's' : ''}</span>
               <span>{formatPrice(total)}</span>
             </div>
-            <p className="cart-summary__note">Hotel y vuelo se seleccionan al comprar cada circuito</p>
+            <Link to="/checkout-all" className="btn btn--primary" style={{ width: '100%', marginTop: '12px', textAlign: 'center', display: 'block' }}>
+              Comprar todo junto
+            </Link>
+            <p className="cart-summary__note" style={{ marginTop: '12px' }}>Hotel y vuelo se seleccionan en el checkout</p>
             <button className="btn btn--outline btn--sm" onClick={clearCart} style={{ width: '100%', marginTop: '12px' }}>
               Vaciar carrito
             </button>

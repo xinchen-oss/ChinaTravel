@@ -110,6 +110,61 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   });
 });
 
+// Batch order - purchase multiple guides at once
+export const placeBatchOrder = asyncHandler(async (req, res) => {
+  const { items, hotelId, vueloId, cupon } = req.body;
+  // items: [{ guiaId, actividadesPersonalizadas }]
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    throw new ApiError(400, 'Debes incluir al menos un circuito');
+  }
+
+  // Validate coupon once if provided
+  let couponData = null;
+  if (cupon) {
+    const couponDoc = await Coupon.findOne({ codigo: cupon, activo: true });
+    if (couponDoc && couponDoc.usosActuales < couponDoc.usosMaximos) {
+      couponData = couponDoc;
+    }
+  }
+
+  const orders = [];
+  for (const item of items) {
+    const orderData = {
+      guiaId: item.guiaId,
+      actividadesPersonalizadas: item.actividadesPersonalizadas || {},
+      hotelId: item.hotelId || hotelId || undefined,
+      vueloId: item.vueloId || vueloId || undefined,
+      precioTotal: item.precioTotal,
+      descuento: 0,
+      cupon: undefined,
+    };
+    const order = await createOrder(req.user, orderData);
+    orders.push(order);
+  }
+
+  // Apply coupon discount to last order if valid
+  if (couponData) {
+    const totalBeforeDiscount = orders.reduce((s, o) => s + o.precioTotal, 0);
+    let descuento = 0;
+    if (couponData.tipo === 'PORCENTAJE') {
+      descuento = Math.round(totalBeforeDiscount * couponData.valor / 100);
+    } else {
+      descuento = Math.min(couponData.valor, totalBeforeDiscount);
+    }
+    if (descuento > 0) {
+      const lastOrder = orders[orders.length - 1];
+      lastOrder.descuento = descuento;
+      lastOrder.cupon = cupon;
+      lastOrder.precioTotal = Math.max(0, lastOrder.precioTotal - descuento);
+      await lastOrder.save();
+      couponData.usosActuales += 1;
+      await couponData.save();
+    }
+  }
+
+  res.status(201).json({ ok: true, data: orders });
+});
+
 // Recommendations based on user history
 export const getRecommendations = asyncHandler(async (req, res) => {
   // Get user's ordered cities

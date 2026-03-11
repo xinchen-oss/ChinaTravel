@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { placeOrder, getMyOrders, getOrder, getAllOrders, getTipsPdf, cancelOrder, getRecommendations } from '../controllers/orderController.js';
+import { placeOrder, placeBatchOrder, getMyOrders, getOrder, getAllOrders, getTipsPdf, cancelOrder, getRecommendations } from '../controllers/orderController.js';
 import { protect, authorize } from '../middleware/auth.js';
 import { ROLES } from '../utils/constants.js';
 
@@ -8,6 +8,7 @@ const router = Router();
 router.use(protect);
 
 router.post('/', placeOrder);
+router.post('/batch', placeBatchOrder);
 router.get('/mis-pedidos', getMyOrders);
 router.get('/todos', authorize(ROLES.ADMIN), getAllOrders);
 router.get('/recomendaciones', getRecommendations);

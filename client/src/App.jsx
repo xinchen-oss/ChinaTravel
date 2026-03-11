@@ -34,7 +34,9 @@ import CultureDetailPage from './features/culture/CultureDetailPage';
 
 // Checkout
 import CheckoutPage from './features/checkout/CheckoutPage';
+import BatchCheckoutPage from './features/checkout/BatchCheckoutPage';
 import OrderConfirmationPage from './features/checkout/OrderConfirmationPage';
+import BatchOrderConfirmationPage from './features/checkout/BatchOrderConfirmationPage';
 
 // Dashboard
 import UserDashboard from './features/dashboard/UserDashboard';
@@ -87,7 +89,9 @@ export default function App() {
               {/* Private */}
               <Route path="guias/:id/personalizar" element={<PrivateRoute><GuideCustomizePage /></PrivateRoute>} />
               <Route path="checkout/:guideId" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+              <Route path="checkout-all" element={<PrivateRoute><BatchCheckoutPage /></PrivateRoute>} />
               <Route path="pedido-confirmado/:id" element={<PrivateRoute><OrderConfirmationPage /></PrivateRoute>} />
+              <Route path="pedidos-confirmados" element={<PrivateRoute><BatchOrderConfirmationPage /></PrivateRoute>} />
               <Route path="dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
 
               {/* 404 */}
