@@ -5,8 +5,21 @@ import Card from '../../components/common/Card';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import './Forum.css';
 
+const FORUM_IMAGES = [
+  'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80', // Gran Muralla
+  'https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=600&q=80', // Shanghai Bund
+  'https://images.unsplash.com/photo-1564577160324-112d603f750f?w=600&q=80', // Panda
+  'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=600&q=80', // Templo chino
+  'https://images.unsplash.com/photo-1513415564515-763d91423bdd?w=600&q=80', // Desierto dunas
+  'https://images.unsplash.com/photo-1529921879218-f99546d03a34?w=600&q=80', // Guilin montanas
+  'https://images.unsplash.com/photo-1591122947157-26bad3a117d2?w=600&q=80', // Guerreros terracota
+  'https://images.unsplash.com/photo-1548919973-5cef591cdbc9?w=600&q=80', // Nieve invierno
+  'https://images.unsplash.com/photo-1474181628414-e17f0716cd84?w=600&q=80', // Comida china
+  'https://images.unsplash.com/photo-1517309230475-46c5dbc2bafa?w=600&q=80', // Linterna china
+];
+
 export default function ForumPage() {
- 
+
   const { posts, loading } = useForum({});
   const { cities } = useCities();
 
@@ -126,8 +139,8 @@ export default function ForumPage() {
           </div>
         ) : (
           <div className="grid grid-3">
-            {posts.map((post) => (
-              <Card key={post._id} to={`/foro/${post._id}`} title={post.titulo}>
+            {posts.map((post, index) => (
+              <Card key={post._id} to={`/foro/${post._id}`} title={post.titulo} image={FORUM_IMAGES[index % FORUM_IMAGES.length]}>
                 <p className="card__subtitle">{post.contenido.substring(0, 120)}...</p>
     
                 <div className="forum-meta">

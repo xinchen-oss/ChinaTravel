@@ -13,16 +13,57 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&q=80',
     title: 'Descubre la Gran Muralla',
     subtitle: 'Una maravilla del mundo que te dejará sin aliento',
+    link: '/guias',
+    linkText: 'Ver circuitos',
   },
   {
-    image: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=1600&q=80',
-    title: 'Explora Shanghái',
-    subtitle: 'La ciudad donde el futuro se encuentra con la tradición',
+    image: 'https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=1600&q=80',
+    title: 'Shanghái: luces y modernidad',
+    subtitle: 'El skyline más impresionante de Asia te espera',
+    link: '/ciudades/shanghai',
+    linkText: 'Explorar Shanghái',
   },
   {
     image: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=1600&q=80',
-    title: 'Templos de Pekín',
-    subtitle: 'Sumérgete en la cultura milenaria china',
+    title: 'Templos milenarios',
+    subtitle: 'Sumérgete en la espiritualidad y la historia de China',
+    link: '/cultura',
+    linkText: 'Cultura china',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1529921879218-f99546d03a34?w=1600&q=80',
+    title: 'Guilin y sus montañas kársticas',
+    subtitle: 'Paisajes de ensueño que parecen sacados de una pintura',
+    link: '/ciudades/guilin',
+    linkText: 'Descubrir Guilin',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1564577160324-112d603f750f?w=1600&q=80',
+    title: 'Chengdú: tierra de pandas',
+    subtitle: 'Conoce a los pandas gigantes y saborea el auténtico hotpot',
+    link: '/ciudades/chengdu',
+    linkText: 'Ir a Chengdú',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1513415564515-763d91423bdd?w=1600&q=80',
+    title: 'La Ruta de la Seda',
+    subtitle: 'Desiertos, oasis y ciudades legendarias te esperan',
+    link: '/guias',
+    linkText: 'Ver rutas',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1591122947157-26bad3a117d2?w=1600&q=80',
+    title: "Guerreros de Terracota de Xi'an",
+    subtitle: 'Un ejército de 8.000 guerreros enterrado durante 2.000 años',
+    link: '/ciudades/xian',
+    linkText: "Explorar Xi'an",
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1548919973-5cef591cdbc9?w=1600&q=80',
+    title: 'Harbin: festival de hielo',
+    subtitle: 'Esculturas gigantes de hielo iluminadas bajo -30°C',
+    link: '/ciudades/harbin',
+    linkText: 'Ver Harbin',
   },
 ];
 
@@ -62,12 +103,12 @@ export default function HomePage() {
         <div className="hero__overlay" />
         <button className="hero__arrow hero__arrow--left" onClick={() => goToSlide(-1)} aria-label="Anterior">&#10094;</button>
         <button className="hero__arrow hero__arrow--right" onClick={() => goToSlide(1)} aria-label="Siguiente">&#10095;</button>
-        <div className="container hero__content">
+        <div className="container hero__content" key={currentSlide}>
           <h1 className="hero__title">{heroSlides[currentSlide].title}</h1>
           <p className="hero__subtitle">{heroSlides[currentSlide].subtitle}</p>
           <div className="hero__actions">
-            <Link to="/guias" className="btn btn--primary btn--lg">Ver circuitos</Link>
-            <Link to="/cultura" className="btn btn--outline-light btn--lg">Cultura china</Link>
+            <Link to={heroSlides[currentSlide].link} className="btn btn--primary btn--lg">{heroSlides[currentSlide].linkText}</Link>
+            <Link to="/guias" className="btn btn--outline-light btn--lg">Todos los circuitos</Link>
           </div>
         </div>
         <div className="hero__dots">

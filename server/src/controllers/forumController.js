@@ -29,8 +29,8 @@ export const getPost = asyncHandler(async (req, res) => {
     .sort({ createdAt: 1 });
 
   res.json({
-    post,
-    replies
+    ok: true,
+    data: { post, replies }
   });
 });
 

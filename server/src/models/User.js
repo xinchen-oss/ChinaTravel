@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema(
     },
     role: { type: String, enum: Object.values(ROLES), default: ROLES.USER },
     isActive: { type: Boolean, default: true },
+    isApproved: { type: Boolean, default: true },
+    empresaNombre: { type: String, trim: true, default: '' },
+    empresaCIF: { type: String, trim: true, default: '' },
+    motivoComercial: { type: String, trim: true, default: '' },
   },
   { timestamps: true }
 );

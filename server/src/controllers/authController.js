@@ -22,24 +22,39 @@ const userResponse = (user) => ({
 });
 
 export const register = asyncHandler(async (req, res) => {
-  const { nombre, apellidos, email, password, telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion } = req.body;
+  const { nombre, apellidos, email, password, telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion, role, empresaNombre, empresaCIF, motivoComercial } = req.body;
 
   const exists = await User.findOne({ email });
   if (exists) throw new ApiError(400, 'El email ya está registrado');
 
+  const isComercial = role === 'COMERCIAL';
+
   const user = await User.create({
     nombre, apellidos, email, password,
     telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion,
-  });
-  const token = generateToken(user._id);
-
-  await sendEmail({
-    to: email,
-    subject: 'Bienvenido a ChinaTravel',
-    html: `<h1>¡Hola ${nombre}!</h1><p>Tu cuenta ha sido creada exitosamente. ¡Descubre China con nosotros!</p>`,
+    role: isComercial ? 'COMERCIAL' : 'USER',
+    isApproved: !isComercial,
+    empresaNombre: isComercial ? empresaNombre : '',
+    empresaCIF: isComercial ? empresaCIF : '',
+    motivoComercial: isComercial ? motivoComercial : '',
   });
 
-  res.status(201).json({ ok: true, token, user: userResponse(user) });
+  if (isComercial) {
+    await sendEmail({
+      to: email,
+      subject: 'Solicitud de cuenta Comercial recibida - ChinaTravel',
+      html: `<h1>¡Hola ${nombre}!</h1><p>Hemos recibido tu solicitud de cuenta Comercial. Nuestro equipo la revisará y te notificaremos cuando sea aprobada.</p>`,
+    });
+    res.status(201).json({ ok: true, pendingApproval: true, message: 'Solicitud de cuenta Comercial enviada. Recibirás una notificación cuando sea aprobada por el administrador.' });
+  } else {
+    const token = generateToken(user._id);
+    await sendEmail({
+      to: email,
+      subject: 'Bienvenido a ChinaTravel',
+      html: `<h1>¡Hola ${nombre}!</h1><p>Tu cuenta ha sido creada exitosamente. ¡Descubre China con nosotros!</p>`,
+    });
+    res.status(201).json({ ok: true, token, user: userResponse(user) });
+  }
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -50,6 +65,7 @@ export const login = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Email o contraseña incorrectos');
   }
   if (!user.isActive) throw new ApiError(401, 'Cuenta desactivada');
+  if (!user.isApproved) throw new ApiError(401, 'Tu cuenta Comercial está pendiente de aprobación por el administrador');
 
   const token = generateToken(user._id);
   res.json({ ok: true, token, user: userResponse(user) });
