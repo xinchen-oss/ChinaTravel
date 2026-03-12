@@ -41,6 +41,26 @@ export default function RegisterPage() {
     setError('');
     setSuccess('');
 
+    if (form.password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+    if (!/[A-Z]/.test(form.password)) {
+      setError('La contraseña debe contener al menos una letra mayúscula');
+      return;
+    }
+    if (!/[a-z]/.test(form.password)) {
+      setError('La contraseña debe contener al menos una letra minúscula');
+      return;
+    }
+    if (!/[0-9]/.test(form.password)) {
+      setError('La contraseña debe contener al menos un número');
+      return;
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(form.password)) {
+      setError('La contraseña debe contener al menos un carácter especial (!@#$%...)');
+      return;
+    }
     if (form.password !== form.confirmPassword) {
       setError('Las contraseñas no coinciden');
       return;
@@ -144,11 +164,11 @@ export default function RegisterPage() {
           <div className="form-row">
             <div className="form-group">
               <label>Contraseña *</label>
-              <input type="password" value={form.password} onChange={set('password')} required placeholder="Mínimo 6 caracteres" minLength={6} />
+              <input type="password" value={form.password} onChange={set('password')} required placeholder="Mín. 8 car., mayús., minús., número, especial" minLength={8} />
             </div>
             <div className="form-group">
               <label>Confirmar contraseña *</label>
-              <input type="password" value={form.confirmPassword} onChange={set('confirmPassword')} required placeholder="Repite la contraseña" minLength={6} />
+              <input type="password" value={form.confirmPassword} onChange={set('confirmPassword')} required placeholder="Repite la contraseña" minLength={8} />
             </div>
           </div>
 
