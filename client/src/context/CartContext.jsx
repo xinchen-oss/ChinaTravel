@@ -1,16 +1,27 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
 const CartContext = createContext();
 
 const CART_KEY = 'chinatravel_cart';
 
 export function CartProvider({ children }) {
+  const { user } = useContext(AuthContext);
+
   const [items, setItems] = useState(() => {
     try {
       const saved = localStorage.getItem(CART_KEY);
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
+
+  // Clear cart when user logs out
+  useEffect(() => {
+    if (!user) {
+      setItems([]);
+      localStorage.removeItem(CART_KEY);
+    }
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(items));

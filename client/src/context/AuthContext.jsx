@@ -55,6 +55,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('chinatravel_cart');
     setUser(null);
   };
 
