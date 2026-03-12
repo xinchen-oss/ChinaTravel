@@ -275,6 +275,11 @@
   border-color: var(--color-primary);
 }
 
+/* Admin sidebar toggle button - hidden on desktop */
+.admin-sidebar-toggle {
+  display: none;
+}
+
 /* Admin/Comercial Layout */
 .admin-layout {
   display: grid;
@@ -422,11 +427,39 @@
 
   .admin-layout {
     grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  .admin-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    position: fixed;
+    bottom: var(--space-lg);
+    left: var(--space-lg);
+    z-index: 90;
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
   }
 
   .admin-sidebar {
-    position: static;
-    height: auto;
+    position: fixed;
+    top: var(--nav-height, 64px);
+    left: -260px;
+    width: 240px;
+    height: calc(100vh - var(--nav-height, 64px));
+    z-index: 85;
+    transition: left 0.3s ease;
+  }
+
+  .admin-sidebar--open {
+    left: 0;
   }
 
   .itinerary-slot {
@@ -440,5 +473,45 @@
 
   .dashboard-tabs {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dashboard-tab {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+  }
+
+  .admin-content {
+    padding: var(--space-md);
+  }
+
+  .admin-stats {
+    gap: var(--space-md);
+  }
+
+  .stat-card {
+    padding: var(--space-md);
+  }
+
+  .stat-card__number {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .order-card__actions {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

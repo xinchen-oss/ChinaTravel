@@ -22,6 +22,7 @@ import CartPage from './pages/CartPage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
+import ResetPasswordPage from './features/auth/ResetPasswordPage';
 
 // Guides
 import GuidesListPage from './features/guides/GuidesListPage';
@@ -92,6 +93,7 @@ export default function App() {
               <Route path="login" element={<LoginPage />} />
               <Route path="registro" element={<RegisterPage />} />
               <Route path="forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="reset-password/:token" element={<ResetPasswordPage />} />
 
               {/* Private */}
               <Route path="guias/:id/personalizar" element={<PrivateRoute><GuideCustomizePage /></PrivateRoute>} />

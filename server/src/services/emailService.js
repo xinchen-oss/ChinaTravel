@@ -1,38 +1,55 @@
-import sgMail from '../config/sendgrid.js';
+import nodemailer from 'nodemailer';
 import config from '../config/env.js';
 import fs from 'fs';
 import path from 'path';
 
+// Create Gmail SMTP transporter
+let transporter = null;
+
+if (config.gmailUser && config.gmailAppPassword && config.gmailAppPassword !== 'tu_app_password_aqui') {
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: config.gmailUser,
+      pass: config.gmailAppPassword,
+    },
+  });
+
+  // Verify connection on startup
+  transporter.verify()
+    .then(() => console.log('✅ Gmail SMTP conectado correctamente'))
+    .catch((err) => console.error('❌ Error conectando Gmail SMTP:', err.message));
+}
+
 export const sendEmail = async ({ to, subject, html, attachments }) => {
-  if (!config.sendgridApiKey) {
-    console.log(`[Email simulado] Para: ${to} | Asunto: ${subject}`);
+  if (!transporter) {
+    console.log(`📧 [Email simulado] Para: ${to} | Asunto: ${subject}`);
     if (attachments?.length) {
-      console.log(`[Email simulado] Adjuntos: ${attachments.map(a => a.filename).join(', ')}`);
+      console.log(`📎 Adjuntos: ${attachments.map(a => a.filename).join(', ')}`);
     }
     return;
   }
 
   try {
-    const msg = {
+    const mailOptions = {
+      from: `"ChinaTravel" <${config.gmailUser}>`,
       to,
-      from: config.sendgridFromEmail,
       subject,
       html,
     };
 
     if (attachments?.length) {
-      msg.attachments = attachments.map(att => ({
-        content: att.content,
+      mailOptions.attachments = attachments.map(att => ({
         filename: att.filename,
-        type: att.type || 'application/pdf',
-        disposition: 'attachment',
+        content: Buffer.from(att.content, 'base64'),
+        contentType: att.type || 'application/pdf',
       }));
     }
 
-    await sgMail.send(msg);
-    console.log(`Email enviado a ${to}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Email enviado a ${to} (${info.messageId})`);
   } catch (error) {
-    console.error('Error enviando email:', error.message);
+    console.error('❌ Error enviando email:', error.message);
   }
 };
 

@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { ROLES } from '../../utils/constants';
 import Navbar from './Navbar';
@@ -7,15 +8,25 @@ import '../../features/dashboard/Dashboard.css';
 export default function AdminLayout() {
   const { user } = useAuth();
   const isAdmin = user?.role === ROLES.ADMIN;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
 
   const linkClass = ({ isActive }) =>
     `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`;
+
+  const handleLinkClick = () => setSidebarOpen(false);
 
   return (
     <>
       <Navbar />
       <div className="admin-layout">
-        <aside className="admin-sidebar">
+        <button
+          className="admin-sidebar-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          {sidebarOpen ? '✕' : '☰'} Menú
+        </button>
+        <aside className={`admin-sidebar ${sidebarOpen ? 'admin-sidebar--open' : ''}`}>
           <div className="admin-sidebar__header">
             <h3>{isAdmin ? 'Admin Panel' : 'Panel Comercial'}</h3>
             <p>{user?.nombre}</p>

@@ -448,25 +448,31 @@
 
 @media (max-width: 640px) {
   .hero {
-    min-height: 60vh;
+    min-height: 55vh;
   }
 
   .hero__title {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
+    padding: 0 var(--space-sm);
+  }
+
+  .hero__subtitle {
+    font-size: var(--font-size-base);
+    padding: 0 var(--space-sm);
   }
 
   .hero__arrow {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
   }
 
   .hero__arrow--left {
-    left: var(--space-sm);
+    left: var(--space-xs);
   }
 
   .hero__arrow--right {
-    right: var(--space-sm);
+    right: var(--space-xs);
   }
 
   .advantages__grid,
@@ -479,6 +485,11 @@
   .hero__actions {
     flex-direction: column;
     align-items: center;
+    padding: 0 var(--space-md);
+  }
+
+  .hero__actions .btn {
+    width: 100%;
   }
 
   .guide-card__image {
@@ -487,5 +498,60 @@
 
   .city-card__image {
     height: 200px;
+  }
+
+  .section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .section__title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .section__subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  .cta-section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .cta-section__inner h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .cta-section__inner p {
+    font-size: var(--font-size-base);
+  }
+
+  .advantage {
+    gap: var(--space-sm);
+  }
+
+  .advantage__icon {
+    font-size: 1.5rem;
+  }
+
+  .feature-card {
+    padding: var(--space-lg);
+  }
+
+  .hero__dot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 50vh;
+  }
+
+  .hero__title {
+    font-size: 1.5rem;
+  }
+
+  .hero__content {
+    padding: 0 var(--space-xs);
   }
 }

@@ -549,4 +549,57 @@
   .activity-slot__time {
     min-width: auto;
   }
+
+  .customize-footer {
+    flex-direction: column;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  .guides-banner {
+    height: 200px;
+  }
+
+  .guides-banner__content h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .guides-banner__content p {
+    font-size: var(--font-size-base);
+  }
+
+  .booking-card {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .guide-list-card__body {
+    padding: var(--space-md);
+  }
+
+  .guide-list-card__aside {
+    padding: var(--space-md);
+  }
+
+  .guide-banner {
+    height: 220px;
+  }
+
+  .guide-banner__content h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .guide-banner__tags {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .day-card__header {
+    padding: var(--space-md);
+  }
+
+  .day-card__activities {
+    padding: var(--space-md);
+  }
 }

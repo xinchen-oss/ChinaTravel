@@ -55,5 +55,16 @@
 @media (max-width: 640px) {
   .footer__inner {
     grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .footer {
+    padding: var(--space-xl) 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__bottom {
+    text-align: center;
   }
 }

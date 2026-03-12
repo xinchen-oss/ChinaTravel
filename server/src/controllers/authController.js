@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/User.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -20,6 +21,22 @@ const userResponse = (user) => ({
   direccion: user.direccion,
   role: user.role,
 });
+
+const emailWrapper = (content) => `
+  <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+    <div style="background:#c41e3a;color:white;padding:24px;text-align:center;">
+      <h1 style="margin:0;font-size:28px;letter-spacing:1px;">🇨🇳 ChinaTravel</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">Descubre China con nosotros</p>
+    </div>
+    <div style="padding:30px 24px;background:#f9f9f9;">
+      ${content}
+    </div>
+    <div style="padding:16px 24px;text-align:center;background:#1a1a2e;color:rgba(255,255,255,0.5);font-size:11px;">
+      <p style="margin:0;">ChinaTravel &copy; ${new Date().getFullYear()} — Todos los derechos reservados</p>
+      <p style="margin:4px 0 0;">Este es un email automático, por favor no respondas.</p>
+    </div>
+  </div>
+`;
 
 export const register = asyncHandler(async (req, res) => {
   const { nombre, apellidos, email, password, telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion, role, empresaNombre, empresaCIF, motivoComercial } = req.body;
@@ -43,15 +60,42 @@ export const register = asyncHandler(async (req, res) => {
     await sendEmail({
       to: email,
       subject: 'Solicitud de cuenta Comercial recibida - ChinaTravel',
-      html: `<h1>¡Hola ${nombre}!</h1><p>Hemos recibido tu solicitud de cuenta Comercial. Nuestro equipo la revisará y te notificaremos cuando sea aprobada.</p>`,
+      html: emailWrapper(`
+        <h2 style="color:#1a1a2e;margin-top:0;">¡Hola ${nombre}!</h2>
+        <p>Hemos recibido tu solicitud de cuenta <strong>Comercial</strong>.</p>
+        <p>Nuestro equipo la revisará y te notificaremos por email cuando sea aprobada.</p>
+        <div style="background:#fff3cd;padding:14px;border-radius:8px;margin:20px 0;">
+          <strong>Empresa:</strong> ${empresaNombre || 'N/A'}<br>
+          <strong>CIF:</strong> ${empresaCIF || 'N/A'}
+        </div>
+        <p style="color:#666;font-size:13px;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+      `),
     });
     res.status(201).json({ ok: true, pendingApproval: true, message: 'Solicitud de cuenta Comercial enviada. Recibirás una notificación cuando sea aprobada por el administrador.' });
   } else {
     const token = generateToken(user._id);
     await sendEmail({
       to: email,
-      subject: 'Bienvenido a ChinaTravel',
-      html: `<h1>¡Hola ${nombre}!</h1><p>Tu cuenta ha sido creada exitosamente. ¡Descubre China con nosotros!</p>`,
+      subject: '¡Bienvenido a ChinaTravel! Confirmación de registro',
+      html: emailWrapper(`
+        <h2 style="color:#1a1a2e;margin-top:0;">¡Bienvenido/a, ${nombre}! 🎉</h2>
+        <p>Tu cuenta ha sido creada exitosamente. Estamos encantados de tenerte con nosotros.</p>
+        <div style="background:#ffffff;padding:20px;border-radius:8px;border-left:4px solid #c41e3a;margin:20px 0;">
+          <p style="margin:0 0 8px;"><strong>Email:</strong> ${email}</p>
+          <p style="margin:0;"><strong>Nombre:</strong> ${nombre} ${apellidos || ''}</p>
+        </div>
+        <p>Con ChinaTravel podrás:</p>
+        <ul style="color:#444;line-height:2;">
+          <li>Descubrir guías de viaje personalizadas</li>
+          <li>Explorar la cultura, gastronomía y ciudades de China</li>
+          <li>Reservar circuitos con itinerarios a tu medida</li>
+          <li>Participar en el foro de viajeros</li>
+        </ul>
+        <div style="text-align:center;margin:24px 0;">
+          <a href="${config.clientUrl}/guias" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Explorar circuitos</a>
+        </div>
+        <p style="color:#666;font-size:13px;">¡Esperamos que disfrutes descubriendo China!</p>
+      `),
     });
     res.status(201).json({ ok: true, token, user: userResponse(user) });
   }
@@ -113,43 +157,69 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) throw new ApiError(404, 'No existe cuenta con ese email');
 
+  // Generate reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  user.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `${config.clientUrl}/reset-password/${resetToken}`;
+
   await sendEmail({
     to: email,
     subject: 'Restablecer contraseña - ChinaTravel',
-    html: `<h1>Restablecer contraseña</h1><p>Hola ${user.nombre}, has solicitado restablecer tu contraseña. En una versión futura, aquí irá el enlace de restablecimiento.</p>`,
+    html: emailWrapper(`
+      <h2 style="color:#1a1a2e;margin-top:0;">Restablecer contraseña</h2>
+      <p>Hola <strong>${user.nombre}</strong>,</p>
+      <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta.</p>
+      <p>Haz clic en el siguiente botón para crear una nueva contraseña:</p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${resetUrl}" style="background:#c41e3a;color:white;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;font-size:16px;">Restablecer contraseña</a>
+      </div>
+      <p style="color:#666;font-size:13px;">Este enlace expirará en <strong>30 minutos</strong>.</p>
+      <p style="color:#666;font-size:13px;">Si no solicitaste restablecer tu contraseña, puedes ignorar este email. Tu cuenta seguirá segura.</p>
+      <div style="background:#f0f0f0;padding:12px;border-radius:6px;margin-top:16px;">
+        <p style="margin:0;font-size:12px;color:#999;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+        <p style="margin:4px 0 0;font-size:11px;color:#c41e3a;word-break:break-all;">${resetUrl}</p>
+      </div>
+    `),
   });
 
   res.json({ ok: true, message: 'Email de restablecimiento enviado' });
 });
-export const resetPassword = asyncHandler(async (req, res) => {
 
+export const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
 
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(token)
-    .digest('hex');
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
   const user = await User.findOne({
     resetPasswordToken: hashedToken,
-    resetPasswordExpire: { $gt: Date.now() }
+    resetPasswordExpire: { $gt: Date.now() },
   });
 
-  if (!user) {
-    throw new ApiError(400, 'Token inválido o expirado');
-  }
+  if (!user) throw new ApiError(400, 'Token inválido o expirado');
 
   user.password = password;
-
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
-
   await user.save();
 
-  res.json({
-    ok: true,
-    message: 'Contraseña actualizada correctamente'
+  await sendEmail({
+    to: user.email,
+    subject: 'Contraseña actualizada - ChinaTravel',
+    html: emailWrapper(`
+      <h2 style="color:#1a1a2e;margin-top:0;">Contraseña actualizada</h2>
+      <p>Hola <strong>${user.nombre}</strong>,</p>
+      <p>Tu contraseña ha sido restablecida exitosamente.</p>
+      <div style="text-align:center;margin:24px 0;">
+        <a href="${config.clientUrl}/login" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Iniciar sesión</a>
+      </div>
+      <p style="color:#666;font-size:13px;">Si no realizaste este cambio, contacta con nosotros inmediatamente.</p>
+    `),
   });
 
+  const jwtToken = generateToken(user._id);
+  res.json({ ok: true, token: jwtToken, user: userResponse(user) });
 });

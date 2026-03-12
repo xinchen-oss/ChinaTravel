@@ -434,4 +434,46 @@
   .checkout-steps__line {
     width: 40px;
   }
+
+  .checkout-summary {
+    position: static;
+  }
+
+  .checkout-section {
+    padding: var(--space-lg);
+  }
+
+  .confirmation__links {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-steps {
+    gap: 0;
+  }
+
+  .checkout-steps__step {
+    font-size: var(--font-size-xs);
+  }
+
+  .checkout-steps__num {
+    width: 26px;
+    height: 26px;
+    font-size: var(--font-size-xs);
+  }
+
+  .checkout-steps__line {
+    width: 20px;
+    margin: 0 var(--space-xs);
+  }
+
+  .payment-method {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .checkout-section {
+    padding: var(--space-md);
+  }
 }

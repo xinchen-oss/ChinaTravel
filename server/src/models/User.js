@@ -31,6 +31,8 @@ const userSchema = new mongoose.Schema(
     empresaNombre: { type: String, trim: true, default: '' },
     empresaCIF: { type: String, trim: true, default: '' },
     motivoComercial: { type: String, trim: true, default: '' },
+    resetPasswordToken: { type: String },
+    resetPasswordExpire: { type: Date },
   },
   { timestamps: true }
 );
