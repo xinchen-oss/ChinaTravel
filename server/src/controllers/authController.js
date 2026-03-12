@@ -121,3 +121,35 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   res.json({ ok: true, message: 'Email de restablecimiento enviado' });
 });
+export const resetPassword = asyncHandler(async (req, res) => {
+
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    throw new ApiError(400, 'Token inválido o expirado');
+  }
+
+  user.password = password;
+
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+
+  await user.save();
+
+  res.json({
+    ok: true,
+    message: 'Contraseña actualizada correctamente'
+  });
+
+});

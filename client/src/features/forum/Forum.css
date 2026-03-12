@@ -147,3 +147,26 @@
 .back-link:hover {
   text-decoration: underline;
 }
+/* contenedor alineado a la derecha */
+.forum-post-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+/* botón eliminar suave */
+.btn-delete-soft {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #777;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-soft:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
