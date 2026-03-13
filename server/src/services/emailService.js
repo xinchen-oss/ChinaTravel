@@ -3,22 +3,21 @@ import config from '../config/env.js';
 import fs from 'fs';
 import path from 'path';
 
-// Create Gmail SMTP transporter
 let transporter = null;
 
-if (config.gmailUser && config.gmailAppPassword && config.gmailAppPassword !== 'tu_app_password_aqui') {
+if (config.mailtrapHost && config.mailtrapUser) {
   transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: config.mailtrapHost,
+    port: Number(config.mailtrapPort) || 587,
     auth: {
-      user: config.gmailUser,
-      pass: config.gmailAppPassword,
+      user: config.mailtrapUser,
+      pass: config.mailtrapPass,
     },
   });
 
-  // Verify connection on startup
   transporter.verify()
-    .then(() => console.log('✅ Gmail SMTP conectado correctamente'))
-    .catch((err) => console.error('❌ Error conectando Gmail SMTP:', err.message));
+    .then(() => console.log('✅ Mailtrap SMTP conectado correctamente'))
+    .catch((err) => console.error('❌ Error conectando Mailtrap:', err.message));
 }
 
 export const sendEmail = async ({ to, subject, html, attachments }) => {
@@ -32,7 +31,7 @@ export const sendEmail = async ({ to, subject, html, attachments }) => {
 
   try {
     const mailOptions = {
-      from: `"ChinaTravel" <${config.gmailUser}>`,
+      from: '"ChinaTravel" <noreply@chinatravel.com>',
       to,
       subject,
       html,

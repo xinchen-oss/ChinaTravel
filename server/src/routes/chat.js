@@ -63,7 +63,7 @@ router.post('/contact', async (req, res) => {
 
     // Send to support team
     await sendEmail({
-      to: config.sendgridFromEmail || 'soporte@chinatravel.com',
+      to: 'soporte@chinatravel.com',
       subject: `💬 Consulta de ${nombre || 'Cliente'} — ChinaTravel Chat`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;">
