@@ -21,7 +21,12 @@ export default function CartPage() {
     );
   }
 
-  const total = items.reduce((sum, i) => sum + (i.precio || 0), 0);
+  const total = items.reduce((sum, i) => {
+    let itemTotal = i.precio || 0;
+    if (i.hotelPrecio) itemTotal += i.hotelPrecio * (i.duracionDias || 1);
+    if (i.flightPrecio) itemTotal += i.flightPrecio;
+    return sum + itemTotal;
+  }, 0);
 
   return (
     <div className="page">
@@ -37,6 +42,16 @@ export default function CartPage() {
                   <h3>{item.titulo}</h3>
                   <p>{item.ciudad} · {item.duracionDias} días</p>
                   <span className="cart-item__price">{formatPrice(item.precio)}</span>
+                  {item.hotelNombre && (
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
+                      Hotel: {item.hotelNombre} ({item.duracionDias} noches: {formatPrice(item.hotelPrecio * item.duracionDias)})
+                    </p>
+                  )}
+                  {item.flightNombre && (
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: '2px 0 0' }}>
+                      Vuelo: {item.flightNombre} ({formatPrice(item.flightPrecio)})
+                    </p>
+                  )}
                 </div>
                 <div className="cart-item__actions">
                   <button className="btn btn--outline btn--sm" onClick={() => removeItem(item.guideId)}>
@@ -56,7 +71,6 @@ export default function CartPage() {
             <Link to="/checkout-all" className="btn btn--primary" style={{ width: '100%', marginTop: '12px', textAlign: 'center', display: 'block' }}>
               Continuar
             </Link>
-            <p className="cart-summary__note" style={{ marginTop: '12px' }}>Hotel y vuelo se seleccionan en el checkout</p>
             <button className="btn btn--outline btn--sm" onClick={clearCart} style={{ width: '100%', marginTop: '12px' }}>
               Vaciar carrito
             </button>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ReviewSection from '../../components/common/ReviewSection';
@@ -11,17 +11,80 @@ import './Guides.css';
 
 export default function GuideDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { addItem, isInCart } = useCart();
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Hotel & flight selection
+  const [hotels, setHotels] = useState([]);
+  const [flights, setFlights] = useState([]);
+  const [selectedHotel, setSelectedHotel] = useState('');
+  const [selectedFlight, setSelectedFlight] = useState('');
+  const [filterAccessible, setFilterAccessible] = useState(false);
+
   useEffect(() => {
-    api.get(`/guias/${id}`)
-      .then((res) => setGuide(res.data.data))
+    Promise.all([
+      api.get(`/guias/${id}`),
+      api.get('/hoteles'),
+      api.get('/vuelos'),
+    ])
+      .then(([guideRes, hotelsRes, flightsRes]) => {
+        setGuide(guideRes.data.data);
+        setHotels(hotelsRes.data.data);
+        setFlights(flightsRes.data.data);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  // Filter hotels by guide's city
+  const cityId = guide?.ciudad?._id;
+  const cityHotels = hotels.filter((h) => {
+    const hotelCity = h.ciudad?._id || h.ciudad;
+    return !cityId || hotelCity === cityId;
+  });
+  const cityFlights = flights.filter((f) => {
+    const flightCity = f.ciudadDestino?._id || f.ciudadDestino;
+    return !cityId || flightCity === cityId;
+  });
+
+  const filteredHotels = filterAccessible
+    ? cityHotels.filter((h) => h.accesibilidad?.sillasRuedas || h.accesibilidad?.ascensor || h.accesibilidad?.habitacionAdaptada)
+    : cityHotels;
+
+  const filteredFlights = filterAccessible
+    ? cityFlights.filter((f) => f.accesibilidad?.sillasRuedas || f.accesibilidad?.asistenciaEspecial)
+    : cityFlights;
+
+  const buildCartItem = () => {
+    const hotel = selectedHotel ? hotels.find((h) => h._id === selectedHotel) : null;
+    const flight = selectedFlight ? flights.find((f) => f._id === selectedFlight) : null;
+    return {
+      guideId: id,
+      titulo: guide.titulo,
+      ciudad: guide.ciudad?.nombre,
+      precio: guide.precio,
+      duracionDias: guide.duracionDias,
+      imagen: guide.imagen || guide.ciudad?.imagenPortada,
+      hotelId: selectedHotel || undefined,
+      hotelNombre: hotel ? `${hotel.nombre} (${'★'.repeat(hotel.estrellas)})` : undefined,
+      hotelPrecio: hotel ? hotel.precioPorNoche : undefined,
+      flightId: selectedFlight || undefined,
+      flightNombre: flight ? `${flight.aerolinea} (${flight.origen} → ${flight.destino})` : undefined,
+      flightPrecio: flight ? flight.precio : undefined,
+    };
+  };
+
+  const handleReservar = () => {
+    addItem(buildCartItem());
+    navigate('/checkout-all');
+  };
+
+  const handleAddToCart = () => {
+    addItem(buildCartItem());
+  };
 
   if (loading) return <LoadingSpinner />;
   if (!guide) return <div className="page"><div className="container"><p>Guía no encontrada</p></div></div>;
@@ -152,26 +215,69 @@ export default function GuideDetailPage() {
                     <strong>{guide.ciudad?.nombre}</strong>
                   </div>
                 </div>
+
                 {user ? (
-                  <div className="booking-card__actions">
-                    <Link to={`/guias/${id}/personalizar`} className="btn btn--primary" style={{ width: '100%' }}>Personalizar itinerario</Link>
-                    <Link to={`/checkout/${id}`} className="btn btn--secondary" style={{ width: '100%' }}>Reservar ahora</Link>
-                    <button
-                      className="btn btn--outline"
-                      style={{ width: '100%' }}
-                      disabled={isInCart(id)}
-                      onClick={() => addItem({
-                        guideId: id,
-                        titulo: guide.titulo,
-                        ciudad: guide.ciudad?.nombre,
-                        precio: guide.precio,
-                        duracionDias: guide.duracionDias,
-                        imagen: guide.imagen || guide.ciudad?.imagenPortada,
-                      })}
-                    >
-                      {isInCart(id) ? '✓ En el carrito' : '🛒 Añadir al carrito'}
-                    </button>
-                  </div>
+                  <>
+                    {/* Hotel selection */}
+                    <div className="booking-card__section">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <h4 style={{ margin: 0, fontSize: '0.9rem' }}>Hotel (opcional)</h4>
+                        <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <input type="checkbox" checked={filterAccessible} onChange={(e) => setFilterAccessible(e.target.checked)} />
+                          Accesible
+                        </label>
+                      </div>
+                      <select value={selectedHotel} onChange={(e) => setSelectedHotel(e.target.value)} className="checkout-select" style={{ width: '100%', fontSize: '0.85rem' }}>
+                        <option value="">Sin hotel</option>
+                        {filteredHotels.map((hotel) => (
+                          <option key={hotel._id} value={hotel._id}>
+                            {hotel.nombre} ({'★'.repeat(hotel.estrellas)}) - {formatPrice(hotel.precioPorNoche)}/noche
+                          </option>
+                        ))}
+                      </select>
+                      {selectedHotel && (() => {
+                        const hotel = hotels.find((h) => h._id === selectedHotel);
+                        return hotel ? (
+                          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                            {guide.duracionDias} noches: {formatPrice(hotel.precioPorNoche * guide.duracionDias)}
+                          </p>
+                        ) : null;
+                      })()}
+                    </div>
+
+                    {/* Flight selection */}
+                    <div className="booking-card__section">
+                      <h4 style={{ margin: '0 0 6px 0', fontSize: '0.9rem' }}>Vuelo (opcional)</h4>
+                      <select value={selectedFlight} onChange={(e) => setSelectedFlight(e.target.value)} className="checkout-select" style={{ width: '100%', fontSize: '0.85rem' }}>
+                        <option value="">Sin vuelo</option>
+                        {filteredFlights.map((flight) => (
+                          <option key={flight._id} value={flight._id}>
+                            {flight.aerolinea} ({flight.origen} → {flight.destino}) - {formatPrice(flight.precio)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="booking-card__actions">
+                      <Link to={`/guias/${id}/personalizar`} className="btn btn--primary" style={{ width: '100%' }}>Personalizar itinerario</Link>
+                      <button
+                        className="btn btn--secondary"
+                        style={{ width: '100%' }}
+                        disabled={isInCart(id)}
+                        onClick={handleReservar}
+                      >
+                        {isInCart(id) ? '✓ Ya reservado' : 'Reservar ahora'}
+                      </button>
+                      <button
+                        className="btn btn--outline"
+                        style={{ width: '100%' }}
+                        disabled={isInCart(id)}
+                        onClick={handleAddToCart}
+                      >
+                        {isInCart(id) ? '✓ En el carrito' : 'Añadir al carrito'}
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <Link to="/login" className="btn btn--primary" style={{ width: '100%' }}>Inicia sesión para reservar</Link>
                 )}

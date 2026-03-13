@@ -335,6 +335,10 @@
   color: var(--color-text-light);
 }
 
+.booking-card__section {
+  margin-bottom: var(--space-sm);
+}
+
 .booking-card__actions {
   display: flex;
   flex-direction: column;
