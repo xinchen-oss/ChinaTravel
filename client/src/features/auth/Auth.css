@@ -171,3 +171,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+.field-error {
+  display: block;
+  color: #dc2626;
+  font-size: 0.78rem;
+  margin-top: 4px;
+}
+
+.phone-field {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: var(--border-radius, 8px);
+  overflow: hidden;
+}
+
+.phone-prefix {
+  padding: 8px 12px;
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-right: 1px solid var(--color-border, #d1d5db);
+  white-space: nowrap;
+}
+
+.phone-field input {
+  border: none !important;
+  border-radius: 0 !important;
+  flex: 1;
+}
+
+.phone-field input:focus {
+  box-shadow: none !important;
+}

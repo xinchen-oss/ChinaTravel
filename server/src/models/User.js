@@ -33,6 +33,9 @@ const userSchema = new mongoose.Schema(
     motivoComercial: { type: String, trim: true, default: '' },
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
+    pendingEmail: { type: String },
+    emailChangeToken: { type: String },
+    emailChangeExpire: { type: Date },
   },
   { timestamps: true }
 );

@@ -7,13 +7,27 @@ import { formatPrice, formatDate } from '../../utils/formatters';
 import { getImageUrl, handleImageError } from '../../utils/imageHelper';
 import './Dashboard.css';
 
-const PAISES = [
-  'España', 'México', 'Argentina', 'Colombia', 'Chile', 'Perú', 'Venezuela',
-  'Ecuador', 'Guatemala', 'Cuba', 'Bolivia', 'Rep. Dominicana', 'Honduras',
-  'Paraguay', 'El Salvador', 'Nicaragua', 'Costa Rica', 'Panamá', 'Uruguay',
-  'Puerto Rico', 'China', 'Estados Unidos', 'Francia', 'Alemania', 'Italia',
-  'Portugal', 'Reino Unido', 'Japón', 'Corea del Sur', 'Otro',
-];
+// Validation helpers
+const ONLY_LETTERS = /^[A-Za-zÀ-ÿñÑ\s'-]+$/;
+const SPANISH_PHONE = /^[679]\d{8}$/;
+const SPANISH_CP = /^(0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
+const NIE_REGEX = /^[XYZ]\d{7}[A-Z]$/i;
+const PASSPORT_REGEX = /^[A-Z]{3}\d{6}$/i;
+
+const validateNIE = (v) => NIE_REGEX.test(v);
+const validatePassport = (v) => PASSPORT_REGEX.test(v);
+
+const validateBirthDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 'Fecha inválida';
+  const now = new Date();
+  if (d > now) return 'La fecha no puede ser futura';
+  const age = now.getFullYear() - d.getFullYear();
+  if (age > 120) return 'Fecha no válida';
+  if (age < 16) return 'Debes tener al menos 16 años';
+  return '';
+};
 
 export default function UserDashboard() {
   const { user, updateProfile } = useAuth();
@@ -23,17 +37,23 @@ export default function UserDashboard() {
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [cancellingId, setCancellingId] = useState(null);
+  const [cancelModal, setCancelModal] = useState({ open: false, orderId: null, motivo: '', selectedReason: '' });
+  const [cancelResult, setCancelResult] = useState({ open: false, success: false, reembolso: false, mensaje: '' });
 
   // Profile form
   const [profileData, setProfileData] = useState({
     nombre: '', apellidos: '', email: '', telefono: '',
-    fechaNacimiento: '', genero: '', nacionalidad: '', pasaporte: '',
-    direccion: { calle: '', ciudad: '', codigoPostal: '', pais: '' },
+    fechaNacimiento: '', genero: '', tipoDocumento: 'NIE', pasaporte: '',
+    direccion: { calle: '', ciudad: '', codigoPostal: '', pais: 'España' },
     currentPassword: '', password: '',
   });
   const [profileMsg, setProfileMsg] = useState('');
   const [profileError, setProfileError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [emailChangeMode, setEmailChangeMode] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     api.get('/pedidos/mis-pedidos')
@@ -47,21 +67,23 @@ export default function UserDashboard() {
 
   useEffect(() => {
     if (user) {
+      const doc = user.pasaporte || '';
+      const isNIE = NIE_REGEX.test(doc);
       setProfileData((prev) => ({
         ...prev,
         nombre: user.nombre || '',
         apellidos: user.apellidos || '',
         email: user.email || '',
-        telefono: user.telefono || '',
+        telefono: user.telefono ? user.telefono.replace(/^\+34\s?/, '') : '',
         fechaNacimiento: user.fechaNacimiento ? user.fechaNacimiento.substring(0, 10) : '',
         genero: user.genero || '',
-        nacionalidad: user.nacionalidad || '',
-        pasaporte: user.pasaporte || '',
+        tipoDocumento: isNIE || !doc ? 'NIE' : 'PASAPORTE',
+        pasaporte: doc,
         direccion: {
           calle: user.direccion?.calle || '',
           ciudad: user.direccion?.ciudad || '',
           codigoPostal: user.direccion?.codigoPostal || '',
-          pais: user.direccion?.pais || '',
+          pais: 'España',
         },
       }));
     }
@@ -73,14 +95,45 @@ export default function UserDashboard() {
     direccion: { ...profileData.direccion, [field]: e.target.value },
   });
 
+  const validateProfile = () => {
+    const errs = {};
+    if (!profileData.nombre.trim()) errs.nombre = 'Obligatorio';
+    else if (!ONLY_LETTERS.test(profileData.nombre)) errs.nombre = 'Solo letras';
+    if (profileData.apellidos && !ONLY_LETTERS.test(profileData.apellidos)) errs.apellidos = 'Solo letras';
+    if (profileData.telefono && !SPANISH_PHONE.test(profileData.telefono.replace(/\s/g, ''))) errs.telefono = 'Formato: 6XX XXX XXX / 7XX XXX XXX / 9XX XXX XXX';
+    if (profileData.fechaNacimiento) {
+      const bdErr = validateBirthDate(profileData.fechaNacimiento);
+      if (bdErr) errs.fechaNacimiento = bdErr;
+    }
+    if (profileData.pasaporte) {
+      if (profileData.tipoDocumento === 'NIE' && !validateNIE(profileData.pasaporte)) errs.pasaporte = 'Formato NIE: X/Y/Z + 7 dígitos + letra (ej: X1234567A)';
+      if (profileData.tipoDocumento === 'PASAPORTE' && !validatePassport(profileData.pasaporte)) errs.pasaporte = 'Formato pasaporte: 3 letras + 6 dígitos (ej: PAA123456)';
+    }
+    if (profileData.direccion.codigoPostal && !SPANISH_CP.test(profileData.direccion.codigoPostal)) errs.codigoPostal = 'Código postal español: 01000-52999';
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleEmailChange = async () => {
+    if (!newEmail || newEmail === profileData.email) return;
+    try {
+      await api.post('/auth/solicitar-cambio-email', { nuevoEmail: newEmail });
+      setEmailSent(true);
+    } catch (err) {
+      setProfileError(err.response?.data?.error || 'Error al solicitar cambio de email');
+    }
+  };
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
     setProfileMsg('');
     setProfileError('');
+    if (!validateProfile()) return;
+    setSaving(true);
     try {
-      const { currentPassword, password, ...rest } = profileData;
-      const data = { ...rest };
+      const { currentPassword, password, tipoDocumento, email, ...rest } = profileData;
+      const data = { ...rest, telefono: rest.telefono ? `+34 ${rest.telefono.replace(/\s/g, '')}` : '' };
+      data.direccion = { ...data.direccion, pais: 'España' };
       if (password) {
         data.password = password;
         data.currentPassword = currentPassword;
@@ -99,16 +152,36 @@ export default function UserDashboard() {
     setExpandedOrder(expandedOrder === id ? null : id);
   };
 
-  const handleCancel = async (orderId) => {
-    const motivo = prompt('¿Por qué quieres cancelar este pedido?');
+  const cancelReasons = [
+    'He cambiado de planes de viaje',
+    'He encontrado una opción mejor',
+    'Problemas económicos',
+    'El viaje ya no es posible por motivos personales',
+    'Otro motivo',
+  ];
+
+  const openCancelModal = (orderId) => {
+    setCancelModal({ open: true, orderId, motivo: '', selectedReason: '' });
+  };
+
+  const closeCancelModal = () => {
+    setCancelModal({ open: false, orderId: null, motivo: '', selectedReason: '' });
+  };
+
+  const handleCancelSubmit = async () => {
+    const motivo = cancelModal.selectedReason === 'Otro motivo'
+      ? cancelModal.motivo
+      : cancelModal.selectedReason;
     if (!motivo) return;
+    const orderId = cancelModal.orderId;
+    closeCancelModal();
     setCancellingId(orderId);
     try {
       const res = await api.put(`/pedidos/${orderId}/cancelar`, { motivo });
-      alert(res.data.mensaje);
       setOrders((prev) => prev.map((o) => o._id === orderId ? { ...o, estado: res.data.data.estado } : o));
+      setCancelResult({ open: true, success: true, reembolso: res.data.reembolso, mensaje: res.data.mensaje });
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al cancelar');
+      setCancelResult({ open: true, success: false, reembolso: false, mensaje: err.response?.data?.error || 'Error al cancelar' });
     } finally {
       setCancellingId(null);
     }
@@ -180,7 +253,7 @@ export default function UserDashboard() {
                           {order.estado === 'CONFIRMADO' && (
                             <button
                               className="btn btn--outline btn--sm"
-                              onClick={(e) => { e.stopPropagation(); handleCancel(order._id); }}
+                              onClick={(e) => { e.stopPropagation(); openCancelModal(order._id); }}
                               disabled={cancellingId === order._id}
                             >
                               {cancellingId === order._id ? '...' : 'Cancelar'}
@@ -249,58 +322,96 @@ export default function UserDashboard() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Nombre</label>
+                  <label>Nombre *</label>
                   <input type="text" value={profileData.nombre} onChange={set('nombre')} required />
+                  {fieldErrors.nombre && <span className="field-error">{fieldErrors.nombre}</span>}
                 </div>
                 <div className="form-group">
                   <label>Apellidos</label>
                   <input type="text" value={profileData.apellidos} onChange={set('apellidos')} />
+                  {fieldErrors.apellidos && <span className="field-error">{fieldErrors.apellidos}</span>}
                 </div>
               </div>
 
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" value={profileData.email} onChange={set('email')} required />
+                <div className="email-field">
+                  <input type="email" value={profileData.email} disabled className="input--disabled" />
+                  {!emailChangeMode ? (
+                    <button type="button" className="btn btn--outline btn--sm" onClick={() => setEmailChangeMode(true)}>
+                      Cambiar email
+                    </button>
+                  ) : emailSent ? (
+                    <span className="field-success">Se ha enviado un enlace de verificación a tu email actual ({profileData.email}). Confírmalo para cambiar a {newEmail}.</span>
+                  ) : (
+                    <div className="email-change-row">
+                      <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Nuevo email" />
+                      <button type="button" className="btn btn--primary btn--sm" onClick={handleEmailChange}>Enviar verificación</button>
+                      <button type="button" className="btn btn--outline btn--sm" onClick={() => { setEmailChangeMode(false); setNewEmail(''); }}>Cancelar</button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Teléfono</label>
-                  <input type="tel" value={profileData.telefono} onChange={set('telefono')} placeholder="+34 600 000 000" />
+                  <div className="phone-field">
+                    <span className="phone-prefix">+34</span>
+                    <input
+                      type="tel"
+                      value={profileData.telefono}
+                      onChange={set('telefono')}
+                      placeholder="612 345 678"
+                      maxLength={9}
+                    />
+                  </div>
+                  {fieldErrors.telefono && <span className="field-error">{fieldErrors.telefono}</span>}
                 </div>
                 <div className="form-group">
                   <label>Fecha de nacimiento</label>
-                  <input type="date" value={profileData.fechaNacimiento} onChange={set('fechaNacimiento')} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Género</label>
-                  <select value={profileData.genero} onChange={set('genero')}>
-                    <option value="">Prefiero no decir</option>
-                    <option value="MASCULINO">Masculino</option>
-                    <option value="FEMENINO">Femenino</option>
-                    <option value="OTRO">Otro</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Nacionalidad</label>
-                  <select value={profileData.nacionalidad} onChange={set('nacionalidad')}>
-                    <option value="">Seleccionar</option>
-                    {PAISES.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </select>
+                  <input
+                    type="date"
+                    value={profileData.fechaNacimiento}
+                    onChange={set('fechaNacimiento')}
+                    max={new Date().toISOString().split('T')[0]}
+                  />
+                  {fieldErrors.fechaNacimiento && <span className="field-error">{fieldErrors.fechaNacimiento}</span>}
                 </div>
               </div>
 
               <div className="form-group">
-                <label>N° Pasaporte / DNI</label>
-                <input type="text" value={profileData.pasaporte} onChange={set('pasaporte')} placeholder="Número de documento" />
+                <label>Género</label>
+                <select value={profileData.genero} onChange={set('genero')}>
+                  <option value="">Prefiero no decir</option>
+                  <option value="MASCULINO">Masculino</option>
+                  <option value="FEMENINO">Femenino</option>
+                  <option value="OTRO">Otro</option>
+                </select>
               </div>
 
-              <h3 className="profile-form__section-title">Dirección</h3>
+              <div className="form-group">
+                <label>Tipo de documento</label>
+                <div className="form-row">
+                  <div className="form-group">
+                    <select value={profileData.tipoDocumento} onChange={set('tipoDocumento')}>
+                      <option value="NIE">NIE</option>
+                      <option value="PASAPORTE">Pasaporte</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      value={profileData.pasaporte}
+                      onChange={set('pasaporte')}
+                      placeholder={profileData.tipoDocumento === 'NIE' ? 'X1234567A' : 'PAA123456'}
+                    />
+                    {fieldErrors.pasaporte && <span className="field-error">{fieldErrors.pasaporte}</span>}
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="profile-form__section-title">Dirección (España)</h3>
               <div className="form-group">
                 <label>Calle y número</label>
                 <input type="text" value={profileData.direccion.calle} onChange={setDir('calle')} placeholder="Calle, número, piso" />
@@ -312,17 +423,19 @@ export default function UserDashboard() {
                 </div>
                 <div className="form-group">
                   <label>Código postal</label>
-                  <input type="text" value={profileData.direccion.codigoPostal} onChange={setDir('codigoPostal')} />
+                  <input
+                    type="text"
+                    value={profileData.direccion.codigoPostal}
+                    onChange={setDir('codigoPostal')}
+                    placeholder="28001"
+                    maxLength={5}
+                  />
+                  {fieldErrors.codigoPostal && <span className="field-error">{fieldErrors.codigoPostal}</span>}
                 </div>
               </div>
               <div className="form-group">
                 <label>País</label>
-                <select value={profileData.direccion.pais} onChange={setDir('pais')}>
-                  <option value="">Seleccionar</option>
-                  {PAISES.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                <input type="text" value="España" disabled className="input--disabled" />
               </div>
 
               <h3 className="profile-form__section-title">Cambiar contraseña</h3>
@@ -370,6 +483,99 @@ export default function UserDashboard() {
           </>
         )}
       </div>
+
+      {/* Cancel order modal */}
+      {cancelModal.open && (
+        <div className="cancel-modal-overlay" onClick={closeCancelModal}>
+          <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="cancel-modal__close" onClick={closeCancelModal}>&times;</button>
+            <div className="cancel-modal__icon">&#10007;</div>
+            <h3 className="cancel-modal__title">¿Por qué quieres cancelar este pedido?</h3>
+            <p className="cancel-modal__subtitle">Tu opinión nos ayuda a mejorar</p>
+            <div className="cancel-modal__reasons">
+              {cancelReasons.map((reason) => (
+                <label key={reason} className={`cancel-modal__reason ${cancelModal.selectedReason === reason ? 'cancel-modal__reason--active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="cancelReason"
+                    value={reason}
+                    checked={cancelModal.selectedReason === reason}
+                    onChange={() => setCancelModal((prev) => ({ ...prev, selectedReason: reason, motivo: reason === 'Otro motivo' ? prev.motivo : reason }))}
+                  />
+                  <span>{reason}</span>
+                </label>
+              ))}
+            </div>
+            {cancelModal.selectedReason === 'Otro motivo' && (
+              <textarea
+                className="cancel-modal__textarea"
+                placeholder="Cuéntanos el motivo..."
+                value={cancelModal.motivo}
+                onChange={(e) => setCancelModal((prev) => ({ ...prev, motivo: e.target.value }))}
+                rows={3}
+                autoFocus
+              />
+            )}
+            <div className="cancel-modal__actions">
+              <button className="btn btn--outline" onClick={closeCancelModal}>Volver</button>
+              <button
+                className="btn btn--danger"
+                onClick={handleCancelSubmit}
+                disabled={!cancelModal.selectedReason || (cancelModal.selectedReason === 'Otro motivo' && !cancelModal.motivo.trim())}
+              >
+                Confirmar cancelación
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel result modal */}
+      {cancelResult.open && (
+        <div className="cancel-modal-overlay" onClick={() => setCancelResult({ ...cancelResult, open: false })}>
+          <div className="cancel-modal cancel-result-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="cancel-modal__close" onClick={() => setCancelResult({ ...cancelResult, open: false })}>&times;</button>
+            {cancelResult.success ? (
+              <>
+                <div className={`cancel-result__icon ${cancelResult.reembolso ? 'cancel-result__icon--refund' : 'cancel-result__icon--no-refund'}`}>
+                  {cancelResult.reembolso ? '\u2713' : '!'}
+                </div>
+                <h3 className="cancel-modal__title">
+                  {cancelResult.reembolso ? 'Pedido cancelado y reembolsado' : 'Pedido cancelado'}
+                </h3>
+                {cancelResult.reembolso ? (
+                  <div className="cancel-result__detail">
+                    <div className="cancel-result__badge cancel-result__badge--success">Reembolso completo</div>
+                    <p>Tu pedido ha sido cancelado correctamente. El reembolso del <strong>100%</strong> del importe se procesará en los próximos días hábiles.</p>
+                    <div className="cancel-result__info">
+                      <span>Cancelación dentro de las 48h</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="cancel-result__detail">
+                    <div className="cancel-result__badge cancel-result__badge--warning">Sin reembolso</div>
+                    <p>Tu pedido ha sido cancelado. Según nuestra política, no se aplica reembolso pasadas las 48 horas desde la compra.</p>
+                    <div className="cancel-result__info">
+                      <span>Han pasado más de 48h desde la compra</span>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="cancel-result__icon cancel-result__icon--error">&#10007;</div>
+                <h3 className="cancel-modal__title">Error al cancelar</h3>
+                <p className="cancel-result__error-msg">{cancelResult.mensaje}</p>
+              </>
+            )}
+            <div className="cancel-modal__actions" style={{ justifyContent: 'center' }}>
+              <button className="btn btn--primary" onClick={() => setCancelResult({ ...cancelResult, open: false })}>
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

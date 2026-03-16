@@ -23,6 +23,7 @@ import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
 import ResetPasswordPage from './features/auth/ResetPasswordPage';
+import ConfirmEmailPage from './features/auth/ConfirmEmailPage';
 
 // Guides
 import GuidesListPage from './features/guides/GuidesListPage';
@@ -94,6 +95,7 @@ export default function App() {
               <Route path="registro" element={<RegisterPage />} />
               <Route path="forgot-password" element={<ForgotPasswordPage />} />
               <Route path="reset-password/:token" element={<ResetPasswordPage />} />
+              <Route path="confirmar-email/:token" element={<ConfirmEmailPage />} />
 
               {/* Private */}
               <Route path="guias/:id/personalizar" element={<PrivateRoute><GuideCustomizePage /></PrivateRoute>} />

@@ -8,6 +8,15 @@ import { sendEmail } from '../services/emailService.js';
 
 const generateToken = (id) => jwt.sign({ id }, config.jwtSecret, { expiresIn: config.jwtExpire });
 
+const validatePassword = (password) => {
+  if (password.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
+  if (!/[A-Z]/.test(password)) return 'La contraseña debe contener al menos una letra mayúscula';
+  if (!/[a-z]/.test(password)) return 'La contraseña debe contener al menos una letra minúscula';
+  if (!/[0-9]/.test(password)) return 'La contraseña debe contener al menos un número';
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return 'La contraseña debe contener al menos un carácter especial (!@#$%...)';
+  return null;
+};
+
 const userResponse = (user) => ({
   id: user._id,
   nombre: user.nombre,
@@ -123,15 +132,10 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select('+password');
   if (!user) throw new ApiError(404, 'Usuario no encontrado');
 
-  const { nombre, apellidos, email, password, currentPassword, telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion } = req.body;
+  const { nombre, apellidos, password, currentPassword, telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion } = req.body;
 
   if (nombre !== undefined) user.nombre = nombre;
   if (apellidos !== undefined) user.apellidos = apellidos;
-  if (email && email !== user.email) {
-    const exists = await User.findOne({ email });
-    if (exists) throw new ApiError(400, 'El email ya está en uso');
-    user.email = email;
-  }
   if (telefono !== undefined) user.telefono = telefono;
   if (fechaNacimiento !== undefined) user.fechaNacimiento = fechaNacimiento || null;
   if (genero !== undefined) user.genero = genero;
@@ -145,11 +149,73 @@ export const updateProfile = asyncHandler(async (req, res) => {
     if (!currentPassword) throw new ApiError(400, 'Debes proporcionar tu contraseña actual');
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) throw new ApiError(400, 'Contraseña actual incorrecta');
+    const isSame = await user.comparePassword(password);
+    if (isSame) throw new ApiError(400, 'La nueva contraseña no puede ser igual a la actual');
+    const pwError = validatePassword(password);
+    if (pwError) throw new ApiError(400, pwError);
     user.password = password;
   }
 
   await user.save();
   res.json({ ok: true, user: userResponse(user) });
+});
+
+export const solicitarCambioEmail = asyncHandler(async (req, res) => {
+  const { nuevoEmail } = req.body;
+  if (!nuevoEmail) throw new ApiError(400, 'El nuevo email es obligatorio');
+
+  const user = await User.findById(req.user._id);
+  if (!user) throw new ApiError(404, 'Usuario no encontrado');
+  if (nuevoEmail === user.email) throw new ApiError(400, 'El nuevo email es igual al actual');
+
+  const exists = await User.findOne({ email: nuevoEmail });
+  if (exists) throw new ApiError(400, 'El email ya está en uso');
+
+  const token = crypto.randomBytes(32).toString('hex');
+  user.pendingEmail = nuevoEmail;
+  user.emailChangeToken = crypto.createHash('sha256').update(token).digest('hex');
+  user.emailChangeExpire = Date.now() + 30 * 60 * 1000;
+  await user.save({ validateBeforeSave: false });
+
+  const confirmUrl = `${config.clientUrl}/confirmar-email/${token}`;
+
+  await sendEmail({
+    to: user.email,
+    subject: 'Confirmar cambio de email - ChinaTravel',
+    html: emailWrapper(`
+      <h2 style="color:#1a1a2e;margin-top:0;">Cambio de email solicitado</h2>
+      <p>Hola <strong>${user.nombre}</strong>,</p>
+      <p>Has solicitado cambiar tu email a <strong>${nuevoEmail}</strong>.</p>
+      <p>Haz clic en el siguiente botón para confirmar el cambio:</p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${confirmUrl}" style="background:#c41e3a;color:white;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;font-size:16px;">Confirmar cambio de email</a>
+      </div>
+      <p style="color:#666;font-size:13px;">Este enlace expirará en <strong>30 minutos</strong>.</p>
+      <p style="color:#666;font-size:13px;">Si no solicitaste este cambio, puedes ignorar este email.</p>
+    `),
+  });
+
+  res.json({ ok: true, message: 'Se ha enviado un enlace de verificación a tu email actual' });
+});
+
+export const confirmarCambioEmail = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOne({
+    emailChangeToken: hashedToken,
+    emailChangeExpire: { $gt: Date.now() },
+  });
+
+  if (!user) throw new ApiError(400, 'Token inválido o expirado');
+
+  user.email = user.pendingEmail;
+  user.pendingEmail = undefined;
+  user.emailChangeToken = undefined;
+  user.emailChangeExpire = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  res.json({ ok: true, message: 'Email actualizado correctamente' });
 });
 
 export const forgotPassword = asyncHandler(async (req, res) => {
@@ -200,6 +266,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
   });
 
   if (!user) throw new ApiError(400, 'Token inválido o expirado');
+
+  const pwError = validatePassword(password);
+  if (pwError) throw new ApiError(400, pwError);
 
   user.password = password;
   user.resetPasswordToken = undefined;

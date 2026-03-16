@@ -4,13 +4,22 @@ import { useAuth } from '../../hooks/useAuth';
 import api from '../../api/axios';
 import './Auth.css';
 
-const PAISES = [
-  'España', 'México', 'Argentina', 'Colombia', 'Chile', 'Perú', 'Venezuela',
-  'Ecuador', 'Guatemala', 'Cuba', 'Bolivia', 'Rep. Dominicana', 'Honduras',
-  'Paraguay', 'El Salvador', 'Nicaragua', 'Costa Rica', 'Panamá', 'Uruguay',
-  'Puerto Rico', 'China', 'Estados Unidos', 'Francia', 'Alemania', 'Italia',
-  'Portugal', 'Reino Unido', 'Japón', 'Corea del Sur', 'Otro',
-];
+const ONLY_LETTERS = /^[A-Za-zÀ-ÿñÑ\s'-]+$/;
+const SPANISH_PHONE = /^[679]\d{8}$/;
+const NIE_REGEX = /^[XYZ]\d{7}[A-Z]$/i;
+const PASSPORT_REGEX = /^[A-Z]{3}\d{6}$/i;
+
+const validateBirthDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 'Fecha inválida';
+  const now = new Date();
+  if (d > now) return 'La fecha no puede ser futura';
+  const age = now.getFullYear() - d.getFullYear();
+  if (age > 120) return 'Fecha no válida';
+  if (age < 16) return 'Debes tener al menos 16 años';
+  return '';
+};
 
 export default function RegisterPage() {
   const [accountType, setAccountType] = useState('USER'); // USER or COMERCIAL
@@ -23,13 +32,15 @@ export default function RegisterPage() {
     telefono: '',
     fechaNacimiento: '',
     genero: '',
-    nacionalidad: '',
+    tipoDocumento: 'NIE',
+    pasaporte: '',
     empresaNombre: '',
     empresaCIF: '',
     motivoComercial: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -40,6 +51,22 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    // Field validations
+    const errs = {};
+    if (!ONLY_LETTERS.test(form.nombre)) errs.nombre = 'Solo letras';
+    if (!ONLY_LETTERS.test(form.apellidos)) errs.apellidos = 'Solo letras';
+    if (form.telefono && !SPANISH_PHONE.test(form.telefono.replace(/\s/g, ''))) errs.telefono = 'Formato: 6XX XXX XXX / 7XX XXX XXX / 9XX XXX XXX';
+    if (form.fechaNacimiento) {
+      const bdErr = validateBirthDate(form.fechaNacimiento);
+      if (bdErr) errs.fechaNacimiento = bdErr;
+    }
+    if (form.pasaporte) {
+      if (form.tipoDocumento === 'NIE' && !NIE_REGEX.test(form.pasaporte)) errs.pasaporte = 'Formato NIE: X/Y/Z + 7 dígitos + letra';
+      if (form.tipoDocumento === 'PASAPORTE' && !PASSPORT_REGEX.test(form.pasaporte)) errs.pasaporte = 'Formato: 3 letras + 6 dígitos';
+    }
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
 
     if (form.password.length < 8) {
       setError('La contraseña debe tener al menos 8 caracteres');
@@ -79,7 +106,9 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const { confirmPassword, ...data } = form;
+      const { confirmPassword, tipoDocumento, ...data } = form;
+      if (data.telefono) data.telefono = `+34 ${data.telefono.replace(/\s/g, '')}`;
+      data.nacionalidad = 'España';
       if (accountType === 'COMERCIAL') {
         const res = await api.post('/auth/registro', { ...data, role: 'COMERCIAL' });
         setSuccess(res.data.message);
@@ -88,7 +117,16 @@ export default function RegisterPage() {
         navigate('/');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al registrarse');
+      const serverError = err.response?.data?.error;
+      if (serverError) {
+        setError(serverError);
+      } else if (!navigator.onLine) {
+        setError('No hay conexión a Internet. Comprueba tu red e inténtalo de nuevo.');
+      } else if (err.code === 'ERR_NETWORK') {
+        setError('No se pudo conectar con el servidor. Inténtalo más tarde.');
+      } else {
+        setError('Error al registrarse. Por favor, revisa los datos e inténtalo de nuevo.');
+      }
     } finally {
       setLoading(false);
     }
@@ -149,10 +187,12 @@ export default function RegisterPage() {
             <div className="form-group">
               <label>Nombre *</label>
               <input type="text" value={form.nombre} onChange={set('nombre')} required placeholder="Tu nombre" />
+              {fieldErrors.nombre && <span className="field-error">{fieldErrors.nombre}</span>}
             </div>
             <div className="form-group">
               <label>Apellidos *</label>
               <input type="text" value={form.apellidos} onChange={set('apellidos')} required placeholder="Tus apellidos" />
+              {fieldErrors.apellidos && <span className="field-error">{fieldErrors.apellidos}</span>}
             </div>
           </div>
 
@@ -175,11 +215,16 @@ export default function RegisterPage() {
           <div className="form-row">
             <div className="form-group">
               <label>Teléfono</label>
-              <input type="tel" value={form.telefono} onChange={set('telefono')} placeholder="+34 600 000 000" />
+              <div className="phone-field">
+                <span className="phone-prefix">+34</span>
+                <input type="tel" value={form.telefono} onChange={set('telefono')} placeholder="612 345 678" maxLength={9} />
+              </div>
+              {fieldErrors.telefono && <span className="field-error">{fieldErrors.telefono}</span>}
             </div>
             <div className="form-group">
               <label>Fecha de nacimiento</label>
-              <input type="date" value={form.fechaNacimiento} onChange={set('fechaNacimiento')} />
+              <input type="date" value={form.fechaNacimiento} onChange={set('fechaNacimiento')} max={new Date().toISOString().split('T')[0]} />
+              {fieldErrors.fechaNacimiento && <span className="field-error">{fieldErrors.fechaNacimiento}</span>}
             </div>
           </div>
 
@@ -194,14 +239,23 @@ export default function RegisterPage() {
               </select>
             </div>
             <div className="form-group">
-              <label>Nacionalidad</label>
-              <select value={form.nacionalidad} onChange={set('nacionalidad')}>
-                <option value="">Seleccionar</option>
-                {PAISES.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
+              <label>Documento de identidad</label>
+              <select value={form.tipoDocumento} onChange={set('tipoDocumento')}>
+                <option value="NIE">NIE</option>
+                <option value="PASAPORTE">Pasaporte</option>
               </select>
             </div>
+          </div>
+
+          <div className="form-group">
+            <label>N° {form.tipoDocumento === 'NIE' ? 'NIE' : 'Pasaporte'}</label>
+            <input
+              type="text"
+              value={form.pasaporte}
+              onChange={set('pasaporte')}
+              placeholder={form.tipoDocumento === 'NIE' ? 'X1234567A' : 'PAA123456'}
+            />
+            {fieldErrors.pasaporte && <span className="field-error">{fieldErrors.pasaporte}</span>}
           </div>
 
           {/* Comercial-specific fields */}

@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+const FONT_CN = 'C:/Windows/Fonts/simhei.ttf';
 
 // Ensure uploads dir exists
 if (!fs.existsSync(uploadsDir)) {
@@ -17,79 +18,148 @@ export const generateTipsPdf = async (order, guide, activities) => {
   return new Promise((resolve, reject) => {
     const filename = `tips-${order._id}.pdf`;
     const filepath = path.join(uploadsDir, filename);
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ margin: 50, size: 'A4' });
     const stream = fs.createWriteStream(filepath);
 
     doc.pipe(stream);
 
-    // Header bar
-    doc.rect(0, 0, doc.page.width, 80).fill('#c41e3a');
-    doc.fontSize(26).fillColor('#ffffff').text('ChinaTravel', 50, 25, { align: 'center' });
-    doc.fontSize(12).text('Tips y Consejos de Viaje', 50, 55, { align: 'center' });
+    // Register Chinese-capable font
+    const hasCnFont = fs.existsSync(FONT_CN);
+    if (hasCnFont) doc.registerFont('CN', FONT_CN);
+    const useCN = (d) => hasCnFont ? d.font('CN') : d;
+    const useDefault = (d) => d.font('Helvetica');
 
-    doc.moveDown(3);
+    const W = doc.page.width;
+    const M = 50; // margin
+
+    // ── Header ──
+    doc.rect(0, 0, W, 100).fill('#c41e3a');
+    doc.rect(0, 100, W, 6).fill('#a01830');
+    useDefault(doc).fontSize(30).fillColor('#ffffff').text('ChinaTravel', M, 28, { align: 'center' });
+    doc.fontSize(13).fillColor('#ffffffcc').text('Tips y Consejos de Viaje', M, 65, { align: 'center' });
+
+    doc.moveDown(4);
     doc.fillColor('#1a1a2e');
 
-    // Guide info
-    doc.fontSize(20).text(guide.titulo, { align: 'center' });
-    doc.moveDown(0.5);
-    doc.fontSize(12).fillColor('#666666').text(`Duración: ${guide.duracionDias} días | Ciudad: ${guide.ciudad?.nombre || ''}`, { align: 'center' });
+    // ── Guide info ──
+    doc.fontSize(22).fillColor('#1a1a2e').text(guide.titulo, { align: 'center' });
+    doc.moveDown(0.3);
+    doc.fontSize(12).fillColor('#888888').text(
+      `Duracion: ${guide.duracionDias} dias  |  Ciudad: ${guide.ciudad?.nombre || ''}`,
+      { align: 'center' }
+    );
     doc.moveDown(1.5);
 
-    // Divider
-    doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke('#e0e0e0');
-    doc.moveDown(1);
+    // Decorative divider
+    const divider = (y) => {
+      doc.moveTo(M, y).lineTo(W - M, y).lineWidth(0.5).stroke('#d1d5db');
+      doc.lineWidth(1);
+    };
+    divider(doc.y);
+    doc.moveDown(1.2);
 
-    // Tips per activity
-    doc.fontSize(16).fillColor('#c41e3a').text('Consejos por actividad');
+    // ── Tips per activity ──
+    doc.fontSize(17).fillColor('#c41e3a').text('Consejos por actividad');
     doc.moveDown(0.8);
 
     for (const activity of activities) {
-      if (doc.y > doc.page.height - 120) doc.addPage();
+      if (doc.y > doc.page.height - 130) doc.addPage();
 
-      doc.fontSize(13).fillColor('#1a1a2e').text(`● ${activity.nombre}`, { continued: false });
-      doc.fontSize(10).fillColor('#999999').text(`  Categoría: ${activity.categoria} | Duración: ${activity.duracionHoras}h`);
+      // Activity card background
+      const cardY = doc.y;
+      doc.save();
+      doc.roundedRect(M, cardY, W - M * 2, 4, 2).fill('#c41e3a');
+      doc.restore();
+
+      doc.rect(M, cardY + 4, W - M * 2, 50).fill('#fef2f2');
+
+      doc.fontSize(13).fillColor('#1a1a2e').text(`  ${activity.nombre}`, M + 10, cardY + 10);
+      doc.fontSize(9).fillColor('#888888').text(
+        `  Categoria: ${activity.categoria}  |  Duracion: ${activity.duracionHoras}h`,
+        M + 10, cardY + 30
+      );
+
+      doc.y = cardY + 60;
 
       if (activity.consejos && activity.consejos.length > 0) {
         activity.consejos.forEach((tip) => {
-          doc.fontSize(11).fillColor('#444444').text(`    → ${tip}`);
+          doc.fontSize(11).fillColor('#374151').text(`    > ${tip}`, M + 10);
         });
       } else {
-        doc.fontSize(11).fillColor('#999999').text('    Sin consejos específicos disponibles.');
+        doc.fontSize(10).fillColor('#9ca3af').text('    Sin consejos especificos disponibles.', M + 10);
       }
-      doc.moveDown(0.6);
+      doc.moveDown(0.8);
     }
 
-    // General tips section
-    doc.moveDown(1);
+    // ── General tips section ──
+    doc.moveDown(0.5);
     if (doc.y > doc.page.height - 200) doc.addPage();
 
-    doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke('#e0e0e0');
-    doc.moveDown(1);
-    doc.fontSize(16).fillColor('#c41e3a').text('Consejos generales para viajar a China');
-    doc.moveDown(0.6);
+    divider(doc.y);
+    doc.moveDown(1.2);
+    doc.fontSize(17).fillColor('#c41e3a').text('Consejos generales para viajar a China');
+    doc.moveDown(0.8);
 
     const generalTips = [
-      'Descarga una app de traducción offline antes de viajar (ej: Google Translate con paquete chino).',
-      'Lleva efectivo en yuan (CNY), muchas tiendas pequeñas no aceptan tarjetas extranjeras.',
+      'Descarga una app de traduccion offline antes de viajar (ej: Google Translate con paquete chino).',
+      'Lleva efectivo en yuan (CNY), muchas tiendas pequenas no aceptan tarjetas extranjeras.',
       'Ten siempre contigo una copia de tu pasaporte y visado.',
       'Descarga una VPN antes de llegar si necesitas acceder a Google, WhatsApp, etc.',
       'El agua del grifo no es potable, compra agua embotellada.',
-      'Aprende algunas frases básicas en mandarín: 你好 (nǐ hǎo - hola), 谢谢 (xiè xie - gracias).',
-      'Respeta las costumbres locales: no señalar con el dedo, no clavar los palillos verticalmente en el arroz.',
-      'El horario comercial suele ser de 10:00 a 22:00. Los mercados abren más temprano.',
+      ['Aprende algunas frases basicas en mandarin: ', 'ni hao (', '\u4f60\u597d', ' - hola), xie xie (', '\u8c22\u8c22', ' - gracias).'],
+      'Respeta las costumbres locales: no senalar con el dedo, no clavar los palillos verticalmente en el arroz.',
+      'El horario comercial suele ser de 10:00 a 22:00. Los mercados abren mas temprano.',
     ];
 
-    generalTips.forEach((tip) => {
-      if (doc.y > doc.page.height - 60) doc.addPage();
-      doc.fontSize(11).fillColor('#444444').text(`  ✓ ${tip}`);
-      doc.moveDown(0.3);
+    const tipTextWidth = W - M * 2 - 30; // available width for tip text
+
+    generalTips.forEach((tip, i) => {
+      // Calculate height needed for this tip
+      const tipStr = Array.isArray(tip) ? tip.join('') : tip;
+      useDefault(doc).fontSize(11);
+      const textHeight = doc.heightOfString(tipStr, { width: tipTextWidth });
+      const rowHeight = Math.max(textHeight + 6, 22);
+
+      if (doc.y + rowHeight > doc.page.height - 50) doc.addPage();
+
+      // Numbered badge
+      const badgeY = doc.y;
+      doc.save();
+      doc.circle(M + 10, badgeY + 7, 9).fill('#c41e3a');
+      doc.restore();
+      doc.fontSize(9).fillColor('#ffffff').text(`${i + 1}`, M + 5, badgeY + 3, { width: 11, align: 'center' });
+
+      if (Array.isArray(tip)) {
+        // Mixed font tip - render as plain text to avoid overlap
+        const plainText = tip.join('');
+        useDefault(doc).fontSize(11).fillColor('#374151');
+        doc.text(plainText, M + 26, badgeY + 1, { width: tipTextWidth });
+      } else {
+        useDefault(doc).fontSize(11).fillColor('#374151');
+        doc.text(tip, M + 26, badgeY + 1, { width: tipTextWidth });
+      }
+
+      // Ensure doc.y is past the rendered text
+      const minY = badgeY + rowHeight;
+      if (doc.y < minY) doc.y = minY;
+      doc.moveDown(0.4);
     });
 
-    // Footer
+    // ── Footer ──
     doc.moveDown(2);
-    doc.fontSize(10).fillColor('#999999').text(`Generado por ChinaTravel — ${new Date().toLocaleDateString('es-ES')}`, { align: 'center' });
-    doc.fontSize(10).text('¡Buen viaje! 祝你旅途愉快!', { align: 'center' });
+    if (doc.y > doc.page.height - 80) doc.addPage();
+
+    divider(doc.y);
+    doc.moveDown(0.8);
+    useDefault(doc).fontSize(10).fillColor('#9ca3af').text(
+      `Generado por ChinaTravel -- ${new Date().toLocaleDateString('es-ES')}`,
+      { align: 'center' }
+    );
+    if (hasCnFont) {
+      useCN(doc).fontSize(10).fillColor('#9ca3af').text('Buen viaje! \u795d\u4f60\u65c5\u9014\u6109\u5feb!', { align: 'center' });
+    } else {
+      useDefault(doc).fontSize(10).fillColor('#9ca3af').text('Buen viaje! Zhu ni lütu yukuai!', { align: 'center' });
+    }
 
     doc.end();
     stream.on('finish', () => resolve(`/uploads/${filename}`));

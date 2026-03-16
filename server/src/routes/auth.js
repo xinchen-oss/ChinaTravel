@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { register, login, getMe, updateProfile, forgotPassword, resetPassword} from '../controllers/authController.js';
+import { register, login, getMe, updateProfile, solicitarCambioEmail, confirmarCambioEmail, forgotPassword, resetPassword } from '../controllers/authController.js';
 import { protect } from '../middleware/auth.js';
 import validateRequest from '../middleware/validateRequest.js';
 
@@ -34,6 +34,8 @@ router.post(
 
 router.get('/me', protect, getMe);
 router.put('/perfil', protect, updateProfile);
+router.post('/solicitar-cambio-email', protect, solicitarCambioEmail);
+router.get('/confirmar-email/:token', confirmarCambioEmail);
 router.post('/forgot-password', body('email').isEmail(), validateRequest, forgotPassword);
 router.put(
   '/reset-password/:token',

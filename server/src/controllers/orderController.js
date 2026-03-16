@@ -1,10 +1,28 @@
 import Order from '../models/Order.js';
 import Guide from '../models/Guide.js';
+import User from '../models/User.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { createOrder } from '../services/orderService.js';
+import { sendEmail } from '../services/emailService.js';
+
+const emailWrapper = (content) => `
+  <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+    <div style="background:#c41e3a;color:white;padding:24px;text-align:center;">
+      <h1 style="margin:0;font-size:28px;letter-spacing:1px;">ChinaTravel</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">Descubre China con nosotros</p>
+    </div>
+    <div style="padding:30px 24px;background:#f9f9f9;">
+      ${content}
+    </div>
+    <div style="padding:16px 24px;text-align:center;background:#1a1a2e;color:rgba(255,255,255,0.5);font-size:11px;">
+      <p style="margin:0;">ChinaTravel &copy; ${new Date().getFullYear()} — Todos los derechos reservados</p>
+      <p style="margin:4px 0 0;">Este es un email automatico, por favor no respondas.</p>
+    </div>
+  </div>
+`;
 
 export const placeOrder = asyncHandler(async (req, res) => {
   const order = await createOrder(req.user, req.body);
@@ -99,6 +117,64 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       : 'Tu pedido ha sido cancelado. Según nuestra política, no se aplica reembolso pasadas las 48h.',
     enlace: '/dashboard',
   });
+
+  // Send cancellation email
+  const usuario = await User.findById(order.usuario);
+  if (usuario?.email) {
+    const orderGuide = await Guide.findById(order.guia).populate('ciudad');
+    const guideName = orderGuide?.titulo || 'tu circuito';
+    const fecha = new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+    const precio = order.precioTotal ? `${order.precioTotal}\u20AC` : '';
+
+    await sendEmail({
+      to: usuario.email,
+      subject: reembolsoCompleto
+        ? 'Pedido cancelado - Reembolso procesado - ChinaTravel'
+        : 'Pedido cancelado - ChinaTravel',
+      html: emailWrapper(reembolsoCompleto
+        ? `
+          <div style="text-align:center;margin-bottom:24px;">
+            <div style="width:64px;height:64px;background:#f0fdf4;color:#16a34a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;">&#10003;</div>
+          </div>
+          <h2 style="color:#1a1a2e;margin-top:0;text-align:center;">Pedido cancelado y reembolsado</h2>
+          <p>Hola <strong>${usuario.nombre}</strong>,</p>
+          <p>Tu pedido ha sido cancelado correctamente. Al haberse realizado dentro de las primeras <strong>48 horas</strong>, se ha procesado el reembolso completo.</p>
+          <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:20px 0;">
+            <table style="width:100%;font-size:14px;color:#374151;">
+              <tr><td style="padding:6px 0;color:#6b7280;">Circuito</td><td style="padding:6px 0;text-align:right;font-weight:600;">${guideName}</td></tr>
+              <tr><td style="padding:6px 0;color:#6b7280;">Fecha de compra</td><td style="padding:6px 0;text-align:right;">${fecha}</td></tr>
+              <tr><td style="padding:6px 0;color:#6b7280;">Importe reembolsado</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#16a34a;">${precio}</td></tr>
+              <tr><td style="padding:6px 0;color:#6b7280;">Estado</td><td style="padding:6px 0;text-align:right;"><span style="background:#f0fdf4;color:#16a34a;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">REEMBOLSADO</span></td></tr>
+            </table>
+          </div>
+          <p style="color:#666;font-size:13px;">El reembolso se reflejara en tu cuenta en los proximos dias habiles.</p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Ver mis pedidos</a>
+          </div>
+        `
+        : `
+          <div style="text-align:center;margin-bottom:24px;">
+            <div style="width:64px;height:64px;background:#fffbeb;color:#d97706;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;">!</div>
+          </div>
+          <h2 style="color:#1a1a2e;margin-top:0;text-align:center;">Pedido cancelado</h2>
+          <p>Hola <strong>${usuario.nombre}</strong>,</p>
+          <p>Tu pedido ha sido cancelado. Segun nuestra politica de cancelacion, al haber transcurrido mas de <strong>48 horas</strong> desde la compra, <strong>no se aplica reembolso</strong>.</p>
+          <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:20px 0;">
+            <table style="width:100%;font-size:14px;color:#374151;">
+              <tr><td style="padding:6px 0;color:#6b7280;">Circuito</td><td style="padding:6px 0;text-align:right;font-weight:600;">${guideName}</td></tr>
+              <tr><td style="padding:6px 0;color:#6b7280;">Fecha de compra</td><td style="padding:6px 0;text-align:right;">${fecha}</td></tr>
+              <tr><td style="padding:6px 0;color:#6b7280;">Importe</td><td style="padding:6px 0;text-align:right;font-weight:600;">${precio}</td></tr>
+              <tr><td style="padding:6px 0;color:#6b7280;">Estado</td><td style="padding:6px 0;text-align:right;"><span style="background:#fffbeb;color:#d97706;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">CANCELADO</span></td></tr>
+            </table>
+          </div>
+          <p style="color:#666;font-size:13px;">Si tienes alguna duda, no dudes en contactarnos.</p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/politica-cancelacion" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Ver politica de cancelacion</a>
+          </div>
+        `
+      ),
+    });
+  }
 
   res.json({
     ok: true,
