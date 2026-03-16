@@ -38,13 +38,16 @@ export default function GuideCustomizePage() {
     }
   };
 
-  const selectAlternative = (newActivityId) => {
-    setCustomizations((prev) => ({ ...prev, [swapModal.activityId]: newActivityId }));
+  const selectAlternative = (newActivity) => {
+    setCustomizations((prev) => ({ ...prev, [swapModal.activityId]: newActivity }));
     setSwapModal({ open: false, activityId: null, categoria: null });
   };
 
   const handleCheckout = () => {
-    navigate(`/checkout/${id}`, { state: { customizations } });
+    const customizationIds = Object.fromEntries(
+      Object.entries(customizations).map(([oldId, act]) => [oldId, act._id])
+    );
+    navigate(`/checkout/${id}`, { state: { customizations: customizationIds } });
   };
 
   if (loading) return <LoadingSpinner />;
@@ -63,19 +66,20 @@ export default function GuideCustomizePage() {
               <div className="day-card__activities">
                 {dia.actividades?.map((slot, i) => {
                   const actId = slot.actividad?._id;
-                  const isSwapped = customizations[actId];
+                  const swapped = customizations[actId];
+                  const display = swapped || slot.actividad;
                   return (
                     <div
                       key={i}
-                      className={`activity-slot activity-slot--clickable ${isSwapped ? 'activity-slot--swapped' : ''}`}
+                      className={`activity-slot activity-slot--clickable ${swapped ? 'activity-slot--swapped' : ''}`}
                       onClick={() => openSwapModal(actId, slot.actividad?.categoria)}
                     >
                       <div className="activity-slot__time">
                         {slot.horaInicio && <span>{slot.horaInicio} - {slot.horaFin}</span>}
                       </div>
                       <div className="activity-slot__info">
-                        <h4>{slot.actividad?.nombre} {isSwapped && '(modificada)'}</h4>
-                        <p>{slot.actividad?.descripcion}</p>
+                        <h4>{display?.nombre} {swapped && '(modificada)'}</h4>
+                        <p>{display?.descripcion}</p>
                         <span className="activity-slot__swap-hint">Clic para cambiar</span>
                       </div>
                     </div>
@@ -105,7 +109,7 @@ export default function GuideCustomizePage() {
           ) : (
             <div className="alt-list">
               {alternatives.map((alt) => (
-                <div key={alt._id} className="alt-item" onClick={() => selectAlternative(alt._id)}>
+                <div key={alt._id} className="alt-item" onClick={() => selectAlternative(alt)}>
                   <h4>{alt.nombre}</h4>
                   <p>{alt.descripcion}</p>
                   <span>{alt.duracionHoras}h - {formatPrice(alt.precio)}</span>
