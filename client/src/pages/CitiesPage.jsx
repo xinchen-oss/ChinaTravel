@@ -7,12 +7,9 @@ export default function CitiesPage() {
   const { cities, loading } = useCities();
   const [search, setSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
-  const [showFeatured, setShowFeatured] = useState(false);
-
   const filtered = useMemo(() => {
     return cities.filter((city) => {
       if (selectedCity && city._id !== selectedCity) return false;
-      if (showFeatured && !city.destacada) return false;
       if (search) {
         const term = search.toLowerCase();
         return (
@@ -23,15 +20,14 @@ export default function CitiesPage() {
       }
       return true;
     });
-  }, [cities, search, selectedCity, showFeatured]);
+  }, [cities, search, selectedCity]);
 
   const clearFilters = () => {
     setSearch('');
     setSelectedCity('');
-    setShowFeatured(false);
   };
 
-  const hasFilters = search || selectedCity || showFeatured;
+  const hasFilters = search || selectedCity;
 
   return (
     <div className="page">
@@ -79,21 +75,6 @@ export default function CitiesPage() {
               </option>
             ))}
           </select>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-            fontSize: 'var(--font-size-base, 1rem)',
-          }}>
-            <input
-              type="checkbox"
-              checked={showFeatured}
-              onChange={(e) => setShowFeatured(e.target.checked)}
-            />
-            Solo destacadas
-          </label>
           {hasFilters && (
             <button
               onClick={clearFilters}

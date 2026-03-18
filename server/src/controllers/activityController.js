@@ -23,7 +23,7 @@ export const createActivity = asyncHandler(async (req, res) => {
 });
 
 export const updateActivity = asyncHandler(async (req, res) => {
-  const activity = await Activity.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  const activity = await Activity.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('ciudad', 'nombre slug');
   if (!activity) throw new ApiError(404, 'Actividad no encontrada');
   res.json({ ok: true, data: activity });
 });
