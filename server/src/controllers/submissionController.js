@@ -8,10 +8,21 @@ import { SUBMISSION_STATUS } from '../utils/constants.js';
 import { sendEmail } from '../services/emailService.js';
 
 export const createSubmission = asyncHandler(async (req, res) => {
+  // Parse contenido from JSON string (since we use multipart/form-data for image upload)
+  let contenido = req.body.contenido;
+  if (typeof contenido === 'string') {
+    try { contenido = JSON.parse(contenido); } catch (e) { /* keep as-is */ }
+  }
+
+  // Attach uploaded image path if present
+  if (req.file) {
+    contenido.imagen = `/uploads/${req.file.filename}`;
+  }
+
   const submission = await Submission.create({
     comercial: req.user._id,
     tipoContenido: req.body.tipoContenido,
-    contenido: req.body.contenido,
+    contenido,
   });
 
   // Notify admins

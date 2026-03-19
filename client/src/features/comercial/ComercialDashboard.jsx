@@ -44,9 +44,16 @@ export default function ComercialDashboard() {
         ) : (
           <div className="orders-list">
             {submissions.map((sub) => (
-              <div key={sub._id} className="order-card">
+              <div key={sub._id} className="order-card" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                {sub.contenido?.imagen && (
+                  <img
+                    src={sub.contenido.imagen.startsWith('http') ? sub.contenido.imagen : `${api.defaults.baseURL?.replace('/api', '')}${sub.contenido.imagen}`}
+                    alt="Imagen"
+                    style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }}
+                  />
+                )}
                 <div className="order-card__info">
-                  <h3>{sub.tipoContenido}</h3>
+                  <h3>{sub.tipoContenido}: {sub.contenido?.nombre || sub.contenido?.aerolinea || ''}</h3>
                   <p>{formatDate(sub.createdAt)}</p>
                   <span className={`badge badge--${statusColor(sub.estado)}`}>{sub.estado}</span>
                   {sub.comentarioAdmin && <p style={{ marginTop: '8px', fontSize: '0.875rem', color: '#666' }}>Admin: {sub.comentarioAdmin}</p>}

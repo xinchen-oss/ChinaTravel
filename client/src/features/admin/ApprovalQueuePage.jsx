@@ -61,6 +61,13 @@ export default function ApprovalQueuePage() {
                   <span className="badge badge--warning">PENDIENTE</span>
                 </div>
                 <div style={{ background: 'var(--color-bg-alt)', padding: 'var(--space-md)', borderRadius: 'var(--border-radius)', marginBottom: 'var(--space-md)', fontSize: 'var(--font-size-sm)' }}>
+                  {sub.contenido?.imagen && (
+                    <img
+                      src={sub.contenido.imagen.startsWith('http') ? sub.contenido.imagen : `${api.defaults.baseURL?.replace('/api', '')}${sub.contenido.imagen}`}
+                      alt="Imagen adjunta"
+                      style={{ maxWidth: '300px', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px', display: 'block' }}
+                    />
+                  )}
                   <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(sub.contenido, null, 2)}</pre>
                 </div>
                 <div className="form-group">
