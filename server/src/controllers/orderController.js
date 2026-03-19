@@ -241,29 +241,109 @@ export const placeBatchOrder = asyncHandler(async (req, res) => {
   res.status(201).json({ ok: true, data: orders });
 });
 
-// Recommendations based on user history
+// Recommendations based on user history, reviews, and preferences
 export const getRecommendations = asyncHandler(async (req, res) => {
-  // Get user's ordered cities
-  const userOrders = await Order.find({ usuario: req.user._id }).populate('guia', 'ciudad');
-  const orderedGuideIds = userOrders.map((o) => o.guia?._id?.toString()).filter(Boolean);
-  const orderedCityIds = userOrders.map((o) => o.guia?.ciudad?.toString()).filter(Boolean);
+  const userId = req.user._id;
 
-  let recommended;
-  if (orderedCityIds.length > 0) {
-    // Recommend guides from same cities (not already ordered) + other popular guides
-    recommended = await Guide.find({
-      _id: { $nin: orderedGuideIds },
-    })
-      .populate('ciudad', 'nombre')
-      .sort('-createdAt')
-      .limit(6);
-  } else {
-    // No history - return popular guides
-    recommended = await Guide.find()
-      .populate('ciudad', 'nombre')
-      .sort('-createdAt')
-      .limit(6);
+  // 1. Get user's order history
+  const userOrders = await Order.find({ usuario: userId }).populate('guia', 'ciudad duracionDias precio');
+  const orderedGuideIds = userOrders.map((o) => o.guia?._id?.toString()).filter(Boolean);
+  const orderedCityIds = [...new Set(userOrders.map((o) => o.guia?.ciudad?.toString()).filter(Boolean))];
+
+  // 2. Get user's reviews to understand preferences
+  const Review = (await import('../models/Review.js')).default;
+  const userReviews = await Review.find({ usuario: userId, tipo: 'GUIA', estado: 'APROBADO' })
+    .populate({ path: 'referencia', select: 'ciudad duracionDias precio', model: 'Guide' });
+
+  // Build preference profile from high-rated guides (4-5 stars)
+  const likedCityIds = [];
+  let avgDuration = 0;
+  let avgPrice = 0;
+  let profileCount = 0;
+
+  userReviews.forEach((r) => {
+    if (r.puntuacion >= 4 && r.referencia) {
+      likedCityIds.push(r.referencia.ciudad?.toString());
+      avgDuration += r.referencia.duracionDias || 0;
+      avgPrice += r.referencia.precio || 0;
+      profileCount++;
+    }
+  });
+
+  // Also factor in ordered guides for preference profile
+  userOrders.forEach((o) => {
+    if (o.guia) {
+      avgDuration += o.guia.duracionDias || 0;
+      avgPrice += o.guia.precio || 0;
+      profileCount++;
+    }
+  });
+
+  if (profileCount > 0) {
+    avgDuration = Math.round(avgDuration / profileCount);
+    avgPrice = Math.round(avgPrice / profileCount);
   }
 
-  res.json({ ok: true, data: recommended });
+  // 3. Get all available guides (exclude already ordered)
+  const allGuides = await Guide.find({ _id: { $nin: orderedGuideIds } })
+    .populate('ciudad', 'nombre');
+
+  if (allGuides.length === 0) {
+    return res.json({ ok: true, data: [] });
+  }
+
+  // 4. If user has history, score each guide by relevance
+  if (profileCount > 0) {
+    const favCities = [...new Set([...orderedCityIds, ...likedCityIds.filter(Boolean)])];
+
+    const scored = allGuides.map((guide) => {
+      let score = 0;
+      const guideCityId = guide.ciudad?._id?.toString();
+
+      // +3 points if same city as a liked/ordered guide (explore more of cities they love)
+      if (favCities.includes(guideCityId)) score += 3;
+
+      // +2 points if similar duration (within ±1 day)
+      if (avgDuration > 0 && Math.abs(guide.duracionDias - avgDuration) <= 1) score += 2;
+
+      // +1 point if similar price range (within ±30%)
+      if (avgPrice > 0) {
+        const priceDiff = Math.abs(guide.precio - avgPrice) / avgPrice;
+        if (priceDiff <= 0.3) score += 1;
+      }
+
+      // +1 point for guides in NEW cities (discovery factor)
+      if (!favCities.includes(guideCityId)) score += 1;
+
+      // Small random factor to add variety between sessions
+      score += Math.random() * 0.5;
+
+      return { guide, score };
+    });
+
+    // Sort by score descending, take top 6
+    scored.sort((a, b) => b.score - a.score);
+    const recommended = scored.slice(0, 6).map((s) => s.guide);
+    return res.json({ ok: true, data: recommended });
+  }
+
+  // 5. No history: recommend a diverse mix of popular cities
+  // Pick one guide per city, shuffled, to maximize diversity
+  const cityMap = {};
+  allGuides.forEach((g) => {
+    const cityId = g.ciudad?._id?.toString() || 'unknown';
+    if (!cityMap[cityId]) cityMap[cityId] = [];
+    cityMap[cityId].push(g);
+  });
+
+  const diverse = [];
+  const cityKeys = Object.keys(cityMap).sort(() => Math.random() - 0.5);
+  for (const cityId of cityKeys) {
+    if (diverse.length >= 6) break;
+    // Pick a random guide from this city
+    const cityGuides = cityMap[cityId];
+    diverse.push(cityGuides[Math.floor(Math.random() * cityGuides.length)]);
+  }
+
+  res.json({ ok: true, data: diverse });
 });

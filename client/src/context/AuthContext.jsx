@@ -1,5 +1,7 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import api from '../api/axios';
+
+const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
 
 export const AuthContext = createContext(null);
 
@@ -9,6 +11,36 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(true);
+  const timerRef = useRef(null);
+
+  const doLogout = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('chinatravel_cart');
+    setUser(null);
+  }, []);
+
+  // Auto-logout on inactivity
+  useEffect(() => {
+    if (!user) return;
+
+    const resetTimer = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        doLogout();
+        alert('Tu sesión ha expirado por inactividad.');
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
+    events.forEach((e) => window.addEventListener(e, resetTimer));
+    resetTimer();
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      events.forEach((e) => window.removeEventListener(e, resetTimer));
+    };
+  }, [user, doLogout]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -53,10 +85,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('chinatravel_cart');
-    setUser(null);
+    doLogout();
   };
 
   return (

@@ -1,5 +1,46 @@
 /* Forum.css */
 
+/* ===== FORUM BANNER ===== */
+.forum-banner {
+  position: relative;
+  height: 300px;
+  background: url('https://images.unsplash.com/photo-1513415564515-763d91423bdd?w=1600&q=80') center/cover;
+  display: flex;
+  align-items: center;
+}
+
+.forum-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.85), rgba(22, 119, 55, 0.6));
+}
+
+.forum-banner__content {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
+.forum-banner__content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.forum-banner__content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Post image in detail */
+.forum-post__image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
 /* Contenedor de filtros */
 .forum-filters {
   display: flex;

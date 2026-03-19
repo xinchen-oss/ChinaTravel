@@ -173,7 +173,7 @@ export default function HomePage() {
               {guides.slice(0, 6).map((guide) => (
                 <Link to={`/guias/${guide._id}`} className="guide-card" key={guide._id}>
                   <div className="guide-card__image">
-                    <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada)} alt={guide.titulo} onError={handleImageError} />
+                    <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada, guide._id)} alt={guide.titulo} onError={handleImageError} />
                     <span className="guide-card__duration">{guide.duracionDias} días</span>
                   </div>
                   <div className="guide-card__body">
@@ -213,7 +213,7 @@ export default function HomePage() {
               {featuredCities.map((city) => (
                 <Link to={`/ciudades/${city.slug}`} className="city-card" key={city._id}>
                   <div className="city-card__image">
-                    <img src={getImageUrl(city.imagenPortada)} alt={city.nombre} onError={handleImageError} />
+                    <img src={getImageUrl(city.imagenPortada, city._id)} alt={city.nombre} onError={handleImageError} />
                     <div className="city-card__overlay" />
                     <div className="city-card__info">
                       <span className="city-card__chinese">{city.nombreChino}</span>

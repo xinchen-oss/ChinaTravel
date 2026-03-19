@@ -3,20 +3,8 @@ import { useForum } from '../../hooks/useForum.js';
 import { useCities } from '../../hooks/useCities.js';
 import Card from '../../components/common/Card';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { getImageUrl } from '../../utils/imageHelper';
 import './Forum.css';
-
-const FORUM_IMAGES = [
-  'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80',
-  'https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=600&q=80',
-  'https://images.unsplash.com/photo-1564577160324-112d603f750f?w=600&q=80',
-  'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=600&q=80',
-  'https://images.unsplash.com/photo-1513415564515-763d91423bdd?w=600&q=80',
-  'https://images.unsplash.com/photo-1529921879218-f99546d03a34?w=600&q=80',
-  'https://images.unsplash.com/photo-1591122947157-26bad3a117d2?w=600&q=80',
-  'https://images.unsplash.com/photo-1548919973-5cef591cdbc9?w=600&q=80',
-  'https://images.unsplash.com/photo-1474181628414-e17f0716cd84?w=600&q=80',
-  'https://images.unsplash.com/photo-1517309230475-46c5dbc2bafa?w=600&q=80',
-];
 
 export default function ForumPage() {
 
@@ -82,13 +70,16 @@ export default function ForumPage() {
   };
 
   return (
+    <>
+      <section className="forum-banner">
+        <div className="forum-banner__overlay" />
+        <div className="container forum-banner__content">
+          <h1>Foro de viajeros</h1>
+          <p>Comparte tus experiencias, consejos y preguntas sobre viajar a China</p>
+        </div>
+      </section>
     <div className="page">
       <div className="container">
-
-        <h1 className="page-title">Foro de viajeros</h1>
-        <p className="page-subtitle">
-          Comparte tus experiencias y preguntas sobre la cultura china
-        </p>
 
         {/* BOTÓN CREAR POST SOLO SI USER O ADMIN */}
         {canCreatePost && (
@@ -218,7 +209,7 @@ export default function ForumPage() {
                 key={post._id}
                 to={`/foro/${post._id}`}
                 title={post.titulo}
-                image={FORUM_IMAGES[index % FORUM_IMAGES.length]}
+                image={getImageUrl(post.imagen, post._id)}
               >
 
                 <p className="card__subtitle">
@@ -249,5 +240,6 @@ export default function ForumPage() {
 
       </div>
     </div>
+    </>
   );
 }

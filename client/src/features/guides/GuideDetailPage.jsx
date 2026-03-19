@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ReviewSection from '../../components/common/ReviewSection';
@@ -12,8 +12,19 @@ import './Guides.css';
 export default function GuideDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
-  const { addItem, isInCart } = useCart();
+  const { addItem, isInCart, updateItem } = useCart();
+
+  // Customizations passed back from GuideCustomizePage
+  // customizations is a map of { oldActivityId: newActivityObject }
+  const [customizations, setCustomizations] = useState({});
+
+  useEffect(() => {
+    if (location.state?.customizations) {
+      setCustomizations(location.state.customizations);
+    }
+  }, [location.state]);
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,6 +72,10 @@ export default function GuideDetailPage() {
   const buildCartItem = () => {
     const hotel = selectedHotel ? hotels.find((h) => h._id === selectedHotel) : null;
     const flight = selectedFlight ? flights.find((f) => f._id === selectedFlight) : null;
+    // Convert customizations to ID map for the backend
+    const customizationIds = Object.keys(customizations).length > 0
+      ? Object.fromEntries(Object.entries(customizations).map(([oldId, act]) => [oldId, act._id]))
+      : undefined;
     return {
       guideId: id,
       titulo: guide.titulo,
@@ -72,8 +87,9 @@ export default function GuideDetailPage() {
       hotelNombre: hotel ? `${hotel.nombre} (${'★'.repeat(hotel.estrellas)})` : undefined,
       hotelPrecio: hotel ? hotel.precioPorNoche : undefined,
       flightId: selectedFlight || undefined,
-      flightNombre: flight ? `${flight.aerolinea} (${flight.origen} → ${flight.destino})` : undefined,
+      flightNombre: flight ? `${flight.aerolinea} (${flight.origen} → ${flight.destino}) ${flight.horaSalida || ''}` : undefined,
       flightPrecio: flight ? flight.precio : undefined,
+      customizations: customizationIds,
     };
   };
 
@@ -94,7 +110,7 @@ export default function GuideDetailPage() {
       {/* Banner con imagen */}
       <section
         className="guide-banner"
-        style={{ backgroundImage: `url(${getImageUrl(guide.imagen || guide.ciudad?.imagenPortada)})` }}
+        style={{ backgroundImage: `url(${getImageUrl(guide.imagen || guide.ciudad?.imagenPortada, id)})` }}
       >
         <div className="guide-banner__overlay" />
         <div className="container guide-banner__content">
@@ -169,7 +185,14 @@ export default function GuideDetailPage() {
 
               {/* Itinerario */}
               <div className="guide-detail__section">
-                <h2>Itinerario día a día</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <h2>Itinerario día a día</h2>
+                  {Object.keys(customizations).length > 0 && (
+                    <span style={{ fontSize: '0.85rem', background: 'var(--color-primary)', color: '#fff', padding: '4px 12px', borderRadius: '20px' }}>
+                      Personalizado ({Object.keys(customizations).length} cambio{Object.keys(customizations).length > 1 ? 's' : ''})
+                    </span>
+                  )}
+                </div>
                 {guide.dias?.map((dia) => (
                   <div key={dia.numeroDia} className="day-card">
                     <div className="day-card__header">
@@ -177,20 +200,25 @@ export default function GuideDetailPage() {
                       <h3 className="day-card__title">{dia.titulo}</h3>
                     </div>
                     <div className="day-card__activities">
-                      {dia.actividades?.map((slot, i) => (
-                        <div key={i} className="activity-slot">
-                          <div className="activity-slot__time">
-                            {slot.horaInicio && <span>{slot.horaInicio} - {slot.horaFin}</span>}
+                      {dia.actividades?.map((slot, i) => {
+                        const actId = slot.actividad?._id;
+                        const swapped = customizations[actId];
+                        const display = swapped || slot.actividad;
+                        return (
+                          <div key={i} className={`activity-slot ${swapped ? 'activity-slot--swapped' : ''}`}>
+                            <div className="activity-slot__time">
+                              {slot.horaInicio && <span>{slot.horaInicio} - {slot.horaFin}</span>}
+                            </div>
+                            <div className="activity-slot__info">
+                              <h4>{display?.nombre} {swapped && <span style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontWeight: 600 }}>(personalizada)</span>}</h4>
+                              <p>{display?.descripcion}</p>
+                              {display?.categoria && (
+                                <span className="activity-slot__category">{display.categoria}</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="activity-slot__info">
-                            <h4>{slot.actividad?.nombre}</h4>
-                            <p>{slot.actividad?.descripcion}</p>
-                            {slot.actividad?.categoria && (
-                              <span className="activity-slot__category">{slot.actividad.categoria}</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -252,14 +280,30 @@ export default function GuideDetailPage() {
                         <option value="">Sin vuelo</option>
                         {filteredFlights.map((flight) => (
                           <option key={flight._id} value={flight._id}>
-                            {flight.aerolinea} ({flight.origen} → {flight.destino}) - {formatPrice(flight.precio)}
+                            {flight.aerolinea} ({flight.origen} → {flight.destino}) {flight.horaSalida && `${flight.horaSalida}-${flight.horaLlegada}`} - {formatPrice(flight.precio)}
                           </option>
                         ))}
                       </select>
+                      {selectedFlight && (() => {
+                        const flight = flights.find((f) => f._id === selectedFlight);
+                        return flight ? (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                            {flight.horaSalida && <span>Salida: {flight.horaSalida} → Llegada: {flight.horaLlegada}</span>}
+                            {flight.duracionHoras && <span> · {flight.duracionHoras}h</span>}
+                          </div>
+                        ) : null;
+                      })()}
                     </div>
 
                     <div className="booking-card__actions">
-                      <Link to={`/guias/${id}/personalizar`} className="btn btn--primary" style={{ width: '100%' }}>Personalizar itinerario</Link>
+                      <Link to={`/guias/${id}/personalizar`} className="btn btn--primary" style={{ width: '100%' }}>
+                        {Object.keys(customizations).length > 0 ? 'Modificar personalización' : 'Personalizar itinerario'}
+                      </Link>
+                      {Object.keys(customizations).length > 0 && (
+                        <button className="btn btn--outline" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => setCustomizations({})}>
+                          Restaurar itinerario original
+                        </button>
+                      )}
                       <button
                         className="btn btn--secondary"
                         style={{ width: '100%' }}

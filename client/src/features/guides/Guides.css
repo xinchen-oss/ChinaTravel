@@ -2,7 +2,7 @@
 .guides-banner {
   position: relative;
   height: 300px;
-  background: url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&q=80') center/cover;
+  background: url('https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=1600&q=80') center/cover;
   display: flex;
   align-items: center;
 }

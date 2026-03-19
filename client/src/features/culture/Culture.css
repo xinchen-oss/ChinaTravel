@@ -1,3 +1,34 @@
+/* ===== CULTURE BANNER ===== */
+.culture-banner {
+  position: relative;
+  height: 300px;
+  background: url('https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=1600&q=80') center/cover;
+  display: flex;
+  align-items: center;
+}
+
+.culture-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(196, 30, 58, 0.6));
+}
+
+.culture-banner__content {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
+.culture-banner__content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.culture-banner__content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
 .culture-filters {
   display: flex;
   gap: var(--space-lg);
@@ -75,4 +106,31 @@
 
 .culture-article__content p {
   margin-bottom: var(--space-lg);
+}
+
+.culture-article__content h3 {
+  font-size: var(--font-size-xl);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+  color: var(--color-text);
+}
+
+.culture-article__content ul,
+.culture-article__content ol {
+  margin-bottom: var(--space-lg);
+  padding-left: var(--space-xl);
+}
+
+.culture-article__content li {
+  margin-bottom: var(--space-sm);
+  line-height: 1.7;
+}
+
+.culture-article__content strong {
+  color: var(--color-text);
+}
+
+.culture-article__content em {
+  color: var(--color-primary);
+  font-style: italic;
 }

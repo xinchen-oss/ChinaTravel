@@ -13,10 +13,16 @@ export default function CulturePage() {
   const { articles, loading } = useCulture({ ciudad: cityId, categoria });
 
   return (
+    <>
+      <section className="culture-banner">
+        <div className="culture-banner__overlay" />
+        <div className="container culture-banner__content">
+          <h1>Cultura china</h1>
+          <p>Sumérgete en la rica cultura milenaria de China: festivales, gastronomía, tradiciones, historia, arte e idioma</p>
+        </div>
+      </section>
     <div className="page">
       <div className="container">
-        <h1 className="page-title">Cultura china</h1>
-        <p className="page-subtitle">Sumérgete en la rica cultura milenaria de China</p>
 
         <div className="culture-filters">
           <CitySelector value={cityId} onChange={setCityId} />
@@ -60,5 +66,6 @@ export default function CulturePage() {
         )}
       </div>
     </div>
+    </>
   );
 }

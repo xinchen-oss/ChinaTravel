@@ -19,7 +19,16 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al iniciar sesión');
+      const serverError = err.response?.data?.error;
+      if (serverError) {
+        setError(serverError);
+      } else if (!navigator.onLine) {
+        setError('No hay conexión a Internet. Comprueba tu red e inténtalo de nuevo.');
+      } else if (err.code === 'ERR_NETWORK') {
+        setError('No se pudo conectar con el servidor. Inténtalo más tarde.');
+      } else {
+        setError('Email o contraseña incorrectos. Inténtalo de nuevo.');
+      }
     } finally {
       setLoading(false);
     }

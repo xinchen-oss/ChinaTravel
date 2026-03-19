@@ -43,11 +43,14 @@ export default function GuideCustomizePage() {
     setSwapModal({ open: false, activityId: null, categoria: null });
   };
 
-  const handleCheckout = () => {
-    const customizationIds = Object.fromEntries(
-      Object.entries(customizations).map(([oldId, act]) => [oldId, act._id])
-    );
-    navigate(`/checkout/${id}`, { state: { customizations: customizationIds } });
+  const handleAccept = () => {
+    // Build a map of oldActivityId -> full new activity object
+    // Pass it back to the guide detail page via navigate state
+    navigate(`/guias/${id}`, { state: { customizations } });
+  };
+
+  const handleCancel = () => {
+    navigate(`/guias/${id}`);
   };
 
   if (loading) return <LoadingSpinner />;
@@ -92,9 +95,14 @@ export default function GuideCustomizePage() {
 
         <div className="customize-footer">
           <p>{Object.keys(customizations).length} actividad(es) modificada(s)</p>
-          <button onClick={handleCheckout} className="btn btn--primary btn--lg">
-            Continuar al checkout
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button onClick={handleCancel} className="btn btn--outline btn--lg">
+              Cancelar cambios
+            </button>
+            <button onClick={handleAccept} className="btn btn--primary btn--lg" disabled={Object.keys(customizations).length === 0}>
+              Aceptar personalización
+            </button>
+          </div>
         </div>
 
         <Modal

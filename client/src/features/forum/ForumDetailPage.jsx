@@ -193,6 +193,10 @@ export default function ForumDetailPage() {
 
           </header>
 
+          {post.imagen && (
+            <img src={post.imagen} alt={post.titulo} className="forum-post__image" />
+          )}
+
           <div className="forum-post__content">
             {post.contenido}
           </div>

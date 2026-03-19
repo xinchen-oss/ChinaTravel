@@ -46,7 +46,7 @@ export default function GuidesListPage() {
               {guides.map((guide) => (
                 <div className="guide-list-card" key={guide._id}>
                   <div className="guide-list-card__image">
-                    <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada)} alt={guide.titulo} onError={handleImageError} />
+                    <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada, guide._id)} alt={guide.titulo} onError={handleImageError} />
                     <span className="guide-list-card__duration">{guide.duracionDias} días</span>
                   </div>
                   <div className="guide-list-card__body">

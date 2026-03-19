@@ -36,6 +36,10 @@ export function CartProvider({ children }) {
     });
   };
 
+  const updateItem = (guideId, updates) => {
+    setItems((prev) => prev.map((i) => i.guideId === guideId ? { ...i, ...updates } : i));
+  };
+
   const removeItem = (guideId) => {
     setItems((prev) => prev.filter((i) => i.guideId !== guideId));
   };
@@ -47,7 +51,7 @@ export function CartProvider({ children }) {
   const count = items.length;
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, clearCart, isInCart, count }}>
+    <CartContext.Provider value={{ items, addItem, updateItem, removeItem, clearCart, isInCart, count }}>
       {children}
     </CartContext.Provider>
   );

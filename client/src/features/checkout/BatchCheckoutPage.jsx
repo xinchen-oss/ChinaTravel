@@ -200,6 +200,12 @@ export default function BatchCheckoutPage() {
                           <span>{guide.titulo} ({guide.duracionDias} dias) - {guide.ciudad?.nombre}</span>
                           <span>{formatPrice(guide.precio)}</span>
                         </div>
+                        {/* Show customized activities if any */}
+                        {cartItem?.customizations && Object.keys(cartItem.customizations).length > 0 && (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--color-primary)', marginTop: '4px' }}>
+                            {Object.keys(cartItem.customizations).length} actividad(es) personalizada(s)
+                          </div>
+                        )}
                         {cartItem?.hotelNombre && (
                           <div className="checkout-item" style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
                             <span>Hotel: {cartItem.hotelNombre} ({guide.duracionDias} noches)</span>
