@@ -179,7 +179,7 @@ export default function UserDashboard() {
     try {
       const res = await api.put(`/pedidos/${orderId}/cancelar`, { motivo });
       setOrders((prev) => prev.map((o) => o._id === orderId ? { ...o, estado: res.data.data.estado } : o));
-      setCancelResult({ open: true, success: true, reembolso: res.data.reembolso, mensaje: res.data.mensaje });
+      setCancelResult({ open: true, success: true, reembolso: false, pendiente: true, mensaje: res.data.mensaje });
     } catch (err) {
       setCancelResult({ open: true, success: false, reembolso: false, mensaje: err.response?.data?.error || 'Error al cancelar' });
     } finally {
@@ -239,8 +239,8 @@ export default function UserDashboard() {
                         <div className="order-card__info">
                           <h3>{order.guia?.titulo || 'Guía'}</h3>
                           <p>{formatDate(order.createdAt)} | {order.guia?.duracionDias || '—'} días | {order.guia?.ciudad?.nombre || ''}</p>
-                          <span className={`badge badge--${order.estado === 'CONFIRMADO' ? 'success' : 'warning'}`}>
-                            {order.estado}
+                          <span className={`badge badge--${order.estado === 'CONFIRMADO' ? 'success' : order.estado === 'REEMBOLSADO' ? 'info' : 'warning'}`}>
+                            {order.estado === 'PENDIENTE_CANCELACION' ? 'Cancelación pendiente' : order.estado}
                           </span>
                         </div>
                         <div className="order-card__actions">
@@ -537,29 +537,17 @@ export default function UserDashboard() {
             <button className="cancel-modal__close" onClick={() => setCancelResult({ ...cancelResult, open: false })}>&times;</button>
             {cancelResult.success ? (
               <>
-                <div className={`cancel-result__icon ${cancelResult.reembolso ? 'cancel-result__icon--refund' : 'cancel-result__icon--no-refund'}`}>
-                  {cancelResult.reembolso ? '\u2713' : '!'}
+                <div className={`cancel-result__icon cancel-result__icon--refund`}>
+                  &#9203;
                 </div>
-                <h3 className="cancel-modal__title">
-                  {cancelResult.reembolso ? 'Pedido cancelado y reembolsado' : 'Pedido cancelado'}
-                </h3>
-                {cancelResult.reembolso ? (
-                  <div className="cancel-result__detail">
-                    <div className="cancel-result__badge cancel-result__badge--success">Reembolso completo</div>
-                    <p>Tu pedido ha sido cancelado correctamente. El reembolso del <strong>100%</strong> del importe se procesará en los próximos días hábiles.</p>
-                    <div className="cancel-result__info">
-                      <span>Cancelación dentro de las 48h</span>
-                    </div>
+                <h3 className="cancel-modal__title">Solicitud de cancelación enviada</h3>
+                <div className="cancel-result__detail">
+                  <div className="cancel-result__badge cancel-result__badge--warning">Pendiente de revisión</div>
+                  <p>Tu solicitud de cancelación ha sido enviada al administrador. Te notificaremos por email cuando sea revisada.</p>
+                  <div className="cancel-result__info">
+                    <span>El administrador decidirá si procede el reembolso</span>
                   </div>
-                ) : (
-                  <div className="cancel-result__detail">
-                    <div className="cancel-result__badge cancel-result__badge--warning">Sin reembolso</div>
-                    <p>Tu pedido ha sido cancelado. Según nuestra política, no se aplica reembolso pasadas las 48 horas desde la compra.</p>
-                    <div className="cancel-result__info">
-                      <span>Han pasado más de 48h desde la compra</span>
-                    </div>
-                  </div>
-                )}
+                </div>
               </>
             ) : (
               <>

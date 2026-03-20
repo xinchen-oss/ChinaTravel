@@ -4,9 +4,12 @@ import { ROLES } from '../../utils/constants';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 export default function ComercialRoute({ children }) {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   if (loading) return <LoadingSpinner />;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== ROLES.COMERCIAL) return <Navigate to="/" replace />;
+  if (user.role !== ROLES.COMERCIAL) {
+    logout();
+    return <Navigate to="/login" replace />;
+  }
   return children;
 }

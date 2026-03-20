@@ -5,10 +5,14 @@ import { ROLES } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import '../dashboard/Dashboard.css';
 
+const emptyUserForm = { nombre: '', email: '', password: '', role: 'USER' };
+
 export default function ManageUsersPage() {
   const [users, setUsers] = useState([]);
   const [pendingComercials, setPendingComercials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [userForm, setUserForm] = useState(emptyUserForm);
 
   const fetchData = () => {
     Promise.all([
@@ -43,6 +47,28 @@ export default function ManageUsersPage() {
     }
   };
 
+  const handleDelete = async (userId, nombre) => {
+    if (!confirm(`¿Eliminar el usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
+    try {
+      await api.delete(`/usuarios/${userId}`);
+      setUsers((prev) => prev.filter((u) => u._id !== userId));
+    } catch (err) {
+      alert(err.response?.data?.error || 'Error');
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/usuarios', userForm);
+      setUserForm(emptyUserForm);
+      setShowForm(false);
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Error');
+    }
+  };
+
   const handleApprove = async (userId, approved) => {
     try {
       await api.put(`/usuarios/${userId}/approve`, { approved });
@@ -62,6 +88,37 @@ export default function ManageUsersPage() {
   return (
     <div>
       <h1 className="page-title">Gestionar usuarios</h1>
+
+      <div style={{ marginBottom: 'var(--space-lg)' }}>
+        <button className="btn btn--primary" onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Cancelar' : 'Nuevo usuario'}
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleCreateUser} className="submission-form" style={{ marginBottom: 'var(--space-xl)' }}>
+          <h2>Crear usuario</h2>
+          <div className="form-group">
+            <label>Nombre</label>
+            <input value={userForm.nombre} onChange={(e) => setUserForm({ ...userForm, nombre: e.target.value })} required />
+          </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input type="email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} required />
+          </div>
+          <div className="form-group">
+            <label>Contraseña</label>
+            <input type="password" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} minLength={6} required />
+          </div>
+          <div className="form-group">
+            <label>Rol</label>
+            <select value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}>
+              {Object.values(ROLES).map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+          <button type="submit" className="btn btn--primary">Crear</button>
+        </form>
+      )}
 
       {/* Pending comercial approvals */}
       {pendingComercials.length > 0 && (
@@ -158,12 +215,20 @@ export default function ManageUsersPage() {
                 </span>
               </td>
               <td>
-                <button
-                  className={`btn btn--sm ${user.isActive ? 'btn--danger' : 'btn--primary'}`}
-                  onClick={() => handleToggleActive(user._id, user.isActive)}
-                >
-                  {user.isActive ? 'Desactivar' : 'Activar'}
-                </button>
+                <div className="table-actions">
+                  <button
+                    className={`btn btn--sm ${user.isActive ? 'btn--outline' : 'btn--primary'}`}
+                    onClick={() => handleToggleActive(user._id, user.isActive)}
+                  >
+                    {user.isActive ? 'Desactivar' : 'Activar'}
+                  </button>
+                  <button
+                    className="btn btn--danger btn--sm"
+                    onClick={() => handleDelete(user._id, user.nombre)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

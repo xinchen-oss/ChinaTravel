@@ -58,9 +58,12 @@ router.post('/', protect, asyncHandler(async (req, res) => {
   res.status(201).json({ ok: true, data: review });
 }));
 
-// Admin: get all pending reviews
+// Admin: get reviews by status
 router.get('/admin/pendientes', protect, authorize(ROLES.ADMIN), asyncHandler(async (req, res) => {
-  const reviews = await Review.find({ estado: 'PENDIENTE' })
+  const filter = {};
+  if (req.query.estado) filter.estado = req.query.estado;
+  else filter.estado = 'PENDIENTE';
+  const reviews = await Review.find(filter)
     .populate('usuario', 'nombre apellidos email')
     .sort('-createdAt');
   res.json({ ok: true, data: reviews });
@@ -84,6 +87,13 @@ router.put('/admin/:id', protect, authorize(ROLES.ADMIN), asyncHandler(async (re
       : 'Tu reseña ha sido rechazada por no cumplir nuestras normas.',
   });
 
+  res.json({ ok: true, data: review });
+}));
+
+// Admin: delete review
+router.delete('/admin/:id', protect, authorize(ROLES.ADMIN), asyncHandler(async (req, res) => {
+  const review = await Review.findByIdAndDelete(req.params.id);
+  if (!review) throw new ApiError(404, 'Reseña no encontrada');
   res.json({ ok: true, data: review });
 }));
 

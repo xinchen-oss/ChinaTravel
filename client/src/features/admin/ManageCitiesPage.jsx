@@ -6,7 +6,7 @@ import '../dashboard/Dashboard.css';
 export default function ManageCitiesPage() {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ nombre: '', nombreChino: '', slug: '', descripcion: '', destacada: false });
+  const [form, setForm] = useState({ nombre: '', nombreChino: '', slug: '', descripcion: '' });
   const [editing, setEditing] = useState(null);
 
   const fetchCities = () => {
@@ -26,7 +26,7 @@ export default function ManageCitiesPage() {
       } else {
         await api.post('/ciudades', form);
       }
-      setForm({ nombre: '', nombreChino: '', slug: '', descripcion: '', destacada: false });
+      setForm({ nombre: '', nombreChino: '', slug: '', descripcion: '' });
       setEditing(null);
       fetchCities();
     } catch (err) {
@@ -36,7 +36,7 @@ export default function ManageCitiesPage() {
 
   const handleEdit = (city) => {
     setEditing(city._id);
-    setForm({ nombre: city.nombre, nombreChino: city.nombreChino || '', slug: city.slug, descripcion: city.descripcion, destacada: city.destacada });
+    setForm({ nombre: city.nombre, nombreChino: city.nombreChino || '', slug: city.slug, descripcion: city.descripcion });
   };
 
   const handleDelete = async (id) => {
@@ -73,16 +73,10 @@ export default function ManageCitiesPage() {
             <label>Descripción</label>
             <textarea value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} required />
           </div>
-          <div className="form-group">
-            <label>
-              <input type="checkbox" checked={form.destacada} onChange={(e) => setForm({ ...form, destacada: e.target.checked })} />
-              {' '}Destacada
-            </label>
-          </div>
           <div className="table-actions">
             <button type="submit" className="btn btn--primary">{editing ? 'Actualizar' : 'Crear'}</button>
             {editing && (
-              <button type="button" className="btn btn--outline" onClick={() => { setEditing(null); setForm({ nombre: '', nombreChino: '', slug: '', descripcion: '', destacada: false }); }}>
+              <button type="button" className="btn btn--outline" onClick={() => { setEditing(null); setForm({ nombre: '', nombreChino: '', slug: '', descripcion: '' }); }}>
                 Cancelar
               </button>
             )}
@@ -95,7 +89,6 @@ export default function ManageCitiesPage() {
               <th>Nombre</th>
               <th>Chino</th>
               <th>Slug</th>
-              <th>Destacada</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -105,7 +98,6 @@ export default function ManageCitiesPage() {
                 <td>{city.nombre}</td>
                 <td>{city.nombreChino}</td>
                 <td>{city.slug}</td>
-                <td>{city.destacada ? 'Sí' : 'No'}</td>
                 <td>
                   <div className="table-actions">
                     <button className="btn btn--outline btn--sm" onClick={() => handleEdit(city)}>Editar</button>

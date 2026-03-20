@@ -4,6 +4,15 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendEmail } from '../services/emailService.js';
 
+export const createUser = asyncHandler(async (req, res) => {
+  const { nombre, email, password, role } = req.body;
+  if (!nombre || !email || !password) throw new ApiError(400, 'Nombre, email y contraseña son obligatorios');
+  const exists = await User.findOne({ email });
+  if (exists) throw new ApiError(400, 'Ya existe un usuario con ese email');
+  const user = await User.create({ nombre, email, password, role: role || 'USER', isApproved: true });
+  res.status(201).json({ ok: true, data: user });
+});
+
 export const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select('-__v');
   res.json({ ok: true, data: users });

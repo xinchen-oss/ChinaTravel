@@ -14,11 +14,11 @@ export default function SubmitContentPage() {
   const [loading, setLoading] = useState(false);
 
   // Activity fields
-  const [actForm, setActForm] = useState({ nombre: '', descripcion: '', ciudad: '', categoria: 'CULTURAL', duracionHoras: 2, precio: 0 });
+  const [actForm, setActForm] = useState({ nombre: '', descripcion: '', ciudad: '', categoria: 'CULTURAL', duracionHoras: 2, precio: '' });
   // Hotel fields
-  const [hotelForm, setHotelForm] = useState({ nombre: '', descripcion: '', ciudad: '', estrellas: 3, precioPorNoche: 0 });
+  const [hotelForm, setHotelForm] = useState({ nombre: '', descripcion: '', ciudad: '', estrellas: 3, precioPorNoche: '' });
   // Flight fields
-  const [flightForm, setFlightForm] = useState({ aerolinea: '', origen: 'Madrid', destino: '', ciudadDestino: '', precio: 0, horaSalida: '', horaLlegada: '', duracionHoras: '' });
+  const [flightForm, setFlightForm] = useState({ aerolinea: '', origen: 'Madrid', destino: '', ciudadDestino: '', precio: '', horaSalida: '', horaLlegada: '', duracionHoras: '' });
   // Image
   const [imagen, setImagen] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -101,11 +101,11 @@ export default function SubmitContentPage() {
                 </div>
                 <div className="form-group">
                   <label>Duración (horas)</label>
-                  <input type="number" value={actForm.duracionHoras} onChange={(e) => setActForm({ ...actForm, duracionHoras: +e.target.value })} min={0.5} step={0.5} required />
+                  <input type="number" value={actForm.duracionHoras} onChange={(e) => setActForm({ ...actForm, duracionHoras: e.target.value })} min={0.5} step={0.5} required />
                 </div>
                 <div className="form-group">
                   <label>Precio (EUR)</label>
-                  <input type="number" value={actForm.precio} onChange={(e) => setActForm({ ...actForm, precio: +e.target.value })} min={0} required />
+                  <input type="number" value={actForm.precio} onChange={(e) => setActForm({ ...actForm, precio: e.target.value })} min={0} required />
                 </div>
               </>
             )}
@@ -135,7 +135,7 @@ export default function SubmitContentPage() {
                 </div>
                 <div className="form-group">
                   <label>Precio por noche (EUR)</label>
-                  <input type="number" value={hotelForm.precioPorNoche} onChange={(e) => setHotelForm({ ...hotelForm, precioPorNoche: +e.target.value })} min={0} required />
+                  <input type="number" value={hotelForm.precioPorNoche} onChange={(e) => setHotelForm({ ...hotelForm, precioPorNoche: e.target.value })} min={0} required />
                 </div>
               </>
             )}
@@ -172,12 +172,12 @@ export default function SubmitContentPage() {
                   </div>
                   <div className="form-group" style={{ flex: 1 }}>
                     <label>Duración (h)</label>
-                    <input type="number" value={flightForm.duracionHoras} onChange={(e) => setFlightForm({ ...flightForm, duracionHoras: +e.target.value })} min={1} step={0.5} />
+                    <input type="number" value={flightForm.duracionHoras} onChange={(e) => setFlightForm({ ...flightForm, duracionHoras: e.target.value })} min={1} step={0.5} />
                   </div>
                 </div>
                 <div className="form-group">
                   <label>Precio (EUR)</label>
-                  <input type="number" value={flightForm.precio} onChange={(e) => setFlightForm({ ...flightForm, precio: +e.target.value })} min={0} required />
+                  <input type="number" value={flightForm.precio} onChange={(e) => setFlightForm({ ...flightForm, precio: e.target.value })} min={0} required />
                 </div>
               </>
             )}

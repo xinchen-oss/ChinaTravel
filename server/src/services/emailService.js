@@ -20,6 +20,8 @@ if (config.mailtrapHost && config.mailtrapUser) {
     .catch((err) => console.error('❌ Error conectando Mailtrap:', err.message));
 }
 
+let lastEmailTime = 0;
+
 export const sendEmail = async ({ to, subject, html, attachments }) => {
   if (!transporter) {
     console.log(`📧 [Email simulado] Para: ${to} | Asunto: ${subject}`);
@@ -27,6 +29,13 @@ export const sendEmail = async ({ to, subject, html, attachments }) => {
       console.log(`📎 Adjuntos: ${attachments.map(a => a.filename).join(', ')}`);
     }
     return;
+  }
+
+  // Rate limit: wait at least 1.5s between emails (Mailtrap free plan limit)
+  const now = Date.now();
+  const elapsed = now - lastEmailTime;
+  if (elapsed < 1500) {
+    await new Promise((r) => setTimeout(r, 1500 - elapsed));
   }
 
   try {
@@ -45,6 +54,7 @@ export const sendEmail = async ({ to, subject, html, attachments }) => {
       }));
     }
 
+    lastEmailTime = Date.now();
     const info = await transporter.sendMail(mailOptions);
     console.log(`✅ Email enviado a ${to} (${info.messageId})`);
   } catch (error) {
