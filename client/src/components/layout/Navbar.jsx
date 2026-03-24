@@ -65,9 +65,11 @@ export default function Navbar() {
           </div>
 
           <div className="navbar__auth">
-            <Link to="/carrito" className="navbar__cart">
-              🛒{cartCount > 0 && <span className="navbar__cart-badge">{cartCount}</span>}
-            </Link>
+            {(!user || user.role !== ROLES.ADMIN) && (
+              <Link to="/carrito" className="navbar__cart">
+                🛒{cartCount > 0 && <span className="navbar__cart-badge">{cartCount}</span>}
+              </Link>
+            )}
             {user ? (
               <>
                 <NotificationBell />
