@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../hooks/useAuth';
+import { ROLES } from '../../utils/constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice, formatDate } from '../../utils/formatters';
 import { getImageUrl, handleImageError } from '../../utils/imageHelper';
@@ -33,7 +34,7 @@ export default function UserDashboard() {
   const { user, updateProfile } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('orders');
+  const [activeTab, setActiveTab] = useState(user?.role === ROLES.ADMIN ? 'profile' : 'orders');
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [cancellingId, setCancellingId] = useState(null);
@@ -56,6 +57,10 @@ export default function UserDashboard() {
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
+    if (user?.role === ROLES.ADMIN) {
+      setLoading(false);
+      return;
+    }
     api.get('/pedidos/mis-pedidos')
       .then((res) => setOrders(res.data.data))
       .catch(console.error)
@@ -63,7 +68,7 @@ export default function UserDashboard() {
     api.get('/pedidos/recomendaciones')
       .then((res) => setRecommendations(res.data.data))
       .catch(() => {});
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -199,24 +204,28 @@ export default function UserDashboard() {
         <p className="page-subtitle">Hola, {user?.nombre} {user?.apellidos}</p>
 
         <div className="dashboard-tabs">
-          <button
-            className={`dashboard-tab ${activeTab === 'orders' ? 'dashboard-tab--active' : ''}`}
-            onClick={() => setActiveTab('orders')}
-          >
-            Mis pedidos
-          </button>
+          {user?.role !== ROLES.ADMIN && (
+            <button
+              className={`dashboard-tab ${activeTab === 'orders' ? 'dashboard-tab--active' : ''}`}
+              onClick={() => setActiveTab('orders')}
+            >
+              Mis pedidos
+            </button>
+          )}
           <button
             className={`dashboard-tab ${activeTab === 'profile' ? 'dashboard-tab--active' : ''}`}
             onClick={() => setActiveTab('profile')}
           >
             Mi perfil
           </button>
-          <button
-            className={`dashboard-tab ${activeTab === 'recommendations' ? 'dashboard-tab--active' : ''}`}
-            onClick={() => setActiveTab('recommendations')}
-          >
-            Recomendaciones
-          </button>
+          {user?.role !== ROLES.ADMIN && (
+            <button
+              className={`dashboard-tab ${activeTab === 'recommendations' ? 'dashboard-tab--active' : ''}`}
+              onClick={() => setActiveTab('recommendations')}
+            >
+              Recomendaciones
+            </button>
+          )}
         </div>
 
         {activeTab === 'orders' && (
