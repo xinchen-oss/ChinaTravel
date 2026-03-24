@@ -468,22 +468,40 @@ export default function UserDashboard() {
 
         {activeTab === 'recommendations' && (
           <>
-            <h2 className="section-title">Circuitos recomendados para ti</h2>
+            <div className="reco-header">
+              <h2 className="reco-header__title">Circuitos recomendados para ti</h2>
+              <p className="reco-header__subtitle">Basados en tus viajes anteriores y preferencias</p>
+            </div>
             {recommendations.length === 0 ? (
-              <div className="empty-state">
+              <div className="reco-empty">
+                <div className="reco-empty__icon">🧭</div>
                 <h3>Aún no tenemos recomendaciones</h3>
-                <p>Explora nuestros <Link to="/guias">circuitos</Link> para empezar</p>
+                <p>Realiza tu primer pedido y te sugeriremos circuitos personalizados</p>
+                <Link to="/guias" className="btn btn--primary">Explorar circuitos</Link>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+              <div className="reco-grid">
                 {recommendations.map((g) => (
-                  <Link to={`/guias/${g._id}`} key={g._id} className="order-card-full" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div style={{ padding: '16px' }}>
-                      <h3 style={{ marginBottom: '4px' }}>{g.titulo}</h3>
-                      <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '8px' }}>
-                        {g.ciudad?.nombre} · {g.duracionDias} días
-                      </p>
-                      <span className="order-card__price">{formatPrice(g.precio)}</span>
+                  <Link to={`/guias/${g._id}`} key={g._id} className="reco-card">
+                    <div className="reco-card__img-wrap">
+                      <img
+                        src={getImageUrl(g.imagen)}
+                        alt={g.titulo}
+                        className="reco-card__img"
+                        onError={handleImageError}
+                      />
+                      <span className="reco-card__badge">{g.duracionDias} días</span>
+                    </div>
+                    <div className="reco-card__body">
+                      <div className="reco-card__location">📍 {g.ciudad?.nombre}</div>
+                      <h3 className="reco-card__title">{g.titulo}</h3>
+                      {g.descripcion && (
+                        <p className="reco-card__desc">{g.descripcion.substring(0, 100)}...</p>
+                      )}
+                      <div className="reco-card__footer">
+                        <span className="reco-card__price">{formatPrice(g.precio)}</span>
+                        <span className="reco-card__cta">Ver circuito →</span>
+                      </div>
                     </div>
                   </Link>
                 ))}
