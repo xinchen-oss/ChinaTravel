@@ -92,17 +92,20 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Carousel */}
-      <section className="hero">
+      <section className="hero" aria-roledescription="carrusel" aria-label="Destinos destacados de China">
         {heroSlides.map((slide, i) => (
           <div
             key={i}
             className={`hero__slide ${i === currentSlide ? 'hero__slide--active' : ''}`}
             style={{ backgroundImage: `url(${slide.image})` }}
+            role="img"
+            aria-label={slide.title}
+            aria-hidden={i !== currentSlide}
           />
         ))}
-        <div className="hero__overlay" />
-        <button className="hero__arrow hero__arrow--left" onClick={() => goToSlide(-1)} aria-label="Anterior">&#10094;</button>
-        <button className="hero__arrow hero__arrow--right" onClick={() => goToSlide(1)} aria-label="Siguiente">&#10095;</button>
+        <div className="hero__overlay" aria-hidden="true" />
+        <button className="hero__arrow hero__arrow--left" onClick={() => goToSlide(-1)} aria-label="Diapositiva anterior">&#10094;</button>
+        <button className="hero__arrow hero__arrow--right" onClick={() => goToSlide(1)} aria-label="Diapositiva siguiente">&#10095;</button>
         <div className="container hero__content" key={currentSlide}>
           <h1 className="hero__title">{heroSlides[currentSlide].title}</h1>
           <p className="hero__subtitle">{heroSlides[currentSlide].subtitle}</p>
@@ -111,19 +114,22 @@ export default function HomePage() {
             <Link to="/guias" className="btn btn--outline-light btn--lg">Todos los circuitos</Link>
           </div>
         </div>
-        <div className="hero__dots">
-          {heroSlides.map((_, i) => (
+        <div className="hero__dots" role="tablist" aria-label="Diapositivas del carrusel">
+          {heroSlides.map((slide, i) => (
             <button
               key={i}
               className={`hero__dot ${i === currentSlide ? 'hero__dot--active' : ''}`}
               onClick={() => setCurrentSlide(i)}
+              role="tab"
+              aria-selected={i === currentSlide}
+              aria-label={`Ir a diapositiva ${i + 1}: ${slide.title}`}
             />
           ))}
         </div>
       </section>
 
       {/* Ventajas */}
-      <section className="advantages">
+      <section className="advantages" aria-label="Ventajas de viajar con ChinaTravel">
         <div className="container">
           <div className="advantages__grid">
             <div className="advantage">

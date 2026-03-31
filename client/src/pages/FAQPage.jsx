@@ -69,11 +69,16 @@ export default function FAQPage() {
                   const isOpen = openItems[key];
                   return (
                     <div key={qi} className={`faq-item ${isOpen ? 'faq-item--open' : ''}`}>
-                      <button className="faq-item__question" onClick={() => toggle(key)}>
+                      <button
+                        className="faq-item__question"
+                        onClick={() => toggle(key)}
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-answer-${key}`}
+                      >
                         <span>{item.q}</span>
-                        <span className="faq-item__icon">{isOpen ? '−' : '+'}</span>
+                        <span className="faq-item__icon" aria-hidden="true">{isOpen ? '−' : '+'}</span>
                       </button>
-                      {isOpen && <div className="faq-item__answer">{item.a}</div>}
+                      {isOpen && <div className="faq-item__answer" id={`faq-answer-${key}`} role="region" aria-label={item.q}>{item.a}</div>}
                     </div>
                   );
                 })}

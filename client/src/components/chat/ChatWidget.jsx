@@ -75,14 +75,15 @@ export default function ChatWidget() {
       <button
         className={`chat-fab ${open ? 'chat-fab--open' : ''}`}
         onClick={() => setOpen(!open)}
-        aria-label="Abrir chat"
+        aria-label={open ? 'Cerrar chat' : 'Abrir chat de asistencia'}
+        aria-expanded={open}
       >
-        {open ? '✕' : '💬'}
+        <span aria-hidden="true">{open ? '✕' : '💬'}</span>
       </button>
 
       {/* Chat window */}
       {open && (
-        <div className="chat-window">
+        <div className="chat-window" role="region" aria-label="Chat de asistencia">
           <div className="chat-header">
             <div className="chat-header__info">
               <div className="chat-header__avatar">🇨🇳</div>
@@ -91,10 +92,10 @@ export default function ChatWidget() {
                 <span className="chat-header__status">En línea</span>
               </div>
             </div>
-            <button className="chat-header__close" onClick={() => setOpen(false)}>✕</button>
+            <button className="chat-header__close" onClick={() => setOpen(false)} aria-label="Cerrar chat">✕</button>
           </div>
 
-          <div className="chat-messages">
+          <div className="chat-messages" aria-live="polite" aria-relevant="additions">
             {messages.map((msg, i) => (
               <div key={i} className={`chat-msg chat-msg--${msg.sender}`}>
                 {msg.sender === 'bot' && <span className="chat-msg__avatar">🤖</span>}
@@ -130,6 +131,7 @@ export default function ChatWidget() {
                     placeholder="Tu nombre"
                     value={contactForm.nombre}
                     onChange={(e) => setContactForm({ ...contactForm, nombre: e.target.value })}
+                    aria-label="Tu nombre"
                   />
                   <input
                     type="email"
@@ -137,6 +139,8 @@ export default function ChatWidget() {
                     value={contactForm.email}
                     onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                     required
+                    aria-label="Tu email"
+                    aria-required="true"
                   />
                   <textarea
                     placeholder="Tu consulta *"
@@ -144,6 +148,8 @@ export default function ChatWidget() {
                     onChange={(e) => setContactForm({ ...contactForm, mensaje: e.target.value })}
                     required
                     rows={3}
+                    aria-label="Tu consulta"
+                    aria-required="true"
                   />
                   <button type="submit" className="chat-contact__submit">Enviar a agente</button>
                 </form>
@@ -160,8 +166,9 @@ export default function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={loading}
+              aria-label="Escribe tu pregunta"
             />
-            <button type="submit" disabled={loading || !input.trim()}>➤</button>
+            <button type="submit" disabled={loading || !input.trim()} aria-label="Enviar mensaje"><span aria-hidden="true">➤</span></button>
           </form>
         </div>
       )}

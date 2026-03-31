@@ -154,13 +154,15 @@ export default function RegisterPage() {
         <p className="auth-subtitle">Únete a ChinaTravel y descubre China</p>
 
         {/* Account type selector */}
-        <div className="account-type-selector">
+        <div className="account-type-selector" role="radiogroup" aria-label="Tipo de cuenta">
           <button
             type="button"
             className={`account-type-btn ${accountType === 'USER' ? 'account-type-btn--active' : ''}`}
             onClick={() => setAccountType('USER')}
+            role="radio"
+            aria-checked={accountType === 'USER'}
           >
-            <span className="account-type-btn__icon">👤</span>
+            <span className="account-type-btn__icon" aria-hidden="true">👤</span>
             <span className="account-type-btn__label">Usuario</span>
             <span className="account-type-btn__desc">Explora y reserva viajes</span>
           </button>
@@ -168,8 +170,10 @@ export default function RegisterPage() {
             type="button"
             className={`account-type-btn ${accountType === 'COMERCIAL' ? 'account-type-btn--active' : ''}`}
             onClick={() => setAccountType('COMERCIAL')}
+            role="radio"
+            aria-checked={accountType === 'COMERCIAL'}
           >
-            <span className="account-type-btn__icon">🏢</span>
+            <span className="account-type-btn__icon" aria-hidden="true">🏢</span>
             <span className="account-type-btn__label">Comercial</span>
             <span className="account-type-btn__desc">Gestiona y publica contenido</span>
           </button>
@@ -181,18 +185,18 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {error && <div className="auth-error">{error}</div>}
+        {error && <div className="auth-error" role="alert">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
               <label>Nombre *</label>
               <input type="text" value={form.nombre} onChange={set('nombre')} required placeholder="Tu nombre" />
-              {fieldErrors.nombre && <span className="field-error">{fieldErrors.nombre}</span>}
+              {fieldErrors.nombre && <span className="field-error" role="alert">{fieldErrors.nombre}</span>}
             </div>
             <div className="form-group">
               <label>Apellidos *</label>
               <input type="text" value={form.apellidos} onChange={set('apellidos')} required placeholder="Tus apellidos" />
-              {fieldErrors.apellidos && <span className="field-error">{fieldErrors.apellidos}</span>}
+              {fieldErrors.apellidos && <span className="field-error" role="alert">{fieldErrors.apellidos}</span>}
             </div>
           </div>
 
@@ -219,12 +223,12 @@ export default function RegisterPage() {
                 <span className="phone-prefix">+34</span>
                 <input type="tel" value={form.telefono} onChange={set('telefono')} placeholder="612 345 678" maxLength={9} />
               </div>
-              {fieldErrors.telefono && <span className="field-error">{fieldErrors.telefono}</span>}
+              {fieldErrors.telefono && <span className="field-error" role="alert">{fieldErrors.telefono}</span>}
             </div>
             <div className="form-group">
               <label>Fecha de nacimiento</label>
               <input type="date" value={form.fechaNacimiento} onChange={set('fechaNacimiento')} max={new Date().toISOString().split('T')[0]} />
-              {fieldErrors.fechaNacimiento && <span className="field-error">{fieldErrors.fechaNacimiento}</span>}
+              {fieldErrors.fechaNacimiento && <span className="field-error" role="alert">{fieldErrors.fechaNacimiento}</span>}
             </div>
           </div>
 
@@ -255,7 +259,7 @@ export default function RegisterPage() {
               onChange={set('pasaporte')}
               placeholder={form.tipoDocumento === 'NIE' ? 'X1234567A' : 'PAA123456'}
             />
-            {fieldErrors.pasaporte && <span className="field-error">{fieldErrors.pasaporte}</span>}
+            {fieldErrors.pasaporte && <span className="field-error" role="alert">{fieldErrors.pasaporte}</span>}
           </div>
 
           {/* Comercial-specific fields */}

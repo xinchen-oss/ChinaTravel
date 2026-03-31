@@ -23,7 +23,7 @@ export default function ConfirmEmailPage() {
   return (
     <div className="auth-page">
       <div className="auth-card" style={{ textAlign: 'center' }}>
-        {status === 'loading' && <p>Verificando...</p>}
+        {status === 'loading' && <p role="status">Verificando...</p>}
         {status === 'success' && (
           <>
             <div style={{ width: 64, height: 64, background: '#f0fdf4', color: '#16a34a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 16px' }}>&#10003;</div>

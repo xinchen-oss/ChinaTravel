@@ -56,27 +56,31 @@ export default function ResetPasswordPage() {
       <div className="auth-card">
         <h1>Nueva contraseña</h1>
         <p className="auth-subtitle">Introduce tu nueva contraseña</p>
-        {error && <div className="auth-error">{error}</div>}
+        {error && <div className="auth-error" role="alert">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Nueva contraseña</label>
+            <label htmlFor="reset-password">Nueva contraseña</label>
             <input
+              id="reset-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
               placeholder="Mín. 8 car., mayús., minús., número, especial"
+              autoComplete="new-password"
             />
           </div>
           <div className="form-group">
-            <label>Confirmar contraseña</label>
+            <label htmlFor="reset-confirm">Confirmar contraseña</label>
             <input
+              id="reset-confirm"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               placeholder="Repite la contraseña"
+              autoComplete="new-password"
             />
           </div>
           <button type="submit" className="btn btn--primary btn--lg auth-btn" disabled={loading}>

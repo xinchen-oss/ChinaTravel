@@ -48,12 +48,18 @@ export default function ReviewSection({ tipo, referenciaId }) {
   };
 
   const renderStars = (rating, interactive = false, onChange) => (
-    <div className="review-stars">
+    <div className="review-stars" role={interactive ? 'radiogroup' : 'img'} aria-label={interactive ? 'Seleccionar puntuación' : `Puntuación: ${rating} de 5 estrellas`}>
       {STARS.map((s) => (
         <span
           key={s}
           className={`review-star ${s <= rating ? 'review-star--filled' : ''} ${interactive ? 'review-star--interactive' : ''}`}
           onClick={interactive ? () => onChange(s) : undefined}
+          onKeyDown={interactive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(s); } } : undefined}
+          role={interactive ? 'radio' : undefined}
+          aria-checked={interactive ? s === rating : undefined}
+          aria-label={interactive ? `${s} estrella${s !== 1 ? 's' : ''}` : undefined}
+          tabIndex={interactive ? 0 : undefined}
+          aria-hidden={!interactive ? 'true' : undefined}
         >★</span>
       ))}
     </div>
@@ -70,8 +76,8 @@ export default function ReviewSection({ tipo, referenciaId }) {
         </div>
       </div>
 
-      {msg && <div className="profile-success">{msg}</div>}
-      {error && <div className="auth-error">{error}</div>}
+      {msg && <div className="profile-success" role="status">{msg}</div>}
+      {error && <div className="auth-error" role="alert">{error}</div>}
 
       {user && !showForm && (
         <button className="btn btn--outline btn--sm" onClick={() => setShowForm(true)}>

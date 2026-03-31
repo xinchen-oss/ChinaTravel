@@ -37,23 +37,25 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="container navbar__inner">
-        <Link to="/" className="navbar__logo">
-          <span className="navbar__logo-cn">中国</span> ChinaTravel
+        <Link to="/" className="navbar__logo" aria-label="ChinaTravel - Inicio">
+          <span className="navbar__logo-cn" aria-hidden="true">中国</span> ChinaTravel
         </Link>
 
         <button
           className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--open' : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menú"
+          aria-label="Menú de navegación"
+          aria-expanded={menuOpen}
+          aria-controls="navbar-menu"
         >
           <span />
           <span />
           <span />
         </button>
 
-        {menuOpen && <div className="navbar__overlay" onClick={() => setMenuOpen(false)} />}
+        {menuOpen && <div className="navbar__overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
 
-        <div className={`navbar__menu ${menuOpen ? 'navbar__menu--open' : ''}`}>
+        <div id="navbar-menu" className={`navbar__menu ${menuOpen ? 'navbar__menu--open' : ''}`}>
           <div className="navbar__links">
             <Link to="/">Inicio</Link>
             <Link to="/ciudades">Ciudades</Link>
@@ -66,8 +68,8 @@ export default function Navbar() {
 
           <div className="navbar__auth">
             {(!user || user.role !== ROLES.ADMIN) && (
-              <Link to="/carrito" className="navbar__cart">
-                🛒{cartCount > 0 && <span className="navbar__cart-badge">{cartCount}</span>}
+              <Link to="/carrito" className="navbar__cart" aria-label={`Carrito de compra${cartCount > 0 ? `, ${cartCount} artículo${cartCount !== 1 ? 's' : ''}` : ''}`}>
+                <span aria-hidden="true">🛒</span>{cartCount > 0 && <span className="navbar__cart-badge" aria-hidden="true">{cartCount}</span>}
               </Link>
             )}
             {user ? (

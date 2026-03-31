@@ -5,7 +5,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { ROLES } from '../../utils/constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice, formatDate } from '../../utils/formatters';
-import { getImageUrl, handleImageError } from '../../utils/imageHelper';
 import './Dashboard.css';
 
 // Validation helpers
@@ -36,7 +35,6 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(user?.role === ROLES.ADMIN ? 'profile' : 'orders');
   const [expandedOrder, setExpandedOrder] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
   const [cancellingId, setCancellingId] = useState(null);
   const [cancelModal, setCancelModal] = useState({ open: false, orderId: null, motivo: '', selectedReason: '' });
   const [cancelResult, setCancelResult] = useState({ open: false, success: false, reembolso: false, mensaje: '' });
@@ -65,9 +63,6 @@ export default function UserDashboard() {
       .then((res) => setOrders(res.data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
-    api.get('/pedidos/recomendaciones')
-      .then((res) => setRecommendations(res.data.data))
-      .catch(() => {});
   }, [user]);
 
   useEffect(() => {
@@ -203,11 +198,15 @@ export default function UserDashboard() {
         <h1 className="page-title">Mi cuenta</h1>
         <p className="page-subtitle">Hola, {user?.nombre} {user?.apellidos}</p>
 
-        <div className="dashboard-tabs">
+        <div className="dashboard-tabs" role="tablist" aria-label="Secciones de mi cuenta">
           {user?.role !== ROLES.ADMIN && (
             <button
               className={`dashboard-tab ${activeTab === 'orders' ? 'dashboard-tab--active' : ''}`}
               onClick={() => setActiveTab('orders')}
+              role="tab"
+              aria-selected={activeTab === 'orders'}
+              aria-controls="tabpanel-orders"
+              id="tab-orders"
             >
               Mis pedidos
             </button>
@@ -215,21 +214,17 @@ export default function UserDashboard() {
           <button
             className={`dashboard-tab ${activeTab === 'profile' ? 'dashboard-tab--active' : ''}`}
             onClick={() => setActiveTab('profile')}
+            role="tab"
+            aria-selected={activeTab === 'profile'}
+            aria-controls="tabpanel-profile"
+            id="tab-profile"
           >
             Mi perfil
           </button>
-          {user?.role !== ROLES.ADMIN && (
-            <button
-              className={`dashboard-tab ${activeTab === 'recommendations' ? 'dashboard-tab--active' : ''}`}
-              onClick={() => setActiveTab('recommendations')}
-            >
-              Recomendaciones
-            </button>
-          )}
         </div>
 
         {activeTab === 'orders' && (
-          <>
+          <div role="tabpanel" id="tabpanel-orders" aria-labelledby="tab-orders">
             {loading ? (
               <LoadingSpinner />
             ) : orders.length === 0 ? (
@@ -244,7 +239,7 @@ export default function UserDashboard() {
                   const isExpanded = expandedOrder === order._id;
                   return (
                     <div key={order._id} className="order-card-full">
-                      <div className="order-card" onClick={() => toggleOrder(order._id)} style={{ cursor: 'pointer' }}>
+                      <div className="order-card" onClick={() => toggleOrder(order._id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleOrder(order._id); } }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-expanded={isExpanded} aria-label={`Pedido: ${order.guia?.titulo || 'Guía'}`}>
                         <div className="order-card__info">
                           <h3>{order.guia?.titulo || 'Guía'}</h3>
                           <p>{formatDate(order.createdAt)} | {order.guia?.duracionDias || '—'} días | {order.guia?.ciudad?.nombre || ''}</p>
@@ -319,15 +314,15 @@ export default function UserDashboard() {
                 })}
               </div>
             )}
-          </>
+          </div>
         )}
 
-        {activeTab === 'profile' && (
+        {activeTab === 'profile' && (<div role="tabpanel" id="tabpanel-profile" aria-labelledby="tab-profile">
           <div className="profile-section">
             <form onSubmit={handleProfileSubmit} className="profile-form profile-form--wide">
               <h2>Datos personales</h2>
-              {profileMsg && <div className="profile-success">{profileMsg}</div>}
-              {profileError && <div className="auth-error">{profileError}</div>}
+              {profileMsg && <div className="profile-success" role="status">{profileMsg}</div>}
+              {profileError && <div className="auth-error" role="alert">{profileError}</div>}
 
               <div className="form-row">
                 <div className="form-group">
@@ -464,60 +459,18 @@ export default function UserDashboard() {
               </button>
             </form>
           </div>
+        </div>
         )}
 
-        {activeTab === 'recommendations' && (
-          <>
-            <div className="reco-header">
-              <h2 className="reco-header__title">Circuitos recomendados para ti</h2>
-              <p className="reco-header__subtitle">Basados en tus viajes anteriores y preferencias</p>
-            </div>
-            {recommendations.length === 0 ? (
-              <div className="reco-empty">
-                <div className="reco-empty__icon">🧭</div>
-                <h3>Aún no tenemos recomendaciones</h3>
-                <p>Realiza tu primer pedido y te sugeriremos circuitos personalizados</p>
-                <Link to="/guias" className="btn btn--primary">Explorar circuitos</Link>
-              </div>
-            ) : (
-              <div className="reco-grid">
-                {recommendations.map((g) => (
-                  <Link to={`/guias/${g._id}`} key={g._id} className="reco-card">
-                    <div className="reco-card__img-wrap">
-                      <img
-                        src={getImageUrl(g.imagen)}
-                        alt={g.titulo}
-                        className="reco-card__img"
-                        onError={handleImageError}
-                      />
-                      <span className="reco-card__badge">{g.duracionDias} días</span>
-                    </div>
-                    <div className="reco-card__body">
-                      <div className="reco-card__location">📍 {g.ciudad?.nombre}</div>
-                      <h3 className="reco-card__title">{g.titulo}</h3>
-                      {g.descripcion && (
-                        <p className="reco-card__desc">{g.descripcion.substring(0, 100)}...</p>
-                      )}
-                      <div className="reco-card__footer">
-                        <span className="reco-card__price">{formatPrice(g.precio)}</span>
-                        <span className="reco-card__cta">Ver circuito →</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </>
-        )}
       </div>
 
       {/* Cancel order modal */}
       {cancelModal.open && (
-        <div className="cancel-modal-overlay" onClick={closeCancelModal}>
-          <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="cancel-modal__close" onClick={closeCancelModal}>&times;</button>
+        <div className="cancel-modal-overlay" onClick={closeCancelModal} role="presentation">
+          <div className="cancel-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+            <button className="cancel-modal__close" onClick={closeCancelModal} aria-label="Cerrar diálogo">&times;</button>
             <div className="cancel-modal__icon">&#10007;</div>
-            <h3 className="cancel-modal__title">¿Por qué quieres cancelar este pedido?</h3>
+            <h3 className="cancel-modal__title" id="cancel-modal-title">¿Por qué quieres cancelar este pedido?</h3>
             <p className="cancel-modal__subtitle">Tu opinión nos ayuda a mejorar</p>
             <div className="cancel-modal__reasons">
               {cancelReasons.map((reason) => (
@@ -559,9 +512,9 @@ export default function UserDashboard() {
 
       {/* Cancel result modal */}
       {cancelResult.open && (
-        <div className="cancel-modal-overlay" onClick={() => setCancelResult({ ...cancelResult, open: false })}>
-          <div className="cancel-modal cancel-result-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="cancel-modal__close" onClick={() => setCancelResult({ ...cancelResult, open: false })}>&times;</button>
+        <div className="cancel-modal-overlay" onClick={() => setCancelResult({ ...cancelResult, open: false })} role="presentation">
+          <div className="cancel-modal cancel-result-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Resultado de la cancelación">
+            <button className="cancel-modal__close" onClick={() => setCancelResult({ ...cancelResult, open: false })} aria-label="Cerrar diálogo">&times;</button>
             {cancelResult.success ? (
               <>
                 <div className={`cancel-result__icon cancel-result__icon--refund`}>

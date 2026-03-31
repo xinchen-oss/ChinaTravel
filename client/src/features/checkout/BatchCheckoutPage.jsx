@@ -173,17 +173,17 @@ export default function BatchCheckoutPage() {
     <div className="page">
       <div className="container">
         {/* Steps indicator */}
-        <div className="checkout-steps">
-          <div className={`checkout-steps__step ${step >= 1 ? 'checkout-steps__step--active' : ''}`}>
-            <span className="checkout-steps__num">1</span>
+        <nav className="checkout-steps" aria-label="Pasos del proceso de compra">
+          <div className={`checkout-steps__step ${step >= 1 ? 'checkout-steps__step--active' : ''}`} aria-current={step === 1 ? 'step' : undefined}>
+            <span className="checkout-steps__num" aria-hidden="true">1</span>
             <span>Resumen</span>
           </div>
-          <div className="checkout-steps__line" />
-          <div className={`checkout-steps__step ${step >= 2 ? 'checkout-steps__step--active' : ''}`}>
-            <span className="checkout-steps__num">2</span>
+          <div className="checkout-steps__line" aria-hidden="true" />
+          <div className={`checkout-steps__step ${step >= 2 ? 'checkout-steps__step--active' : ''}`} aria-current={step === 2 ? 'step' : undefined}>
+            <span className="checkout-steps__num" aria-hidden="true">2</span>
             <span>Pago</span>
           </div>
-        </div>
+        </nav>
 
         {step === 1 && (
           <>
@@ -284,7 +284,7 @@ export default function BatchCheckoutPage() {
               <div className="checkout-options">
                 <div className="checkout-section">
                   <h2>Selecciona tu forma de pago</h2>
-                  <div className="payment-methods">
+                  <div className="payment-methods" role="radiogroup" aria-label="Métodos de pago">
                     <label className={`payment-method ${paymentMethod === 'card' ? 'payment-method--active' : ''}`}>
                       <input type="radio" name="pm" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} />
                       <div className="payment-method__content">
@@ -397,7 +397,7 @@ export default function BatchCheckoutPage() {
                     </div>
 
                     <div className="card-form__secure">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }} aria-hidden="true" role="img">
                         <path d="M12 6H4V5C4 2.79 5.79 1 8 1s4 1.79 4 4v1zm1 0V5c0-2.76-2.24-5-5-5S3 2.24 3 5v1a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2V8a2 2 0 00-2-2z" fill="#4CAF50"/>
                       </svg>
                       <span>Pago seguro con encriptacion SSL. Tus datos estan protegidos.</span>
@@ -450,7 +450,7 @@ export default function BatchCheckoutPage() {
                   <span>Total a pagar</span>
                   <span>{formatPrice(calcTotal())}</span>
                 </div>
-                {error && <div className="auth-error">{error}</div>}
+                {error && <div className="auth-error" role="alert">{error}</div>}
                 <button onClick={handleSubmit} className="btn btn--primary btn--lg" disabled={submitting} style={{ width: '100%' }}>
                   {submitting ? 'Procesando pago...' : `Pagar ${formatPrice(calcTotal())}`}
                 </button>

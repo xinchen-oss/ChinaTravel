@@ -44,10 +44,11 @@ export default function CitiesPage() {
           alignItems: 'center',
         }}>
           <input
-            type="text"
+            type="search"
             placeholder="Buscar por nombre o descripción..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label="Buscar ciudades por nombre o descripción"
             style={{
               flex: '1 1 240px',
               padding: '10px 16px',
@@ -59,6 +60,7 @@ export default function CitiesPage() {
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
+            aria-label="Filtrar por ciudad"
             style={{
               padding: '10px 16px',
               border: '1px solid var(--color-border, #ddd)',
@@ -95,7 +97,7 @@ export default function CitiesPage() {
         </div>
 
         {!loading && (
-          <p style={{ color: '#888', marginBottom: '16px', fontSize: '0.9rem' }}>
+          <p style={{ color: '#888', marginBottom: '16px', fontSize: '0.9rem' }} aria-live="polite" role="status">
             {filtered.length} {filtered.length === 1 ? 'ciudad encontrada' : 'ciudades encontradas'}
           </p>
         )}

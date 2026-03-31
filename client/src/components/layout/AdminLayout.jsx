@@ -23,10 +23,13 @@ export default function AdminLayout() {
         <button
           className="admin-sidebar-toggle"
           onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-expanded={sidebarOpen}
+          aria-controls="admin-sidebar"
+          aria-label={`${sidebarOpen ? 'Cerrar' : 'Abrir'} menú de administración`}
         >
-          {sidebarOpen ? '✕' : '☰'} Menú
+          <span aria-hidden="true">{sidebarOpen ? '✕' : '☰'}</span> Menú
         </button>
-        <aside className={`admin-sidebar ${sidebarOpen ? 'admin-sidebar--open' : ''}`}>
+        <aside id="admin-sidebar" className={`admin-sidebar ${sidebarOpen ? 'admin-sidebar--open' : ''}`} aria-label="Navegación de administración">
           <div className="admin-sidebar__header">
             <h3>{isAdmin ? 'Admin Panel' : 'Panel Comercial'}</h3>
             <p>{user?.nombre}</p>

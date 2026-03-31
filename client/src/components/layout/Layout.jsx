@@ -5,8 +5,9 @@ import Footer from './Footer';
 export default function Layout() {
   return (
     <>
+      <a href="#main-content" className="skip-to-content">Saltar al contenido principal</a>
       <Navbar />
-      <main>
+      <main id="main-content">
         <Outlet />
       </main>
       <Footer />

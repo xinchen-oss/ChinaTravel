@@ -51,13 +51,19 @@ export default function NotificationBell() {
 
   return (
     <div className="notif-bell" ref={ref}>
-      <button className="notif-bell__btn" onClick={() => setOpen(!open)}>
-        🔔
-        {unread > 0 && <span className="notif-bell__badge">{unread}</span>}
+      <button
+        className="notif-bell__btn"
+        onClick={() => setOpen(!open)}
+        aria-label={`Notificaciones${unread > 0 ? `, ${unread} sin leer` : ''}`}
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        <span aria-hidden="true">🔔</span>
+        {unread > 0 && <span className="notif-bell__badge" aria-hidden="true">{unread}</span>}
       </button>
 
       {open && (
-        <div className="notif-dropdown">
+        <div className="notif-dropdown" role="region" aria-label="Panel de notificaciones">
           <div className="notif-dropdown__header">
             <h4>Notificaciones</h4>
             {unread > 0 && (
@@ -72,6 +78,10 @@ export default function NotificationBell() {
                 key={n._id}
                 className={`notif-item ${!n.leido ? 'notif-item--unread' : ''}`}
                 onClick={() => !n.leido && markRead(n._id)}
+                onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !n.leido) { e.preventDefault(); markRead(n._id); } }}
+                role={!n.leido ? 'button' : undefined}
+                tabIndex={!n.leido ? 0 : undefined}
+                aria-label={!n.leido ? `Marcar como leída: ${n.titulo}` : undefined}
               >
                 <span className="notif-item__icon">{iconMap[n.tipo] || '🔔'}</span>
                 <div className="notif-item__content">

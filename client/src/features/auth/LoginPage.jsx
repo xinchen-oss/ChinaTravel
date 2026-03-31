@@ -39,15 +39,15 @@ export default function LoginPage() {
       <div className="auth-card">
         <h1>Iniciar sesión</h1>
         <p className="auth-subtitle">Accede a tu cuenta de ChinaTravel</p>
-        {error && <div className="auth-error">{error}</div>}
+        {error && <div className="auth-error" role="alert">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="tu@email.com" />
+            <label htmlFor="login-email">Email</label>
+            <input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="tu@email.com" autoComplete="email" />
           </div>
           <div className="form-group">
-            <label>Contraseña</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••" />
+            <label htmlFor="login-password">Contraseña</label>
+            <input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••" autoComplete="current-password" />
           </div>
           <button type="submit" className="btn btn--primary btn--lg auth-btn" disabled={loading}>
             {loading ? 'Entrando...' : 'Iniciar sesión'}

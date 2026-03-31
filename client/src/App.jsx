@@ -66,6 +66,7 @@ import SubmitContentPage from './features/comercial/SubmitContentPage';
 
 // Chat
 import ChatWidget from './components/chat/ChatWidget';
+import AccessibilityWidget from './components/common/AccessibilityWidget';
 
 export default function App() {
   return (
@@ -130,6 +131,7 @@ export default function App() {
             </Route>
           </Routes>
           <ChatWidget />
+          <AccessibilityWidget />
         </BrowserRouter>
       </CartProvider>
     </AuthProvider>

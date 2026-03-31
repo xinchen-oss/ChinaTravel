@@ -29,12 +29,12 @@ export default function ForgotPasswordPage() {
       <div className="auth-card">
         <h1>Recuperar contraseña</h1>
         <p className="auth-subtitle">Te enviaremos un email para restablecer tu contraseña</p>
-        {error && <div className="auth-error">{error}</div>}
-        {message && <div className="auth-success">{message}</div>}
+        {error && <div className="auth-error" role="alert">{error}</div>}
+        {message && <div className="auth-success" role="status">{message}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="tu@email.com" />
+            <label htmlFor="forgot-email">Email</label>
+            <input id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="tu@email.com" autoComplete="email" />
           </div>
           <button type="submit" className="btn btn--primary btn--lg auth-btn" disabled={loading}>
             {loading ? 'Enviando...' : 'Enviar email'}

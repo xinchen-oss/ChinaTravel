@@ -98,16 +98,20 @@ export default function ForumPage() {
           <div
             className="modal-overlay"
             onClick={() => setShowModal(false)}
+            role="presentation"
           >
 
             <div
               className="modal-content"
               onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="forum-modal-title"
             >
 
-              <h2>Crear nuevo post</h2>
+              <h2 id="forum-modal-title">Crear nuevo post</h2>
 
-              {error && <div className="auth-error">{error}</div>}
+              {error && <div className="auth-error" role="alert">{error}</div>}
 
               <form onSubmit={handleSubmit}>
 
