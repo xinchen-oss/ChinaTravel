@@ -67,7 +67,7 @@ export default function Navbar() {
           </div>
 
           <div className="navbar__auth">
-            {(!user || user.role !== ROLES.ADMIN) && (
+            {(!user || (user.role !== ROLES.ADMIN && user.role !== ROLES.COMERCIAL)) && (
               <Link to="/carrito" className="navbar__cart" aria-label={`Carrito de compra${cartCount > 0 ? `, ${cartCount} artículo${cartCount !== 1 ? 's' : ''}` : ''}`}>
                 <span aria-hidden="true">🛒</span>{cartCount > 0 && <span className="navbar__cart-badge" aria-hidden="true">{cartCount}</span>}
               </Link>

@@ -244,7 +244,7 @@ export default function GuideDetailPage() {
                   </div>
                 </div>
 
-                {user ? (
+                {user && user.role !== 'ADMIN' && user.role !== 'COMERCIAL' ? (
                   <>
                     {/* Hotel selection */}
                     <div className="booking-card__section">
@@ -322,8 +322,12 @@ export default function GuideDetailPage() {
                       </button>
                     </div>
                   </>
-                ) : (
+                ) : !user ? (
                   <Link to="/login" className="btn btn--primary" style={{ width: '100%' }}>Inicia sesión para reservar</Link>
+                ) : (
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', textAlign: 'center', padding: 'var(--space-md) 0' }}>
+                    Las cuentas {user.role === 'ADMIN' ? 'de administrador' : 'comerciales'} no pueden realizar compras
+                  </p>
                 )}
               </div>
             </aside>

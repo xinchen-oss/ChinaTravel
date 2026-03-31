@@ -99,7 +99,9 @@ export default function GuidesListPage() {
                         <span className="guide-list-card__price-value">{formatPrice(guide.precio)}</span>
                       </div>
                       <Link to={`/guias/${guide._id}`} className="btn btn--primary">Ver circuito</Link>
-                      <Link to={`/guias/${guide._id}/personalizar`} className="btn btn--outline btn--sm">Personalizar</Link>
+                      {(!user || (user.role !== 'ADMIN' && user.role !== 'COMERCIAL')) && (
+                        <Link to={`/guias/${guide._id}/personalizar`} className="btn btn--outline btn--sm">Personalizar</Link>
+                      )}
                     </div>
                   </div>
                 </div>
