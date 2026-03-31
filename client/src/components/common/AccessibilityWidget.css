@@ -271,7 +271,19 @@ body.a11y-high-contrast {
   --color-border: #555 !important;
   --color-primary: #ff6b6b !important;
   --color-primary-dark: #ff4444 !important;
+  --color-primary-light: #ff8a8a !important;
   --color-secondary: #fff !important;
+  --color-accent: #ffd700 !important;
+  --color-success: #4caf50 !important;
+  --color-error: #ff5252 !important;
+  --color-warning: #ffab00 !important;
+}
+
+/* All text defaults to white */
+body.a11y-high-contrast,
+body.a11y-high-contrast * {
+  color: #fff;
+  border-color: #555;
 }
 
 body.a11y-high-contrast a {
@@ -283,14 +295,397 @@ body.a11y-high-contrast a:hover {
 }
 
 body.a11y-high-contrast img {
-  filter: contrast(1.1) brightness(1.05);
+  filter: contrast(1.2) brightness(1.1) saturate(1.2);
 }
 
+/* Backgrounds */
 body.a11y-high-contrast .navbar,
 body.a11y-high-contrast .footer {
   background: #111 !important;
 }
 
+body.a11y-high-contrast .navbar a,
+body.a11y-high-contrast .footer a {
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .navbar a:hover,
+body.a11y-high-contrast .footer a:hover {
+  color: #6bc5ff !important;
+}
+
+/* Buttons - ensure contrast */
+body.a11y-high-contrast .btn,
+body.a11y-high-contrast button {
+  border-color: #666 !important;
+}
+
+body.a11y-high-contrast .btn--primary {
+  background: #ff6b6b !important;
+  color: #000 !important;
+  border-color: #ff6b6b !important;
+}
+
+body.a11y-high-contrast .btn--primary:hover {
+  background: #ff4444 !important;
+  color: #000 !important;
+}
+
+body.a11y-high-contrast .btn--outline,
+body.a11y-high-contrast .btn--outline-light {
+  background: transparent !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+body.a11y-high-contrast .btn--outline:hover,
+body.a11y-high-contrast .btn--outline-light:hover {
+  background: #333 !important;
+}
+
+body.a11y-high-contrast .btn--danger {
+  background: #ff5252 !important;
+  color: #000 !important;
+}
+
+/* Cards and surfaces */
+body.a11y-high-contrast .card,
+body.a11y-high-contrast .guide-card,
+body.a11y-high-contrast .guide-list-card,
+body.a11y-high-contrast .order-card,
+body.a11y-high-contrast .review-card,
+body.a11y-high-contrast .feature-card,
+body.a11y-high-contrast .reco-card,
+body.a11y-high-contrast .checkout-section,
+body.a11y-high-contrast .profile-form,
+body.a11y-high-contrast .booking-card,
+body.a11y-high-contrast .day-card,
+body.a11y-high-contrast .cancel-modal,
+body.a11y-high-contrast .modal,
+body.a11y-high-contrast .auth-card {
+  background: #1a1a1a !important;
+  border: 1px solid #555 !important;
+}
+
+body.a11y-high-contrast .card a,
+body.a11y-high-contrast .guide-card,
+body.a11y-high-contrast .reco-card {
+  color: #fff !important;
+}
+
+/* Hero & banners - semi-transparent overlay so images remain visible */
+body.a11y-high-contrast .hero__overlay,
+body.a11y-high-contrast .guides-banner__overlay,
+body.a11y-high-contrast .forum-banner__overlay {
+  background: rgba(0, 0, 0, 0.55) !important;
+}
+
+body.a11y-high-contrast .hero__title,
+body.a11y-high-contrast .hero__subtitle,
+body.a11y-high-contrast .hero__content,
+body.a11y-high-contrast .hero__content * {
+  color: #fff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.7) !important;
+}
+
+body.a11y-high-contrast .hero__arrow {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+body.a11y-high-contrast .hero__dot {
+  border-color: #fff !important;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Sections with colored backgrounds */
+body.a11y-high-contrast .advantages {
+  background: #111 !important;
+}
+
+body.a11y-high-contrast .advantage,
+body.a11y-high-contrast .advantage * {
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .cta-section {
+  background: linear-gradient(135deg, #2a0a0f, #1a1a2e) !important;
+  border-top: 2px solid #ff6b6b !important;
+  border-bottom: 2px solid #ff6b6b !important;
+}
+
+body.a11y-high-contrast .cta-section__inner,
+body.a11y-high-contrast .cta-section__inner * {
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .section--alt {
+  background: #0a0a0a !important;
+}
+
+/* City cards - keep image visible with lighter overlay */
+body.a11y-high-contrast .city-card__overlay {
+  background: linear-gradient(180deg, transparent 20%, rgba(0, 0, 0, 0.6) 100%) !important;
+}
+
+body.a11y-high-contrast .city-card__info,
+body.a11y-high-contrast .city-card__info * {
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Guide card images stay visible */
+body.a11y-high-contrast .guide-card__image,
+body.a11y-high-contrast .guide-list-card__image {
+  position: relative;
+}
+
+body.a11y-high-contrast .guide-card__image img,
+body.a11y-high-contrast .guide-list-card__image img,
+body.a11y-high-contrast .city-card__image img,
+body.a11y-high-contrast .reco-card__img {
+  filter: contrast(1.2) brightness(1.1) saturate(1.2) !important;
+}
+
+/* Badges */
+body.a11y-high-contrast .badge,
+body.a11y-high-contrast .guide-card__duration,
+body.a11y-high-contrast .guide-list-card__duration,
+body.a11y-high-contrast .guide-list-card__reco-badge {
+  color: #000 !important;
+  background: #ff6b6b !important;
+}
+
+body.a11y-high-contrast .badge--success {
+  background: #4caf50 !important;
+  color: #000 !important;
+}
+
+body.a11y-high-contrast .badge--warning {
+  background: #ffab00 !important;
+  color: #000 !important;
+}
+
+body.a11y-high-contrast .badge--info {
+  background: #6bc5ff !important;
+  color: #000 !important;
+}
+
+/* Form inputs */
+body.a11y-high-contrast input,
+body.a11y-high-contrast select,
+body.a11y-high-contrast textarea {
+  background: #222 !important;
+  color: #fff !important;
+  border-color: #666 !important;
+}
+
+body.a11y-high-contrast input::placeholder,
+body.a11y-high-contrast textarea::placeholder {
+  color: #999 !important;
+}
+
+body.a11y-high-contrast input:disabled,
+body.a11y-high-contrast .input--disabled {
+  background: #333 !important;
+  color: #999 !important;
+}
+
+/* Error/success messages */
+body.a11y-high-contrast .auth-error {
+  background: #3a0000 !important;
+  color: #ff5252 !important;
+  border: 1px solid #ff5252 !important;
+}
+
+body.a11y-high-contrast .auth-success,
+body.a11y-high-contrast .profile-success {
+  background: #003a00 !important;
+  color: #4caf50 !important;
+  border: 1px solid #4caf50 !important;
+}
+
+body.a11y-high-contrast .field-error {
+  color: #ff5252 !important;
+}
+
+/* Guide list card specifics */
+body.a11y-high-contrast .guide-list-card__destination {
+  color: #ff8a8a !important;
+}
+
+body.a11y-high-contrast .guide-list-card__price-value,
+body.a11y-high-contrast .guide-card__price {
+  color: #ff8a8a !important;
+}
+
+body.a11y-high-contrast .guide-list-card__includes span {
+  background: #333 !important;
+  color: #ccc !important;
+}
+
+body.a11y-high-contrast .guide-list-card__aside {
+  border-color: #555 !important;
+}
+
+/* Navbar specifics */
+body.a11y-high-contrast .navbar__cart-badge,
+body.a11y-high-contrast .notif-bell__badge {
+  background: #ff6b6b !important;
+  color: #000 !important;
+}
+
+body.a11y-high-contrast .navbar__hamburger span {
+  background: #fff !important;
+}
+
+/* Dashboard tabs */
+body.a11y-high-contrast .dashboard-tab {
+  color: #ccc !important;
+  border-color: #555 !important;
+}
+
+body.a11y-high-contrast .dashboard-tab--active {
+  color: #fff !important;
+  border-color: #ff6b6b !important;
+}
+
+/* FAQ */
+body.a11y-high-contrast .faq-item__question {
+  color: #fff !important;
+  background: #1a1a1a !important;
+}
+
+body.a11y-high-contrast .faq-item__answer {
+  color: #e0e0e0 !important;
+  background: #111 !important;
+}
+
+/* Chat widget */
+body.a11y-high-contrast .chat-window {
+  background: #111 !important;
+  border: 1px solid #555 !important;
+}
+
+body.a11y-high-contrast .chat-header {
+  background: #1a1a1a !important;
+}
+
+body.a11y-high-contrast .chat-header,
+body.a11y-high-contrast .chat-header * {
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .chat-msg__bubble {
+  background: #222 !important;
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .chat-msg--user .chat-msg__bubble {
+  background: #ff6b6b !important;
+  color: #000 !important;
+}
+
+body.a11y-high-contrast .chat-input {
+  background: #1a1a1a !important;
+  border-top: 1px solid #555 !important;
+}
+
+body.a11y-high-contrast .chat-quick__btn {
+  background: #222 !important;
+  color: #fff !important;
+  border-color: #555 !important;
+}
+
+/* Notification dropdown */
+body.a11y-high-contrast .notif-dropdown {
+  background: #1a1a1a !important;
+  border: 1px solid #555 !important;
+}
+
+body.a11y-high-contrast .notif-item {
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .notif-item--unread {
+  background: #222 !important;
+}
+
+/* Checkout steps */
+body.a11y-high-contrast .checkout-steps__step {
+  color: #999 !important;
+}
+
+body.a11y-high-contrast .checkout-steps__step--active {
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .checkout-steps__num {
+  border-color: #666 !important;
+}
+
+body.a11y-high-contrast .checkout-steps__step--active .checkout-steps__num {
+  background: #ff6b6b !important;
+  color: #000 !important;
+  border-color: #ff6b6b !important;
+}
+
+/* Payment methods */
+body.a11y-high-contrast .payment-method {
+  background: #1a1a1a !important;
+  border-color: #555 !important;
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .payment-method--active {
+  border-color: #ff6b6b !important;
+}
+
+/* Admin sidebar */
+body.a11y-high-contrast .admin-sidebar {
+  background: #111 !important;
+}
+
+body.a11y-high-contrast .admin-sidebar__link {
+  color: #ccc !important;
+}
+
+body.a11y-high-contrast .admin-sidebar__link--active {
+  color: #fff !important;
+  background: #333 !important;
+}
+
+/* Account type selector */
+body.a11y-high-contrast .account-type-btn {
+  background: #1a1a1a !important;
+  border-color: #555 !important;
+  color: #fff !important;
+}
+
+body.a11y-high-contrast .account-type-btn--active {
+  border-color: #ff6b6b !important;
+}
+
+body.a11y-high-contrast .account-type-btn__desc {
+  color: #ccc !important;
+}
+
+/* Commercial notice */
+body.a11y-high-contrast .comercial-notice {
+  background: #222 !important;
+  color: #ffab00 !important;
+  border-color: #ffab00 !important;
+}
+
+/* Scrollbar */
+body.a11y-high-contrast ::-webkit-scrollbar {
+  background: #111;
+}
+
+body.a11y-high-contrast ::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+/* Accessibility panel itself */
 body.a11y-high-contrast .a11y-panel {
   background: #1a1a1a;
   border: 1px solid #555;
@@ -329,6 +724,10 @@ body.a11y-high-contrast .a11y-panel__font-value {
 
 body.a11y-high-contrast .a11y-toggle {
   border-color: #333;
+}
+
+body.a11y-high-contrast .a11y-toggle__desc {
+  color: #999 !important;
 }
 
 /* Large Pointer */
