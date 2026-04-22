@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ImageUploadField from '../../components/common/ImageUploadField';
 import { formatPrice } from '../../utils/formatters';
 import { useCities } from '../../hooks/useCities';
 import '../dashboard/Dashboard.css';
@@ -95,10 +96,11 @@ export default function ManageGuidesPage() {
             <input type="number" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} min={0} required />
           </div>
         </div>
-        <div className="form-group">
-          <label>URL de imagen (opcional)</label>
-          <input value={form.imagen} onChange={(e) => setForm({ ...form, imagen: e.target.value })} placeholder="https://..." />
-        </div>
+        <ImageUploadField
+          value={form.imagen}
+          onChange={(url) => setForm({ ...form, imagen: url })}
+          label="Imagen (opcional)"
+        />
         <div className="table-actions">
           <button type="submit" className="btn btn--primary">{editing ? 'Actualizar' : 'Crear'}</button>
           {editing && (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ImageUploadField from '../../components/common/ImageUploadField';
 import { formatPrice } from '../../utils/formatters';
 import '../dashboard/Dashboard.css';
 
@@ -114,10 +115,10 @@ export default function ManageActivitiesPage() {
             <label>Precio</label>
             <input type="number" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} required />
           </div>
-          <div className="form-group">
-            <label>Imagen (URL)</label>
-            <input value={form.imagen} onChange={(e) => setForm({ ...form, imagen: e.target.value })} />
-          </div>
+          <ImageUploadField
+            value={form.imagen}
+            onChange={(url) => setForm({ ...form, imagen: url })}
+          />
           <div className="form-group">
             <label>Consejos (uno por línea)</label>
             <textarea value={form.consejos} onChange={(e) => setForm({ ...form, consejos: e.target.value })} />

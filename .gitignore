@@ -3,5 +3,7 @@ node_modules/
 dist/
 uploads/*
 !uploads/.gitkeep
+server/uploads/*
+!server/uploads/.gitkeep
 *.log
 .DS_Store

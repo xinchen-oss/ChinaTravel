@@ -3,10 +3,13 @@ import Notification from '../models/Notification.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendEmail } from '../services/emailService.js';
+import { validatePassword } from '../utils/validatePassword.js';
 
 export const createUser = asyncHandler(async (req, res) => {
   const { nombre, email, password, role } = req.body;
   if (!nombre || !email || !password) throw new ApiError(400, 'Nombre, email y contraseña son obligatorios');
+  const pwError = validatePassword(password);
+  if (pwError) throw new ApiError(400, pwError);
   const exists = await User.findOne({ email });
   if (exists) throw new ApiError(400, 'Ya existe un usuario con ese email');
   const user = await User.create({ nombre, email, password, role: role || 'USER', isApproved: true });
