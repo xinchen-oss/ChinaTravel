@@ -59,6 +59,8 @@ import ManageOrdersPage from './features/admin/ManageOrdersPage';
 import ApprovalQueuePage from './features/admin/ApprovalQueuePage';
 import ManageCouponsPage from './features/admin/ManageCouponsPage';
 import ManageReviewsPage from './features/admin/ManageReviewsPage';
+import ManageHotelsPage from './features/admin/ManageHotelsPage';
+import ManageFlightsPage from './features/admin/ManageFlightsPage';
 
 // Comercial
 import ComercialDashboard from './features/comercial/ComercialDashboard';
@@ -117,6 +119,8 @@ export default function App() {
               <Route path="ciudades" element={<ManageCitiesPage />} />
               <Route path="guias" element={<ManageGuidesPage />} />
               <Route path="actividades" element={<ManageActivitiesPage />} />
+              <Route path="hoteles" element={<ManageHotelsPage />} />
+              <Route path="vuelos" element={<ManageFlightsPage />} />
               <Route path="cultura" element={<ManageCulturePage />} />
               <Route path="pedidos" element={<ManageOrdersPage />} />
               <Route path="aprobaciones" element={<ApprovalQueuePage />} />

@@ -5,17 +5,9 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import config from '../config/env.js';
 import { sendEmail } from '../services/emailService.js';
+import { validatePassword } from '../utils/validatePassword.js';
 
 const generateToken = (id) => jwt.sign({ id }, config.jwtSecret, { expiresIn: config.jwtExpire });
-
-const validatePassword = (password) => {
-  if (password.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
-  if (!/[A-Z]/.test(password)) return 'La contraseña debe contener al menos una letra mayúscula';
-  if (!/[a-z]/.test(password)) return 'La contraseña debe contener al menos una letra minúscula';
-  if (!/[0-9]/.test(password)) return 'La contraseña debe contener al menos un número';
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return 'La contraseña debe contener al menos un carácter especial (!@#$%...)';
-  return null;
-};
 
 const userResponse = (user) => ({
   id: user._id,
@@ -49,6 +41,9 @@ const emailWrapper = (content) => `
 
 export const register = asyncHandler(async (req, res) => {
   const { nombre, apellidos, email, password, telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion, role, empresaNombre, empresaCIF, motivoComercial } = req.body;
+
+  const pwError = validatePassword(password || '');
+  if (pwError) throw new ApiError(400, pwError);
 
   const exists = await User.findOne({ email });
   if (exists) throw new ApiError(400, 'El email ya está registrado');

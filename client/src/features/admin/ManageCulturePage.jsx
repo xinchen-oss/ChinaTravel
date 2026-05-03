@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import CitySelector from '../../components/common/CitySelector';
+import ImageUploadField from '../../components/common/ImageUploadField';
 import { CULTURE_CATEGORIES } from '../../utils/constants';
 import { getImageUrl } from '../../utils/imageHelper';
 import '../dashboard/Dashboard.css';
@@ -13,7 +14,6 @@ export default function ManageCulturePage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // null = list, 'new' = create, id = edit
   const [form, setForm] = useState(emptyForm);
-  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -62,24 +62,6 @@ export default function ManageCulturePage() {
     setError('');
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('imagen', file);
-      const res = await api.post('/upload/imagen', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setForm((prev) => ({ ...prev, imagen: res.data.data.url }));
-    } catch (err) {
-      alert('Error subiendo imagen');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -111,29 +93,10 @@ export default function ManageCulturePage() {
         <form onSubmit={handleSubmit} className="submission-form" style={{ maxWidth: '700px' }}>
           {error && <div className="auth-error">{error}</div>}
 
-          <div className="form-group">
-            <label>Imagen</label>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              {form.imagen && (
-                <img
-                  src={getImageUrl(form.imagen)}
-                  alt="Preview"
-                  style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
-                />
-              )}
-              <div>
-                <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-                {uploading && <p style={{ fontSize: '0.8rem', color: '#666' }}>Subiendo...</p>}
-              </div>
-            </div>
-            <input
-              type="text"
-              placeholder="O pegar URL de imagen"
-              value={form.imagen}
-              onChange={(e) => setForm({ ...form, imagen: e.target.value })}
-              style={{ marginTop: '8px' }}
-            />
-          </div>
+          <ImageUploadField
+            value={form.imagen}
+            onChange={(url) => setForm({ ...form, imagen: url })}
+          />
 
           <div className="form-group">
             <label>Título *</label>
@@ -221,7 +184,7 @@ export default function ManageCulturePage() {
             <tr key={article._id}>
               <td>
                 <img
-                  src={getImageUrl(article.imagen)}
+                  src={getImageUrl(article.imagen, article._id)}
                   alt=""
                   style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
                 />
