@@ -1,13 +1,14 @@
 export default {
-  preset: null,
-  extensionsToTreatAsEsm: ['.js'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-  },
-  moduleNameMapping: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
+  testEnvironment: 'node',
   transform: {},
+  testMatch: ['**/tests/**/*.test.js'],
+  setupFiles: ['<rootDir>/tests/setEnv.js'],
+  setupFilesAfterEach: [],
+  testTimeout: 30000,
+  verbose: true,
+  collectCoverageFrom: [
+    'src/utils/**/*.js',
+    'src/middleware/**/*.js',
+    'src/controllers/**/*.js',
+  ],
 };
