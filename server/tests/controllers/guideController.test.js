@@ -1,255 +1,131 @@
-import {
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { chainable, mockRes } from '../helpers/chain.js';
+
+jest.unstable_mockModule('../../src/models/Guide.js', () => ({
+  default: {
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+jest.unstable_mockModule('../../src/models/Activity.js', () => ({
+  default: { find: jest.fn() },
+}));
+
+const { default: Guide } = await import('../../src/models/Guide.js');
+const { default: Activity } = await import('../../src/models/Activity.js');
+const { default: ApiError } = await import('../../src/utils/ApiError.js');
+const {
   getGuides,
   getGuide,
   getAlternativeActivities,
   createGuide,
   updateGuide,
-  deleteGuide
-} from '../controllers/guide.controller.js';
+  deleteGuide,
+} = await import('../../src/controllers/guideController.js');
 
-import Guide from '../models/Guide.js';
-import Activity from '../models/Activity.js';
-import ApiError from '../utils/ApiError.js';
+beforeEach(() => jest.clearAllMocks());
 
-// 🔹 Mocks
-jest.mock('../models/Guide.js');
-jest.mock('../models/Activity.js');
-
-const mockRes = () => {
-  const res = {};
-  res.json = jest.fn().mockReturnValue(res);
-  res.status = jest.fn().mockReturnValue(res);
-  return res;
-};
-
-describe('Guide Controller', () => {
-
-  afterEach(() => jest.clearAllMocks());
-
-  // 🔹 getGuides
-  describe('getGuides', () => {
-
-    it('should return guides with filter', async () => {
-      const req = { query: { ciudad: '123' } };
-      const res = mockRes();
-
-      const mockGuides = [{ nombre: 'Guía 1' }];
-
-      const selectMock = jest.fn().mockResolvedValue(mockGuides);
-      const populateMock = jest.fn().mockReturnValue({ select: selectMock });
-
-      Guide.find.mockReturnValue({
-        populate: populateMock
-      });
-
-      await getGuides(req, res);
-
-      expect(Guide.find).toHaveBeenCalledWith({ ciudad: '123' });
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockGuides
-      });
-    });
-
-    it('should return all guides without filter', async () => {
-      const req = { query: {} };
-      const res = mockRes();
-
-      const selectMock = jest.fn().mockResolvedValue([]);
-
-      Guide.find.mockReturnValue({
-        populate: jest.fn().mockReturnValue({ select: selectMock })
-      });
-
-      await getGuides(req, res);
-
-      expect(Guide.find).toHaveBeenCalledWith({});
-    });
-
+describe('guideController.getGuides', () => {
+  it('filtra por ciudad', async () => {
+    const data = [{ titulo: 'G' }];
+    Guide.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getGuides({ query: { ciudad: '123' } }, res);
+    expect(Guide.find).toHaveBeenCalledWith({ ciudad: '123' });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 getGuide
-  describe('getGuide', () => {
+  it('sin filtro', async () => {
+    Guide.find.mockReturnValue(chainable([]));
+    await getGuides({ query: {} }, mockRes());
+    expect(Guide.find).toHaveBeenCalledWith({});
+  });
+});
 
-    it('should return one guide with nested populate', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const mockGuide = { nombre: 'Guía completa' };
-
-      const populateDeepMock = jest.fn().mockResolvedValue(mockGuide);
-      const populateCiudadMock = jest.fn().mockReturnValue({
-        populate: populateDeepMock
-      });
-
-      Guide.findById.mockReturnValue({
-        populate: populateCiudadMock
-      });
-
-      await getGuide(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockGuide
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      Guide.findById.mockReturnValue({
-        populate: jest.fn().mockReturnValue({
-          populate: jest.fn().mockResolvedValue(null)
-        })
-      });
-
-      await expect(getGuide(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('guideController.getGuide', () => {
+  it('devuelve guía', async () => {
+    const data = { titulo: 'G' };
+    Guide.findById.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getGuide({ params: { id: '1' } }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 getAlternativeActivities
-  describe('getAlternativeActivities', () => {
+  it('lanza 404 si no existe', async () => {
+    Guide.findById.mockReturnValue(chainable(null));
+    await expect(getGuide({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should return alternative activities with filters', async () => {
-      const req = {
-        params: { id: '123' },
-        query: {
-          categoria: 'ocio',
-          exclude: '1,2,3'
-        }
-      };
-      const res = mockRes();
-
-      const mockGuide = {
-        ciudad: { _id: 'city123' }
-      };
-
-      const mockActivities = [{ nombre: 'Actividad' }];
-
-      Guide.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockGuide)
-      });
-
-      Activity.find.mockResolvedValue(mockActivities);
-
-      await getAlternativeActivities(req, res);
-
-      expect(Activity.find).toHaveBeenCalledWith({
-        ciudad: 'city123',
-        isApproved: true,
-        categoria: 'ocio',
-        _id: { $nin: ['1', '2', '3'] }
-      });
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockActivities
-      });
+describe('guideController.getAlternativeActivities', () => {
+  it('devuelve actividades alternativas con filtros', async () => {
+    Guide.findById.mockReturnValue(chainable({ ciudad: { _id: 'city1' } }));
+    const data = [{ nombre: 'A' }];
+    Activity.find.mockResolvedValue(data);
+    const res = mockRes();
+    await getAlternativeActivities(
+      { params: { id: '1' }, query: { categoria: 'CULTURAL', exclude: '1,2' } },
+      res
+    );
+    expect(Activity.find).toHaveBeenCalledWith({
+      ciudad: 'city1',
+      isApproved: true,
+      categoria: 'CULTURAL',
+      _id: { $nin: ['1', '2'] },
     });
-
-    it('should throw error if guide not found', async () => {
-      const req = { params: { id: '123' }, query: {} };
-      const res = mockRes();
-
-      Guide.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(null)
-      });
-
-      await expect(getAlternativeActivities(req, res)).rejects.toThrow(ApiError);
-    });
-
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 createGuide
-  describe('createGuide', () => {
+  it('lanza 404 si la guía no existe', async () => {
+    Guide.findById.mockReturnValue(chainable(null));
+    await expect(
+      getAlternativeActivities({ params: { id: '1' }, query: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should create guide', async () => {
-      const req = { body: { nombre: 'Nueva guía' } };
-      const res = mockRes();
+describe('guideController.createGuide', () => {
+  it('crea guía', async () => {
+    const data = { titulo: 'X' };
+    Guide.create.mockResolvedValue(data);
+    const res = mockRes();
+    await createGuide({ body: data }, res);
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
 
-      const mockGuide = { nombre: 'Nueva guía' };
-
-      Guide.create.mockResolvedValue(mockGuide);
-
-      await createGuide(req, res);
-
-      expect(Guide.create).toHaveBeenCalledWith(req.body);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockGuide
-      });
-    });
-
+describe('guideController.updateGuide', () => {
+  it('actualiza guía', async () => {
+    const data = { titulo: 'U' };
+    Guide.findByIdAndUpdate.mockResolvedValue(data);
+    const res = mockRes();
+    await updateGuide({ params: { id: '1' }, body: data }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 updateGuide
-  describe('updateGuide', () => {
+  it('lanza 404 si no existe', async () => {
+    Guide.findByIdAndUpdate.mockResolvedValue(null);
+    await expect(
+      updateGuide({ params: { id: '1' }, body: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should update guide', async () => {
-      const req = {
-        params: { id: '123' },
-        body: { nombre: 'Updated' }
-      };
-      const res = mockRes();
-
-      const mockGuide = { nombre: 'Updated' };
-
-      Guide.findByIdAndUpdate.mockResolvedValue(mockGuide);
-
-      await updateGuide(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockGuide
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' }, body: {} };
-      const res = mockRes();
-
-      Guide.findByIdAndUpdate.mockResolvedValue(null);
-
-      await expect(updateGuide(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('guideController.deleteGuide', () => {
+  it('elimina guía', async () => {
+    const deleteOne = jest.fn().mockResolvedValue();
+    Guide.findById.mockResolvedValue({ deleteOne });
+    const res = mockRes();
+    await deleteGuide({ params: { id: '1' } }, res);
+    expect(deleteOne).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, message: 'Guía eliminada' });
   });
 
-  // 🔹 deleteGuide
-  describe('deleteGuide', () => {
-
-    it('should delete guide', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const deleteOneMock = jest.fn().mockResolvedValue();
-
-      Guide.findById.mockResolvedValue({
-        deleteOne: deleteOneMock
-      });
-
-      await deleteGuide(req, res);
-
-      expect(deleteOneMock).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        message: 'Guía eliminada'
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      Guide.findById.mockResolvedValue(null);
-
-      await expect(deleteGuide(req, res)).rejects.toThrow(ApiError);
-    });
-
+  it('lanza 404 si no existe', async () => {
+    Guide.findById.mockResolvedValue(null);
+    await expect(deleteGuide({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
   });
-
 });

@@ -1,199 +1,99 @@
-import {
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { chainable, mockRes } from '../helpers/chain.js';
+
+jest.unstable_mockModule('../../src/models/Hotel.js', () => ({
+  default: {
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+const { default: Hotel } = await import('../../src/models/Hotel.js');
+const { default: ApiError } = await import('../../src/utils/ApiError.js');
+const {
   getHotels,
   getHotel,
   createHotel,
   updateHotel,
-  deleteHotel
-} from '../controllers/hotel.controller.js';
+  deleteHotel,
+} = await import('../../src/controllers/hotelController.js');
 
-import Hotel from '../models/Hotel.js';
-import ApiError from '../utils/ApiError.js';
+beforeEach(() => jest.clearAllMocks());
 
-// 🔹 Mock
-jest.mock('../models/Hotel.js');
-
-const mockRes = () => {
-  const res = {};
-  res.json = jest.fn().mockReturnValue(res);
-  res.status = jest.fn().mockReturnValue(res);
-  return res;
-};
-
-describe('Hotel Controller', () => {
-
-  afterEach(() => jest.clearAllMocks());
-
-  // 🔹 getHotels
-  describe('getHotels', () => {
-
-    it('should return hotels with filter', async () => {
-      const req = {
-        query: { ciudad: '123' }
-      };
-      const res = mockRes();
-
-      const mockHotels = [{ nombre: 'Hotel 1' }];
-
-      Hotel.find.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockHotels)
-      });
-
-      await getHotels(req, res);
-
-      expect(Hotel.find).toHaveBeenCalledWith({
-        isApproved: true,
-        ciudad: '123'
-      });
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockHotels
-      });
-    });
-
-    it('should return all approved hotels without city filter', async () => {
-      const req = { query: {} };
-      const res = mockRes();
-
-      const mockHotels = [];
-
-      Hotel.find.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockHotels)
-      });
-
-      await getHotels(req, res);
-
-      expect(Hotel.find).toHaveBeenCalledWith({
-        isApproved: true
-      });
-    });
-
+describe('hotelController.getHotels', () => {
+  it('filtra por ciudad', async () => {
+    const data = [{ nombre: 'Hotel 1' }];
+    Hotel.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getHotels({ query: { ciudad: '123' } }, res);
+    expect(Hotel.find).toHaveBeenCalledWith({ isApproved: true, ciudad: '123' });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 getHotel
-  describe('getHotel', () => {
+  it('sin filtro de ciudad', async () => {
+    Hotel.find.mockReturnValue(chainable([]));
+    await getHotels({ query: {} }, mockRes());
+    expect(Hotel.find).toHaveBeenCalledWith({ isApproved: true });
+  });
+});
 
-    it('should return one hotel', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const mockHotel = { nombre: 'Hotel 1' };
-
-      Hotel.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockHotel)
-      });
-
-      await getHotel(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockHotel
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      Hotel.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(null)
-      });
-
-      await expect(getHotel(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('hotelController.getHotel', () => {
+  it('devuelve un hotel', async () => {
+    const data = { nombre: 'H1' };
+    Hotel.findById.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getHotel({ params: { id: '1' } }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 createHotel
-  describe('createHotel', () => {
+  it('lanza 404 si no existe', async () => {
+    Hotel.findById.mockReturnValue(chainable(null));
+    await expect(getHotel({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should create hotel', async () => {
-      const req = { body: { nombre: 'Nuevo Hotel' } };
-      const res = mockRes();
+describe('hotelController.createHotel', () => {
+  it('crea un hotel', async () => {
+    const data = { nombre: 'Nuevo' };
+    Hotel.create.mockResolvedValue(data);
+    const res = mockRes();
+    await createHotel({ body: data }, res);
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
 
-      const mockHotel = { nombre: 'Nuevo Hotel' };
-
-      Hotel.create.mockResolvedValue(mockHotel);
-
-      await createHotel(req, res);
-
-      expect(Hotel.create).toHaveBeenCalledWith(req.body);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockHotel
-      });
-    });
-
+describe('hotelController.updateHotel', () => {
+  it('actualiza un hotel', async () => {
+    const data = { nombre: 'U' };
+    Hotel.findByIdAndUpdate.mockResolvedValue(data);
+    const res = mockRes();
+    await updateHotel({ params: { id: '1' }, body: data }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 updateHotel
-  describe('updateHotel', () => {
+  it('lanza 404 si no existe', async () => {
+    Hotel.findByIdAndUpdate.mockResolvedValue(null);
+    await expect(
+      updateHotel({ params: { id: '1' }, body: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should update hotel', async () => {
-      const req = {
-        params: { id: '123' },
-        body: { nombre: 'Updated' }
-      };
-      const res = mockRes();
-
-      const mockHotel = { nombre: 'Updated' };
-
-      Hotel.findByIdAndUpdate.mockResolvedValue(mockHotel);
-
-      await updateHotel(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockHotel
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = {
-        params: { id: '123' },
-        body: {}
-      };
-      const res = mockRes();
-
-      Hotel.findByIdAndUpdate.mockResolvedValue(null);
-
-      await expect(updateHotel(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('hotelController.deleteHotel', () => {
+  it('elimina hotel', async () => {
+    const deleteOne = jest.fn().mockResolvedValue();
+    Hotel.findById.mockResolvedValue({ deleteOne });
+    const res = mockRes();
+    await deleteHotel({ params: { id: '1' } }, res);
+    expect(deleteOne).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, message: 'Hotel eliminado' });
   });
 
-  // 🔹 deleteHotel
-  describe('deleteHotel', () => {
-
-    it('should delete hotel', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const deleteOneMock = jest.fn().mockResolvedValue();
-
-      Hotel.findById.mockResolvedValue({
-        deleteOne: deleteOneMock
-      });
-
-      await deleteHotel(req, res);
-
-      expect(deleteOneMock).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        message: 'Hotel eliminado'
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      Hotel.findById.mockResolvedValue(null);
-
-      await expect(deleteHotel(req, res)).rejects.toThrow(ApiError);
-    });
-
+  it('lanza 404 si no existe', async () => {
+    Hotel.findById.mockResolvedValue(null);
+    await expect(deleteHotel({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
   });
-
 });

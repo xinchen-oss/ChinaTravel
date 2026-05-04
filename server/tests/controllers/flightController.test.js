@@ -1,199 +1,99 @@
-import {
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { chainable, mockRes } from '../helpers/chain.js';
+
+jest.unstable_mockModule('../../src/models/Flight.js', () => ({
+  default: {
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+const { default: Flight } = await import('../../src/models/Flight.js');
+const { default: ApiError } = await import('../../src/utils/ApiError.js');
+const {
   getFlights,
   getFlight,
   createFlight,
   updateFlight,
-  deleteFlight
-} from '../controllers/flight.controller.js';
+  deleteFlight,
+} = await import('../../src/controllers/flightController.js');
 
-import Flight from '../models/Flight.js';
-import ApiError from '../utils/ApiError.js';
+beforeEach(() => jest.clearAllMocks());
 
-// 🔹 Mock
-jest.mock('../models/Flight.js');
-
-const mockRes = () => {
-  const res = {};
-  res.json = jest.fn().mockReturnValue(res);
-  res.status = jest.fn().mockReturnValue(res);
-  return res;
-};
-
-describe('Flight Controller', () => {
-
-  afterEach(() => jest.clearAllMocks());
-
-  // 🔹 getFlights
-  describe('getFlights', () => {
-
-    it('should return flights with filter', async () => {
-      const req = {
-        query: { ciudad: '123' }
-      };
-      const res = mockRes();
-
-      const mockFlights = [{ name: 'Vuelo 1' }];
-
-      Flight.find.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockFlights)
-      });
-
-      await getFlights(req, res);
-
-      expect(Flight.find).toHaveBeenCalledWith({
-        isApproved: true,
-        ciudadDestino: '123'
-      });
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockFlights
-      });
-    });
-
-    it('should return all approved flights without city filter', async () => {
-      const req = { query: {} };
-      const res = mockRes();
-
-      const mockFlights = [];
-
-      Flight.find.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockFlights)
-      });
-
-      await getFlights(req, res);
-
-      expect(Flight.find).toHaveBeenCalledWith({
-        isApproved: true
-      });
-    });
-
+describe('flightController.getFlights', () => {
+  it('filtra por ciudad destino', async () => {
+    const data = [{ aerolinea: 'X' }];
+    Flight.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getFlights({ query: { ciudad: 'PEK' } }, res);
+    expect(Flight.find).toHaveBeenCalledWith({ isApproved: true, ciudadDestino: 'PEK' });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 getFlight
-  describe('getFlight', () => {
+  it('sin filtro', async () => {
+    Flight.find.mockReturnValue(chainable([]));
+    await getFlights({ query: {} }, mockRes());
+    expect(Flight.find).toHaveBeenCalledWith({ isApproved: true });
+  });
+});
 
-    it('should return one flight', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const mockFlight = { name: 'Vuelo 1' };
-
-      Flight.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(mockFlight)
-      });
-
-      await getFlight(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockFlight
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      Flight.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue(null)
-      });
-
-      await expect(getFlight(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('flightController.getFlight', () => {
+  it('devuelve un vuelo', async () => {
+    const data = { aerolinea: 'X' };
+    Flight.findById.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getFlight({ params: { id: '1' } }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 createFlight
-  describe('createFlight', () => {
+  it('lanza 404 si no existe', async () => {
+    Flight.findById.mockReturnValue(chainable(null));
+    await expect(getFlight({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should create flight', async () => {
-      const req = { body: { name: 'Vuelo nuevo' } };
-      const res = mockRes();
+describe('flightController.createFlight', () => {
+  it('crea un vuelo', async () => {
+    const data = { aerolinea: 'X' };
+    Flight.create.mockResolvedValue(data);
+    const res = mockRes();
+    await createFlight({ body: data }, res);
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
 
-      const mockFlight = { name: 'Vuelo nuevo' };
-
-      Flight.create.mockResolvedValue(mockFlight);
-
-      await createFlight(req, res);
-
-      expect(Flight.create).toHaveBeenCalledWith(req.body);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockFlight
-      });
-    });
-
+describe('flightController.updateFlight', () => {
+  it('actualiza un vuelo', async () => {
+    const data = { aerolinea: 'U' };
+    Flight.findByIdAndUpdate.mockResolvedValue(data);
+    const res = mockRes();
+    await updateFlight({ params: { id: '1' }, body: data }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 updateFlight
-  describe('updateFlight', () => {
+  it('lanza 404 si no existe', async () => {
+    Flight.findByIdAndUpdate.mockResolvedValue(null);
+    await expect(
+      updateFlight({ params: { id: '1' }, body: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should update flight', async () => {
-      const req = {
-        params: { id: '123' },
-        body: { name: 'Updated' }
-      };
-      const res = mockRes();
-
-      const mockFlight = { name: 'Updated' };
-
-      Flight.findByIdAndUpdate.mockResolvedValue(mockFlight);
-
-      await updateFlight(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockFlight
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = {
-        params: { id: '123' },
-        body: {}
-      };
-      const res = mockRes();
-
-      Flight.findByIdAndUpdate.mockResolvedValue(null);
-
-      await expect(updateFlight(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('flightController.deleteFlight', () => {
+  it('elimina vuelo', async () => {
+    const deleteOne = jest.fn().mockResolvedValue();
+    Flight.findById.mockResolvedValue({ deleteOne });
+    const res = mockRes();
+    await deleteFlight({ params: { id: '1' } }, res);
+    expect(deleteOne).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, message: 'Vuelo eliminado' });
   });
 
-  // 🔹 deleteFlight
-  describe('deleteFlight', () => {
-
-    it('should delete flight', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const deleteOneMock = jest.fn().mockResolvedValue();
-
-      Flight.findById.mockResolvedValue({
-        deleteOne: deleteOneMock
-      });
-
-      await deleteFlight(req, res);
-
-      expect(deleteOneMock).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        message: 'Vuelo eliminado'
-      });
-    });
-
-    it('should throw error if not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      Flight.findById.mockResolvedValue(null);
-
-      await expect(deleteFlight(req, res)).rejects.toThrow(ApiError);
-    });
-
+  it('lanza 404 si no existe', async () => {
+    Flight.findById.mockResolvedValue(null);
+    await expect(deleteFlight({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
   });
-
 });

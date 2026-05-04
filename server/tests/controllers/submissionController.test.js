@@ -1,227 +1,156 @@
-import {
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { chainable, mockRes } from '../helpers/chain.js';
+
+jest.unstable_mockModule('../../src/models/Submission.js', () => ({
+  default: {
+    create: jest.fn(),
+    find: jest.fn(),
+    findById: jest.fn(),
+  },
+}));
+jest.unstable_mockModule('../../src/models/Activity.js', () => ({
+  default: { create: jest.fn() },
+}));
+jest.unstable_mockModule('../../src/models/Hotel.js', () => ({
+  default: { create: jest.fn() },
+}));
+jest.unstable_mockModule('../../src/models/Flight.js', () => ({
+  default: { create: jest.fn() },
+}));
+jest.unstable_mockModule('../../src/models/User.js', () => ({
+  default: { find: jest.fn() },
+}));
+jest.unstable_mockModule('../../src/services/emailService.js', () => ({
+  sendEmail: jest.fn(),
+}));
+
+const { default: Submission } = await import('../../src/models/Submission.js');
+const { default: Activity } = await import('../../src/models/Activity.js');
+const { default: Hotel } = await import('../../src/models/Hotel.js');
+const { default: User } = await import('../../src/models/User.js');
+const { sendEmail } = await import('../../src/services/emailService.js');
+const { default: ApiError } = await import('../../src/utils/ApiError.js');
+const { SUBMISSION_STATUS } = await import('../../src/utils/constants.js');
+const {
   createSubmission,
   getSubmissions,
   getMySubmissions,
   approveSubmission,
-  rejectSubmission
-} from '../controllers/submission.controller.js';
+  rejectSubmission,
+} = await import('../../src/controllers/submissionController.js');
 
-import Submission from '../models/Submission.js';
-import Activity from '../models/Activity.js';
-import Hotel from '../models/Hotel.js';
-import Flight from '../models/Flight.js';
-import User from '../models/User.js';
-import ApiError from '../utils/ApiError.js';
-import { SUBMISSION_STATUS } from '../utils/constants.js';
-import { sendEmail } from '../services/emailService.js';
+beforeEach(() => jest.clearAllMocks());
 
-// 🔹 mocks
-jest.mock('../models/Submission.js');
-jest.mock('../models/Activity.js');
-jest.mock('../models/Hotel.js');
-jest.mock('../models/Flight.js');
-jest.mock('../models/User.js');
-jest.mock('../services/emailService.js');
-
-const mockRes = () => {
-  const res = {};
-  res.json = jest.fn().mockReturnValue(res);
-  res.status = jest.fn().mockReturnValue(res);
-  return res;
-};
-
-describe('Submission Controller', () => {
-
-  afterEach(() => jest.clearAllMocks());
-
-  // 🔹 createSubmission
-  describe('createSubmission', () => {
-
-    it('should create submission and notify admins', async () => {
-      const req = {
-        user: { _id: 'user1', nombre: 'Test', email: 'test@test.com' },
-        body: {
-          tipoContenido: 'ACTIVIDAD',
-          contenido: { nombre: 'Actividad 1' }
-        }
-      };
-      const res = mockRes();
-
-      const mockSubmission = { _id: 'sub1' };
-
-      Submission.create.mockResolvedValue(mockSubmission);
-      User.find.mockResolvedValue([{ email: 'admin@test.com' }]);
-
-      await createSubmission(req, res);
-
-      expect(Submission.create).toHaveBeenCalled();
-      expect(User.find).toHaveBeenCalledWith({ role: 'ADMIN' });
-      expect(sendEmail).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(201);
-    });
-
-    it('should parse contenido if string', async () => {
-      const req = {
-        user: { _id: 'user1' },
-        body: {
-          tipoContenido: 'HOTEL',
-          contenido: JSON.stringify({ nombre: 'Hotel 1' })
-        }
-      };
-      const res = mockRes();
-
-      Submission.create.mockResolvedValue({});
-      User.find.mockResolvedValue([]);
-
-      await createSubmission(req, res);
-
-      expect(Submission.create).toHaveBeenCalled();
-    });
-
+describe('submissionController.createSubmission', () => {
+  it('crea solicitud y notifica admins', async () => {
+    Submission.create.mockResolvedValue({ _id: 's1' });
+    User.find.mockResolvedValue([{ email: 'admin@test.com' }]);
+    const res = mockRes();
+    await createSubmission(
+      {
+        user: { _id: 'u1', nombre: 'Test', email: 'u@t.com' },
+        body: { tipoContenido: 'ACTIVIDAD', contenido: { nombre: 'A' } },
+      },
+      res
+    );
+    expect(Submission.create).toHaveBeenCalled();
+    expect(User.find).toHaveBeenCalledWith({ role: 'ADMIN' });
+    expect(sendEmail).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
   });
 
-  // 🔹 getSubmissions
-  it('should return submissions with filter', async () => {
-    const req = { query: { estado: 'PENDIENTE' } };
+  it('parsea contenido si viene como string JSON', async () => {
+    Submission.create.mockResolvedValue({});
+    User.find.mockResolvedValue([]);
+    await createSubmission(
+      {
+        user: { _id: 'u1', nombre: 'T', email: 'u@t.com' },
+        body: { tipoContenido: 'HOTEL', contenido: JSON.stringify({ nombre: 'H' }) },
+      },
+      mockRes()
+    );
+    expect(Submission.create).toHaveBeenCalledWith(
+      expect.objectContaining({ tipoContenido: 'HOTEL', contenido: { nombre: 'H' } })
+    );
+  });
+});
+
+describe('submissionController.getSubmissions', () => {
+  it('filtra por estado', async () => {
+    const data = [{ _id: '1' }];
+    Submission.find.mockReturnValue(chainable(data));
     const res = mockRes();
-
-    const mockData = [{ _id: '1' }];
-
-    Submission.find.mockReturnValue({
-      populate: jest.fn().mockReturnThis(),
-      sort: jest.fn().mockResolvedValue(mockData)
-    });
-
-    await getSubmissions(req, res);
-
+    await getSubmissions({ query: { estado: 'PENDIENTE' } }, res);
     expect(Submission.find).toHaveBeenCalledWith({ estado: 'PENDIENTE' });
-    expect(res.json).toHaveBeenCalledWith({
-      ok: true,
-      data: mockData
-    });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
+
+describe('submissionController.getMySubmissions', () => {
+  it('devuelve solicitudes del usuario', async () => {
+    Submission.find.mockReturnValue(chainable([]));
+    await getMySubmissions({ user: { _id: 'u1' } }, mockRes());
+    expect(Submission.find).toHaveBeenCalledWith({ comercial: 'u1' });
+  });
+});
+
+describe('submissionController.approveSubmission', () => {
+  const buildSubmission = (overrides = {}) => ({
+    estado: SUBMISSION_STATUS.PENDIENTE,
+    tipoContenido: 'ACTIVIDAD',
+    contenido: {},
+    comentarioAdmin: '',
+    comercial: { _id: 'u1', email: 'u@t.com', nombre: 'Test' },
+    save: jest.fn().mockResolvedValue(),
+    ...overrides,
   });
 
-  // 🔹 getMySubmissions
-  it('should return user submissions', async () => {
-    const req = { user: { _id: 'user1' } };
+  it('aprueba ACTIVIDAD: crea Activity, envía email', async () => {
+    Submission.findById.mockReturnValue(chainable(buildSubmission()));
     const res = mockRes();
-
-    const mockData = [];
-
-    Submission.find.mockReturnValue({
-      sort: jest.fn().mockResolvedValue(mockData)
-    });
-
-    await getMySubmissions(req, res);
-
-    expect(Submission.find).toHaveBeenCalledWith({ comercial: 'user1' });
+    await approveSubmission({ params: { id: '1' }, body: {} }, res);
+    expect(Activity.create).toHaveBeenCalled();
+    expect(sendEmail).toHaveBeenCalled();
   });
 
-  // 🔹 approveSubmission
-  describe('approveSubmission', () => {
-
-    it('should approve and create ACTIVITY', async () => {
-      const req = {
-        params: { id: '1' },
-        body: {}
-      };
-      const res = mockRes();
-
-      const saveMock = jest.fn();
-
-      Submission.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue({
-          estado: SUBMISSION_STATUS.PENDIENTE,
-          tipoContenido: 'ACTIVIDAD',
-          contenido: {},
-          comercial: { _id: 'user1', email: 'test@test.com', nombre: 'Test' },
-          save: saveMock
-        })
-      });
-
-      await approveSubmission(req, res);
-
-      expect(Activity.create).toHaveBeenCalled();
-      expect(sendEmail).toHaveBeenCalled();
-      expect(saveMock).toHaveBeenCalled();
-    });
-
-    it('should approve and create HOTEL', async () => {
-      const req = { params: { id: '1' }, body: {} };
-      const res = mockRes();
-
-      Submission.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue({
-          estado: SUBMISSION_STATUS.PENDIENTE,
-          tipoContenido: 'HOTEL',
-          contenido: {},
-          comercial: { _id: 'user1', email: 'test@test.com', nombre: 'Test' },
-          save: jest.fn()
-        })
-      });
-
-      await approveSubmission(req, res);
-
-      expect(Hotel.create).toHaveBeenCalled();
-    });
-
-    it('should throw if not pending', async () => {
-      const req = { params: { id: '1' }, body: {} };
-      const res = mockRes();
-
-      Submission.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue({
-          estado: SUBMISSION_STATUS.APROBADO
-        })
-      });
-
-      await expect(approveSubmission(req, res)).rejects.toThrow(ApiError);
-    });
-
+  it('aprueba HOTEL: crea Hotel', async () => {
+    Submission.findById.mockReturnValue(chainable(buildSubmission({ tipoContenido: 'HOTEL' })));
+    await approveSubmission({ params: { id: '1' }, body: {} }, mockRes());
+    expect(Hotel.create).toHaveBeenCalled();
   });
 
-  // 🔹 rejectSubmission
-  describe('rejectSubmission', () => {
+  it('rechaza si la solicitud ya no está pendiente', async () => {
+    Submission.findById.mockReturnValue(
+      chainable(buildSubmission({ estado: SUBMISSION_STATUS.APROBADO }))
+    );
+    await expect(
+      approveSubmission({ params: { id: '1' }, body: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should reject submission', async () => {
-      const req = {
-        params: { id: '1' },
-        body: { comentario: 'Error' }
-      };
-      const res = mockRes();
-
-      const saveMock = jest.fn();
-
-      Submission.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue({
-          estado: SUBMISSION_STATUS.PENDIENTE,
-          contenido: {},
-          tipoContenido: 'HOTEL',
-          comentarioAdmin: '',
-          comercial: { email: 'test@test.com', nombre: 'Test' },
-          save: saveMock
-        })
-      });
-
-      await rejectSubmission(req, res);
-
-      expect(saveMock).toHaveBeenCalled();
-      expect(sendEmail).toHaveBeenCalled();
-    });
-
-    it('should throw if not pending', async () => {
-      const req = { params: { id: '1' }, body: {} };
-      const res = mockRes();
-
-      Submission.findById.mockReturnValue({
-        populate: jest.fn().mockResolvedValue({
-          estado: SUBMISSION_STATUS.RECHAZADO
-        })
-      });
-
-      await expect(rejectSubmission(req, res)).rejects.toThrow(ApiError);
-    });
-
+describe('submissionController.rejectSubmission', () => {
+  it('rechaza solicitud y envía email', async () => {
+    const sub = {
+      estado: SUBMISSION_STATUS.PENDIENTE,
+      tipoContenido: 'HOTEL',
+      contenido: {},
+      comentarioAdmin: '',
+      comercial: { email: 'u@t.com', nombre: 'Test' },
+      save: jest.fn().mockResolvedValue(),
+    };
+    Submission.findById.mockReturnValue(chainable(sub));
+    await rejectSubmission({ params: { id: '1' }, body: { comentario: 'No' } }, mockRes());
+    expect(sub.save).toHaveBeenCalled();
+    expect(sendEmail).toHaveBeenCalled();
   });
 
+  it('lanza ApiError si ya estaba rechazada', async () => {
+    Submission.findById.mockReturnValue(
+      chainable({ estado: SUBMISSION_STATUS.RECHAZADO })
+    );
+    await expect(
+      rejectSubmission({ params: { id: '1' }, body: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
 });

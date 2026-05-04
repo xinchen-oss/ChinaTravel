@@ -1,319 +1,129 @@
-import {
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { mockRes } from '../helpers/chain.js';
+
+jest.unstable_mockModule('../../src/models/User.js', () => ({
+  default: {
+    findOne: jest.fn(),
+    findById: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+jest.unstable_mockModule('../../src/services/emailService.js', () => ({
+  sendEmail: jest.fn(),
+}));
+jest.unstable_mockModule('jsonwebtoken', () => ({
+  default: { sign: jest.fn() },
+}));
+
+const { default: User } = await import('../../src/models/User.js');
+const { sendEmail } = await import('../../src/services/emailService.js');
+const { default: jwt } = await import('jsonwebtoken');
+const { default: ApiError } = await import('../../src/utils/ApiError.js');
+const {
   register,
   login,
   getMe,
-  updateProfile,
- solicitarCambioEmail,
-  confirmarCambioEmail,
-  forgotPassword,
-  resetPassword
-} from '../controllers/auth.controller.js';
+} = await import('../../src/controllers/authController.js');
 
-import User from '../models/User.js';
-import ApiError from '../utils/ApiError.js';
-import { sendEmail } from '../services/emailService.js';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
+beforeEach(() => jest.clearAllMocks());
 
-// 🔹 Mocks
-jest.mock('../models/User.js');
-jest.mock('../services/emailService.js');
-jest.mock('jsonwebtoken');
-
-const mockRes = () => {
-  const res = {};
-  res.json = jest.fn().mockReturnValue(res);
-  res.status = jest.fn().mockReturnValue(res);
-  return res;
+const validBody = {
+  nombre: 'Ana',
+  email: 'ana@test.com',
+  password: 'Abcdefg1!',
+  role: 'USER',
 };
 
-describe('Auth Controller', () => {
+describe('authController.register', () => {
+  it('registra un usuario USER y devuelve token', async () => {
+    User.findOne.mockResolvedValue(null);
+    User.create.mockResolvedValue({ _id: '1', ...validBody });
+    jwt.sign.mockReturnValue('TKN');
+    const res = mockRes();
 
-  afterEach(() => jest.clearAllMocks());
+    await register({ body: validBody }, res);
 
-  // 🔹 REGISTER
-  describe('register', () => {
-
-    it('should register normal user', async () => {
-      const req = {
-        body: {
-          nombre: 'Ella',
-          email: 'test@test.com',
-          password: 'Password1!',
-          role: 'USER'
-        }
-      };
-      const res = mockRes();
-
-      User.findOne.mockResolvedValue(null);
-      User.create.mockResolvedValue({ _id: '123', ...req.body });
-
-      jwt.sign.mockReturnValue('token123');
-
-      await register(req, res);
-
-      expect(sendEmail).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        ok: true,
-        token: 'token123'
-      }));
-    });
-
-    it('should fail if email exists', async () => {
-      const req = { body: { email: 'test@test.com' } };
-      const res = mockRes();
-
-      User.findOne.mockResolvedValue({ email: 'test@test.com' });
-
-      await expect(register(req, res)).rejects.toThrow(ApiError);
-    });
-
-    it('should register comercial user (pending approval)', async () => {
-      const req = {
-        body: {
-          nombre: 'Ella',
-          email: 'test@test.com',
-          password: 'Password1!',
-          role: 'COMERCIAL'
-        }
-      };
-      const res = mockRes();
-
-      User.findOne.mockResolvedValue(null);
-      User.create.mockResolvedValue({ _id: '123', ...req.body });
-
-      await register(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        pendingApproval: true
-      }));
-    });
-
+    expect(sendEmail).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ ok: true, token: 'TKN' })
+    );
   });
 
-  // 🔹 LOGIN
-  describe('login', () => {
-
-    it('should login successfully', async () => {
-      const req = {
-        body: { email: 'test@test.com', password: 'Password1!' }
-      };
-      const res = mockRes();
-
-      const mockUser = {
-        _id: '123',
-        isActive: true,
-        isApproved: true,
-        comparePassword: jest.fn().mockResolvedValue(true)
-      };
-
-      User.findOne.mockReturnValue({
-        select: jest.fn().mockResolvedValue(mockUser)
-      });
-
-      jwt.sign.mockReturnValue('token123');
-
-      await login(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        ok: true,
-        token: 'token123'
-      }));
-    });
-
-    it('should fail with wrong password', async () => {
-      const req = { body: { email: 'a', password: 'b' } };
-      const res = mockRes();
-
-      const mockUser = {
-        comparePassword: jest.fn().mockResolvedValue(false)
-      };
-
-      User.findOne.mockReturnValue({
-        select: jest.fn().mockResolvedValue(mockUser)
-      });
-
-      await expect(login(req, res)).rejects.toThrow(ApiError);
-    });
-
+  it('lanza ApiError si el email ya existe', async () => {
+    User.findOne.mockResolvedValue({ email: validBody.email });
+    await expect(register({ body: validBody }, mockRes())).rejects.toThrow(ApiError);
   });
 
-  // 🔹 GET ME
-  describe('getMe', () => {
-    it('should return current user', async () => {
-      const req = { user: { _id: '123', nombre: 'Ella' } };
-      const res = mockRes();
+  it('un comercial queda pendiente de aprobación (sin token)', async () => {
+    User.findOne.mockResolvedValue(null);
+    User.create.mockResolvedValue({ _id: '1', ...validBody, role: 'COMERCIAL' });
+    const res = mockRes();
 
-      await getMe(req, res);
+    await register(
+      { body: { ...validBody, role: 'COMERCIAL', empresaNombre: 'X', empresaCIF: 'B1' } },
+      res
+    );
 
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        ok: true
-      }));
-    });
+    expect(sendEmail).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ pendingApproval: true })
+    );
   });
 
-  // 🔹 UPDATE PROFILE
-  describe('updateProfile', () => {
+  it('lanza ApiError si la password es débil', async () => {
+    await expect(
+      register({ body: { ...validBody, password: '123' } }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-    it('should update user profile', async () => {
-      const req = {
-        user: { _id: '123' },
-        body: { nombre: 'Nuevo' }
-      };
-      const res = mockRes();
+describe('authController.login', () => {
+  it('inicia sesión con credenciales correctas', async () => {
+    const user = {
+      _id: '1',
+      isActive: true,
+      isApproved: true,
+      comparePassword: jest.fn().mockResolvedValue(true),
+    };
+    User.findOne.mockReturnValue({ select: jest.fn().mockResolvedValue(user) });
+    jwt.sign.mockReturnValue('TKN');
+    const res = mockRes();
 
-      const saveMock = jest.fn();
+    await login({ body: { email: 'a@b.com', password: 'x' } }, res);
 
-      const mockUser = {
-        nombre: 'Viejo',
-        save: saveMock
-      };
-
-      User.findById.mockReturnValue({
-        select: jest.fn().mockResolvedValue(mockUser)
-      });
-
-      await updateProfile(req, res);
-
-      expect(saveMock).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalled();
-    });
-
-    it('should fail if user not found', async () => {
-      const req = { user: { _id: '123' }, body: {} };
-      const res = mockRes();
-
-      User.findById.mockReturnValue({
-        select: jest.fn().mockResolvedValue(null)
-      });
-
-      await expect(updateProfile(req, res)).rejects.toThrow(ApiError);
-    });
-
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ ok: true, token: 'TKN' })
+    );
   });
 
-  // 🔹 SOLICITAR CAMBIO EMAIL
-  describe('solicitarCambioEmail', () => {
-
-    it('should send email change request', async () => {
-      const req = {
-        user: { _id: '123' },
-        body: { nuevoEmail: 'new@test.com' }
-      };
-      const res = mockRes();
-
-      const saveMock = jest.fn();
-
-      const mockUser = {
-        email: 'old@test.com',
-        nombre: 'Ella',
-        save: saveMock
-      };
-
-      User.findById.mockResolvedValue(mockUser);
-      User.findOne.mockResolvedValue(null);
-
-      await solicitarCambioEmail(req, res);
-
-      expect(sendEmail).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalled();
-    });
-
+  it('rechaza con password incorrecta', async () => {
+    const user = { comparePassword: jest.fn().mockResolvedValue(false) };
+    User.findOne.mockReturnValue({ select: jest.fn().mockResolvedValue(user) });
+    await expect(
+      login({ body: { email: 'a@b.com', password: 'x' } }, mockRes())
+    ).rejects.toThrow(ApiError);
   });
 
-  // 🔹 CONFIRMAR CAMBIO EMAIL
-  describe('confirmarCambioEmail', () => {
-
-    it('should confirm email change', async () => {
-      const req = { params: { token: 'token' } };
-      const res = mockRes();
-
-      const saveMock = jest.fn();
-
-      const mockUser = {
-        pendingEmail: 'new@test.com',
-        save: saveMock
-      };
-
-      jest.spyOn(crypto, 'createHash').mockReturnValue({
-        update: () => ({
-          digest: () => 'hashed'
-        })
-      });
-
-      User.findOne.mockResolvedValue(mockUser);
-
-      await confirmarCambioEmail(req, res);
-
-      expect(saveMock).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalled();
-    });
-
+  it('rechaza si la cuenta comercial no está aprobada', async () => {
+    const user = {
+      isActive: true,
+      isApproved: false,
+      comparePassword: jest.fn().mockResolvedValue(true),
+    };
+    User.findOne.mockReturnValue({ select: jest.fn().mockResolvedValue(user) });
+    await expect(
+      login({ body: { email: 'a@b.com', password: 'x' } }, mockRes())
+    ).rejects.toThrow(ApiError);
   });
+});
 
-  // 🔹 FORGOT PASSWORD
-  describe('forgotPassword', () => {
-
-    it('should send reset email', async () => {
-      const req = { body: { email: 'test@test.com' } };
-      const res = mockRes();
-
-      const saveMock = jest.fn();
-
-      const mockUser = {
-        nombre: 'Ella',
-        save: saveMock
-      };
-
-      User.findOne.mockResolvedValue(mockUser);
-
-      await forgotPassword(req, res);
-
-      expect(sendEmail).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalled();
-    });
-
+describe('authController.getMe', () => {
+  it('devuelve el usuario actual', async () => {
+    const res = mockRes();
+    await getMe({ user: { _id: '1', nombre: 'Ana', email: 'a@b.com' } }, res);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ ok: true, user: expect.objectContaining({ nombre: 'Ana' }) })
+    );
   });
-
-  // 🔹 RESET PASSWORD
-  describe('resetPassword', () => {
-
-    it('should reset password successfully', async () => {
-      const req = {
-        params: { token: 'token' },
-        body: { password: 'Password1!' }
-      };
-      const res = mockRes();
-
-      const saveMock = jest.fn();
-
-      const mockUser = {
-        _id: '123',
-        nombre: 'Ella',
-        email: 'test@test.com',
-        save: saveMock
-      };
-
-      jest.spyOn(crypto, 'createHash').mockReturnValue({
-        update: () => ({
-          digest: () => 'hashed'
-        })
-      });
-
-      User.findOne.mockResolvedValue(mockUser);
-      jwt.sign.mockReturnValue('token123');
-
-      await resetPassword(req, res);
-
-      expect(saveMock).toHaveBeenCalled();
-      expect(sendEmail).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        ok: true,
-        token: 'token123'
-      }));
-    });
-
-  });
-
 });

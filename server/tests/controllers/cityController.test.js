@@ -1,186 +1,108 @@
-import {
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { chainable, mockRes } from '../helpers/chain.js';
+
+jest.unstable_mockModule('../../src/models/City.js', () => ({
+  default: {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+const { default: City } = await import('../../src/models/City.js');
+const { default: ApiError } = await import('../../src/utils/ApiError.js');
+const {
   getCities,
   getFeaturedCities,
   getCityBySlug,
   createCity,
   updateCity,
-  deleteCity
-} from '../controllers/city.controller.js';
+  deleteCity,
+} = await import('../../src/controllers/cityController.js');
 
-import City from '../models/City.js';
-import ApiError from '../utils/ApiError.js';
+beforeEach(() => jest.clearAllMocks());
 
-// 🔹 Mock del modelo
-jest.mock('../models/City.js');
+describe('cityController.getCities', () => {
+  it('devuelve todas las ciudades ordenadas', async () => {
+    const data = [{ nombre: 'Madrid' }];
+    City.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getCities({}, res);
+    expect(City.find).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
 
-const mockRes = () => {
-  const res = {};
-  res.json = jest.fn().mockReturnValue(res);
-  res.status = jest.fn().mockReturnValue(res);
-  return res;
-};
+describe('cityController.getFeaturedCities', () => {
+  it('filtra por destacada=true', async () => {
+    const data = [{ nombre: 'Beijing', destacada: true }];
+    City.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getFeaturedCities({}, res);
+    expect(City.find).toHaveBeenCalledWith({ destacada: true });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
 
-describe('City Controller', () => {
-
-  afterEach(() => jest.clearAllMocks());
-
-  // 🔹 getCities
-  describe('getCities', () => {
-    it('should return all cities sorted', async () => {
-      const req = {};
-      const res = mockRes();
-
-      const mockCities = [{ nombre: 'Madrid' }];
-
-      City.find.mockReturnValue({
-        sort: jest.fn().mockResolvedValue(mockCities)
-      });
-
-      await getCities(req, res);
-
-      expect(City.find).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockCities
-      });
-    });
+describe('cityController.getCityBySlug', () => {
+  it('devuelve la ciudad por slug', async () => {
+    const data = { nombre: 'Madrid' };
+    City.findOne.mockResolvedValue(data);
+    const res = mockRes();
+    await getCityBySlug({ params: { slug: 'madrid' } }, res);
+    expect(City.findOne).toHaveBeenCalledWith({ slug: 'madrid' });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 getFeaturedCities
-  describe('getFeaturedCities', () => {
-    it('should return featured cities', async () => {
-      const req = {};
-      const res = mockRes();
+  it('lanza 404 si no existe', async () => {
+    City.findOne.mockResolvedValue(null);
+    await expect(getCityBySlug({ params: { slug: 'x' } }, mockRes())).rejects.toThrow(ApiError);
+  });
+});
 
-      const mockCities = [{ nombre: 'Beijing', destacada: true }];
+describe('cityController.createCity', () => {
+  it('crea una ciudad con status 201', async () => {
+    const data = { nombre: 'Shanghai' };
+    City.create.mockResolvedValue(data);
+    const res = mockRes();
+    await createCity({ body: data }, res);
+    expect(City.create).toHaveBeenCalledWith(data);
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+});
 
-      City.find.mockReturnValue({
-        sort: jest.fn().mockResolvedValue(mockCities)
-      });
-
-      await getFeaturedCities(req, res);
-
-      expect(City.find).toHaveBeenCalledWith({ destacada: true });
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockCities
-      });
-    });
+describe('cityController.updateCity', () => {
+  it('actualiza una ciudad', async () => {
+    const data = { nombre: 'Updated' };
+    City.findByIdAndUpdate.mockResolvedValue(data);
+    const res = mockRes();
+    await updateCity({ params: { id: '1' }, body: data }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
-  // 🔹 getCityBySlug
-  describe('getCityBySlug', () => {
-    it('should return a city by slug', async () => {
-      const req = { params: { slug: 'madrid' } };
-      const res = mockRes();
+  it('lanza 404 si no existe', async () => {
+    City.findByIdAndUpdate.mockResolvedValue(null);
+    await expect(
+      updateCity({ params: { id: '1' }, body: {} }, mockRes())
+    ).rejects.toThrow(ApiError);
+  });
+});
 
-      const mockCity = { nombre: 'Madrid' };
-
-      City.findOne.mockResolvedValue(mockCity);
-
-      await getCityBySlug(req, res);
-
-      expect(City.findOne).toHaveBeenCalledWith({ slug: 'madrid' });
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockCity
-      });
-    });
-
-    it('should throw error if city not found', async () => {
-      const req = { params: { slug: 'unknown' } };
-      const res = mockRes();
-
-      City.findOne.mockResolvedValue(null);
-
-      await expect(getCityBySlug(req, res)).rejects.toThrow(ApiError);
-    });
+describe('cityController.deleteCity', () => {
+  it('elimina la ciudad', async () => {
+    const deleteOne = jest.fn().mockResolvedValue();
+    City.findById.mockResolvedValue({ deleteOne });
+    const res = mockRes();
+    await deleteCity({ params: { id: '1' } }, res);
+    expect(deleteOne).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, message: 'Ciudad eliminada' });
   });
 
-  // 🔹 createCity
-  describe('createCity', () => {
-    it('should create a city', async () => {
-      const req = { body: { nombre: 'Shanghai' } };
-      const res = mockRes();
-
-      const mockCity = { nombre: 'Shanghai' };
-
-      City.create.mockResolvedValue(mockCity);
-
-      await createCity(req, res);
-
-      expect(City.create).toHaveBeenCalledWith(req.body);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockCity
-      });
-    });
+  it('lanza 404 si no existe', async () => {
+    City.findById.mockResolvedValue(null);
+    await expect(deleteCity({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
   });
-
-  // 🔹 updateCity
-  describe('updateCity', () => {
-    it('should update a city', async () => {
-      const req = {
-        params: { id: '123' },
-        body: { nombre: 'Updated' }
-      };
-      const res = mockRes();
-
-      const mockCity = { nombre: 'Updated' };
-
-      City.findByIdAndUpdate.mockResolvedValue(mockCity);
-
-      await updateCity(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        data: mockCity
-      });
-    });
-
-    it('should throw error if city not found', async () => {
-      const req = {
-        params: { id: '123' },
-        body: {}
-      };
-      const res = mockRes();
-
-      City.findByIdAndUpdate.mockResolvedValue(null);
-
-      await expect(updateCity(req, res)).rejects.toThrow(ApiError);
-    });
-  });
-
-  // 🔹 deleteCity
-  describe('deleteCity', () => {
-    it('should delete a city', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      const deleteOneMock = jest.fn().mockResolvedValue();
-
-      City.findById.mockResolvedValue({
-        deleteOne: deleteOneMock
-      });
-
-      await deleteCity(req, res);
-
-      expect(deleteOneMock).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        ok: true,
-        message: 'Ciudad eliminada'
-      });
-    });
-
-    it('should throw error if city not found', async () => {
-      const req = { params: { id: '123' } };
-      const res = mockRes();
-
-      City.findById.mockResolvedValue(null);
-
-      await expect(deleteCity(req, res)).rejects.toThrow(ApiError);
-    });
-  });
-
 });
