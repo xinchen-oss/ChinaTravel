@@ -1957,9 +1957,9 @@ const seed = async () => {
   console.log('Artículos: 7');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('Credenciales:');
-  console.log('  Admin: admin@chinatravel.com / admin123');
-  console.log('  Comercial: comercial@chinatravel.com / comercial123');
-  console.log('  Usuario: user@chinatravel.com / user123');
+  console.log('  Admin: admin@chinatravel.com / Admin123!');
+  console.log('  Comercial: comercial@chinatravel.com / Comercial1!');
+  console.log('  Usuario: user@chinatravel.com / User1234!');
 
   process.exit(0);
 };
