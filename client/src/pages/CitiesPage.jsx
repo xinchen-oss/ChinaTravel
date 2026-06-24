@@ -6,10 +6,8 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 export default function CitiesPage() {
   const { cities, loading } = useCities();
   const [search, setSearch] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
   const filtered = useMemo(() => {
     return cities.filter((city) => {
-      if (selectedCity && city._id !== selectedCity) return false;
       if (search) {
         const term = search.toLowerCase();
         return (
@@ -20,14 +18,13 @@ export default function CitiesPage() {
       }
       return true;
     });
-  }, [cities, search, selectedCity]);
+  }, [cities, search]);
 
   const clearFilters = () => {
     setSearch('');
-    setSelectedCity('');
   };
 
-  const hasFilters = search || selectedCity;
+  const hasFilters = search;
 
   return (
     <div className="page">
@@ -57,26 +54,6 @@ export default function CitiesPage() {
               fontSize: 'var(--font-size-base, 1rem)',
             }}
           />
-          <select
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-            aria-label="Filtrar por ciudad"
-            style={{
-              padding: '10px 16px',
-              border: '1px solid var(--color-border, #ddd)',
-              borderRadius: 'var(--border-radius, 8px)',
-              fontSize: 'var(--font-size-base, 1rem)',
-              background: '#fff',
-              minWidth: '180px',
-            }}
-          >
-            <option value="">Todas las ciudades</option>
-            {cities.map((city) => (
-              <option key={city._id} value={city._id}>
-                {city.nombre} {city.nombreChino ? `(${city.nombreChino})` : ''}
-              </option>
-            ))}
-          </select>
           {hasFilters && (
             <button
               onClick={clearFilters}

@@ -3,7 +3,9 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
 import config from './config/env.js';
+import swaggerSpec from './config/swagger.js';
 import errorHandler from './middleware/errorHandler.js';
 
 // Routes
@@ -45,6 +47,13 @@ app.use('/api/', limiter);
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// API documentation (Swagger UI)
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customSiteTitle: 'ChinaTravel API Docs',
+  swaggerOptions: { persistAuthorization: true },
+}));
+app.get('/api/docs.json', (req, res) => res.json(swaggerSpec));
 
 // API routes
 app.use('/api/auth', authRoutes);
