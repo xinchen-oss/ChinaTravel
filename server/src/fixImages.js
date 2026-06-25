@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 
 const fixImages = async () => {
   await connectDB();
@@ -170,7 +170,7 @@ const fixImages = async () => {
   for (const city of newCities) {
     const img = guideImageMap[city.slug];
     if (img) {
-      const res = await Guide.updateMany({ ciudad: city._id }, { imagen: img });
+      const res = await Ruta.updateMany({ ciudad: city._id }, { imagen: img });
       guideCount += res.modifiedCount;
     }
   }

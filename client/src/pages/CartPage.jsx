@@ -4,6 +4,13 @@ import { formatPrice } from '../utils/formatters';
 import { getImageUrl, handleImageError } from '../utils/imageHelper';
 import './CartPage.css';
 
+const formatVisitDate = (d) => {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+  } catch { return d; }
+};
+
 export default function CartPage() {
   const { items, removeItem, clearCart } = useCart();
 
@@ -14,19 +21,14 @@ export default function CartPage() {
           <h1 className="page-title">Mi carrito</h1>
           <div className="empty-state">
             <h3>Tu carrito está vacío</h3>
-            <p>Explora nuestros <Link to="/guias">circuitos</Link> y añade los que más te gusten</p>
+            <p>Explora nuestras <Link to="/rutas">rutas</Link> y <Link to="/actividades">actividades</Link> y añade las que más te gusten</p>
           </div>
         </div>
       </div>
     );
   }
 
-  const total = items.reduce((sum, i) => {
-    let itemTotal = i.precio || 0;
-    if (i.hotelPrecio) itemTotal += i.hotelPrecio * (i.duracionDias || 1);
-    if (i.flightPrecio) itemTotal += i.flightPrecio;
-    return sum + itemTotal;
-  }, 0);
+  const total = items.reduce((sum, i) => sum + (i.precio || 0), 0);
 
   return (
     <div className="page">
@@ -36,25 +38,25 @@ export default function CartPage() {
         <div className="cart-layout">
           <div className="cart-items">
             {items.map((item) => (
-              <div key={item.guideId} className="cart-item">
+              <div key={`${item.tipo}:${item.id}`} className="cart-item">
                 <img src={getImageUrl(item.imagen)} alt={item.titulo} className="cart-item__img" onError={handleImageError} />
                 <div className="cart-item__info">
                   <h3>{item.titulo}</h3>
-                  <p>{item.ciudad} · {item.duracionDias} días</p>
+                  {item.tipo === 'ACTIVIDAD' ? (
+                    <p>
+                      <span style={{ background: 'var(--color-primary)', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: '10px', marginRight: 4 }}>Entrada</span> {item.ciudad}
+                      {item.fechaVisita && ` · ${formatVisitDate(item.fechaVisita)}`}
+                      {item.horaVisita && ` · ${item.horaVisita}`}
+                    </p>
+                  ) : (
+                    <p>
+                      <span style={{ background: '#0ea5e9', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: '10px', marginRight: 4 }}>Ruta</span> {item.ciudad} · {item.duracionDias} días
+                    </p>
+                  )}
                   <span className="cart-item__price">{formatPrice(item.precio)}</span>
-                  {item.hotelNombre && (
-                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
-                      Hotel: {item.hotelNombre} ({item.duracionDias} noches: {formatPrice(item.hotelPrecio * item.duracionDias)})
-                    </p>
-                  )}
-                  {item.flightNombre && (
-                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: '2px 0 0' }}>
-                      Vuelo: {item.flightNombre} ({formatPrice(item.flightPrecio)})
-                    </p>
-                  )}
                 </div>
                 <div className="cart-item__actions">
-                  <button className="btn btn--outline btn--sm" onClick={() => removeItem(item.guideId)}>
+                  <button className="btn btn--outline btn--sm" onClick={() => removeItem(item.tipo, item.id)}>
                     Eliminar
                   </button>
                 </div>
@@ -65,7 +67,7 @@ export default function CartPage() {
           <div className="cart-summary">
             <h3>Resumen</h3>
             <div className="cart-summary__row">
-              <span>{items.length} circuito{items.length > 1 ? 's' : ''}</span>
+              <span>{items.length} artículo{items.length > 1 ? 's' : ''}</span>
               <span>{formatPrice(total)}</span>
             </div>
             <Link to="/checkout-all" className="btn btn--primary" style={{ width: '100%', marginTop: '12px', textAlign: 'center', display: 'block' }}>

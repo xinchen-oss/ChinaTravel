@@ -15,7 +15,7 @@ export default function CityDetailPage() {
     api.get(`/ciudades/${slug}`)
       .then(async (res) => {
         setCity(res.data.data);
-        const guidesRes = await api.get('/guias', { params: { ciudad: res.data.data._id } });
+        const guidesRes = await api.get('/rutas', { params: { ciudad: res.data.data._id } });
         setGuides(guidesRes.data.data);
       })
       .catch(console.error)
@@ -34,17 +34,17 @@ export default function CityDetailPage() {
 
         {guides.length > 0 && (
           <>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Guías de viaje en {city.nombre}</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Rutas en {city.nombre}</h2>
             <div className="grid grid-3">
               {guides.map((guide) => (
                 <Card
                   key={guide._id}
-                  to={`/guias/${guide._id}`}
+                  to={`/rutas/${guide._id}`}
                   image={guide.imagen || city.imagenPortada}
                   title={guide.titulo}
                   badge={`${guide.duracionDias} días`}
                 >
-                  <p className="guide-price">{formatPrice(guide.precio)}</p>
+                  <p className="guide-price">Entradas desde {formatPrice(guide.precio)}</p>
                 </Card>
               ))}
             </div>

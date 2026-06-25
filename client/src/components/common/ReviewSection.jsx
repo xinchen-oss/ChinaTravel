@@ -16,7 +16,7 @@ export default function ReviewSection({ tipo, referenciaId }) {
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
 
-  const tipoUrl = tipo === 'GUIA' ? 'guia' : tipo === 'HOTEL' ? 'hotel' : 'actividad';
+  const tipoUrl = tipo === 'RUTA' ? 'ruta' : 'actividad';
 
   const fetchReviews = () => {
     api.get(`/resenas/${tipoUrl}/${referenciaId}`)

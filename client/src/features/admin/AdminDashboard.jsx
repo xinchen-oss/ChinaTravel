@@ -12,15 +12,15 @@ export default function AdminDashboard() {
     Promise.all([
       api.get('/usuarios'),
       api.get('/ciudades'),
-      api.get('/guias'),
+      api.get('/rutas'),
       api.get('/pedidos/todos'),
       api.get('/solicitudes'),
     ])
-      .then(([users, cities, guides, orders, submissions]) => {
+      .then(([users, cities, rutas, orders, submissions]) => {
         setStats({
           users: users.data.data.length,
           cities: cities.data.data.length,
-          guides: guides.data.data.length,
+          rutas: rutas.data.data.length,
           orders: orders.data.data.length,
           pendingSubmissions: submissions.data.data.filter((s) => s.estado === 'PENDIENTE').length,
         });
@@ -45,8 +45,8 @@ export default function AdminDashboard() {
           <div className="stat-card__label">Ciudades</div>
         </div>
         <div className="stat-card">
-          <div className="stat-card__number">{stats?.guides || 0}</div>
-          <div className="stat-card__label">Guías</div>
+          <div className="stat-card__number">{stats?.rutas || 0}</div>
+          <div className="stat-card__label">Rutas</div>
         </div>
         <div className="stat-card">
           <div className="stat-card__number">{stats?.orders || 0}</div>

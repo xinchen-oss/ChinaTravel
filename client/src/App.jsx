@@ -25,10 +25,14 @@ import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
 import ResetPasswordPage from './features/auth/ResetPasswordPage';
 import ConfirmEmailPage from './features/auth/ConfirmEmailPage';
 
-// Guides
-import GuidesListPage from './features/guides/GuidesListPage';
-import GuideDetailPage from './features/guides/GuideDetailPage';
-import GuideCustomizePage from './features/guides/GuideCustomizePage';
+// Rutas
+import RutasListPage from './features/rutas/RutasListPage';
+import RutaDetailPage from './features/rutas/RutaDetailPage';
+import RutaCustomizePage from './features/rutas/RutaCustomizePage';
+
+// Actividades (entradas sueltas)
+import ActividadesListPage from './features/actividades/ActividadesListPage';
+import ActividadDetailPage from './features/actividades/ActividadDetailPage';
 
 // Culture
 import CulturePage from './features/culture/CulturePage';
@@ -52,15 +56,13 @@ import UserDashboard from './features/dashboard/UserDashboard';
 import AdminDashboard from './features/admin/AdminDashboard';
 import ManageUsersPage from './features/admin/ManageUsersPage';
 import ManageCitiesPage from './features/admin/ManageCitiesPage';
-import ManageGuidesPage from './features/admin/ManageGuidesPage';
+import ManageRutasPage from './features/admin/ManageRutasPage';
 import ManageActivitiesPage from './features/admin/ManageActivitiesPage';
 import ManageCulturePage from './features/admin/ManageCulturePage';
 import ManageOrdersPage from './features/admin/ManageOrdersPage';
 import ApprovalQueuePage from './features/admin/ApprovalQueuePage';
 import ManageCouponsPage from './features/admin/ManageCouponsPage';
 import ManageReviewsPage from './features/admin/ManageReviewsPage';
-import ManageHotelsPage from './features/admin/ManageHotelsPage';
-import ManageFlightsPage from './features/admin/ManageFlightsPage';
 
 // Comercial
 import ComercialDashboard from './features/comercial/ComercialDashboard';
@@ -81,8 +83,10 @@ export default function App() {
             <Route index element={<HomePage />} />
             <Route path="ciudades" element={<CitiesPage />} />
             <Route path="ciudades/:slug" element={<CityDetailPage />} />
-            <Route path="guias" element={<GuidesListPage />} />
-            <Route path="guias/:id" element={<GuideDetailPage />} />
+            <Route path="rutas" element={<RutasListPage />} />
+            <Route path="rutas/:id" element={<RutaDetailPage />} />
+            <Route path="actividades" element={<ActividadesListPage />} />
+            <Route path="actividades/:id" element={<ActividadDetailPage />} />
             <Route path="cultura" element={<CulturePage />} />
             <Route path="cultura/:id" element={<CultureDetailPage />} />
             <Route path="sobre-nosotros" element={<AboutPage />} />
@@ -101,8 +105,8 @@ export default function App() {
               <Route path="confirmar-email/:token" element={<ConfirmEmailPage />} />
 
               {/* Private */}
-              <Route path="guias/:id/personalizar" element={<PrivateRoute><GuideCustomizePage /></PrivateRoute>} />
-              <Route path="checkout/:guideId" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+              <Route path="rutas/:id/personalizar" element={<PrivateRoute><RutaCustomizePage /></PrivateRoute>} />
+              <Route path="checkout/:rutaId" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
               <Route path="checkout-all" element={<PrivateRoute><BatchCheckoutPage /></PrivateRoute>} />
               <Route path="pedido-confirmado/:id" element={<PrivateRoute><OrderConfirmationPage /></PrivateRoute>} />
               <Route path="pedidos-confirmados" element={<PrivateRoute><BatchOrderConfirmationPage /></PrivateRoute>} />
@@ -117,10 +121,8 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="usuarios" element={<ManageUsersPage />} />
               <Route path="ciudades" element={<ManageCitiesPage />} />
-              <Route path="guias" element={<ManageGuidesPage />} />
+              <Route path="rutas" element={<ManageRutasPage />} />
               <Route path="actividades" element={<ManageActivitiesPage />} />
-              <Route path="hoteles" element={<ManageHotelsPage />} />
-              <Route path="vuelos" element={<ManageFlightsPage />} />
               <Route path="cultura" element={<ManageCulturePage />} />
               <Route path="pedidos" element={<ManageOrdersPage />} />
               <Route path="aprobaciones" element={<ApprovalQueuePage />} />

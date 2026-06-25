@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 
 const fixAll = async () => {
   await connectDB();
@@ -87,10 +87,10 @@ const fixAll = async () => {
   for (const city of allCities) {
     const ids = guideImgs[city.slug];
     if (!ids) continue;
-    const guides = await Guide.find({ ciudad: city._id }).sort('createdAt');
+    const guides = await Ruta.find({ ciudad: city._id }).sort('createdAt');
     for (let i = 0; i < guides.length; i++) {
       const url = `https://images.unsplash.com/${ids[i % ids.length]}?w=800&q=80`;
-      await Guide.findByIdAndUpdate(guides[i]._id, { imagen: url });
+      await Ruta.findByIdAndUpdate(guides[i]._id, { imagen: url });
       gc++;
     }
   }

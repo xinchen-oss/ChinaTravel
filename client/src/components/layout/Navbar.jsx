@@ -59,7 +59,8 @@ export default function Navbar() {
           <div className="navbar__links">
             <Link to="/">Inicio</Link>
             <Link to="/ciudades">Ciudades</Link>
-            <Link to="/guias">Circuitos</Link>
+            <Link to="/rutas">Rutas</Link>
+            <Link to="/actividades">Actividades</Link>
             <Link to="/cultura">Cultura</Link>
             <Link to="/foro">Foro</Link>
             <Link to="/sobre-nosotros">Sobre nosotros</Link>

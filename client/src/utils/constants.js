@@ -25,6 +25,8 @@ export const CULTURE_CATEGORIES = [
 
 export const SUBMISSION_TYPES = [
   { value: 'ACTIVIDAD', label: 'Actividad' },
-  { value: 'HOTEL', label: 'Hotel' },
-  { value: 'VUELO', label: 'Vuelo' },
+  { value: 'RUTA', label: 'Ruta completa' },
 ];
+
+// Time slots offered when buying a single attraction ticket.
+export const TIME_SLOTS = ['09:00', '11:00', '13:00', '15:00', '17:00'];

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useCities } from '../hooks/useCities';
-import { useGuides } from '../hooks/useGuides';
+import { useRutas } from '../hooks/useRutas';
 import Card from '../components/common/Card';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { formatPrice } from '../utils/formatters';
@@ -13,8 +13,8 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&q=80',
     title: 'Descubre la Gran Muralla',
     subtitle: 'Una maravilla del mundo que te dejará sin aliento',
-    link: '/guias',
-    linkText: 'Ver circuitos',
+    link: '/rutas',
+    linkText: 'Ver rutas',
   },
   {
     image: 'https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=1600&q=80',
@@ -48,7 +48,7 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1513415564515-763d91423bdd?w=1600&q=80',
     title: 'La Ruta de la Seda',
     subtitle: 'Desiertos, oasis y ciudades legendarias te esperan',
-    link: '/guias',
+    link: '/rutas',
     linkText: 'Ver rutas',
   },
   {
@@ -72,7 +72,7 @@ const FEATURED_SLUGS = ['pekin', 'shanghai', 'chengdu', 'xian', 'guilin', 'hangz
 
 export default function HomePage() {
   const { cities, loading: citiesLoading } = useCities(true);
-  const { guides, loading: guidesLoading } = useGuides(null);
+  const { rutas, loading: guidesLoading } = useRutas(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const goToSlide = useCallback((dir) => {
@@ -111,7 +111,7 @@ export default function HomePage() {
           <p className="hero__subtitle">{heroSlides[currentSlide].subtitle}</p>
           <div className="hero__actions">
             <Link to={heroSlides[currentSlide].link} className="btn btn--primary btn--lg">{heroSlides[currentSlide].linkText}</Link>
-            <Link to="/guias" className="btn btn--outline-light btn--lg">Todos los circuitos</Link>
+            <Link to="/rutas" className="btn btn--outline-light btn--lg">Todas las rutas</Link>
           </div>
         </div>
         <div className="hero__dots" role="tablist" aria-label="Diapositivas del carrusel">
@@ -133,42 +133,42 @@ export default function HomePage() {
         <div className="container">
           <div className="advantages__grid">
             <div className="advantage">
-              <div className="advantage__icon">🏨</div>
+              <div className="advantage__icon">🎫</div>
               <div>
-                <h4>Alojamiento incluido</h4>
-                <p>Hoteles seleccionados de 4 y 5 estrellas</p>
+                <h4>Entradas incluidas</h4>
+                <p>Las entradas a las atracciones de tu ruta, en un solo pago</p>
               </div>
             </div>
             <div className="advantage">
-              <div className="advantage__icon">🍜</div>
+              <div className="advantage__icon">🗽</div>
               <div>
-                <h4>Comidas incluidas</h4>
-                <p>Gastronomía auténtica china y opciones locales</p>
+                <h4>Itinerario personalizable</h4>
+                <p>Cambia actividades o elige "actividad por libre"</p>
               </div>
             </div>
             <div className="advantage">
-              <div className="advantage__icon">🧑‍🏫</div>
+              <div className="advantage__icon">🎟️</div>
               <div>
-                <h4>Guía en español</h4>
-                <p>Guías profesionales de habla hispana</p>
+                <h4>Entradas sueltas</h4>
+                <p>Compra la entrada a una atracción y elige día y hora</p>
               </div>
             </div>
             <div className="advantage">
-              <div className="advantage__icon">🛡️</div>
+              <div className="advantage__icon">💶</div>
               <div>
-                <h4>Seguro de viaje</h4>
-                <p>Cobertura completa durante todo el viaje</p>
+                <h4>Solo pagas las entradas</h4>
+                <p>Sin hoteles ni vuelos: precios muy ajustados</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Circuitos destacados */}
+      {/* Rutas destacadas */}
       <section className="section">
         <div className="container">
           <div className="section__header">
-            <h2 className="section__title">Circuitos por China</h2>
+            <h2 className="section__title">Rutas por China</h2>
             <p className="section__subtitle">Los mejores itinerarios diseñados para viajeros españoles</p>
           </div>
 
@@ -176,8 +176,8 @@ export default function HomePage() {
             <LoadingSpinner />
           ) : (
             <div className="guides-grid">
-              {guides.slice(0, 6).map((guide) => (
-                <Link to={`/guias/${guide._id}`} className="guide-card" key={guide._id}>
+              {rutas.slice(0, 6).map((guide) => (
+                <Link to={`/rutas/${guide._id}`} className="guide-card" key={guide._id}>
                   <div className="guide-card__image">
                     <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada, guide._id)} alt={guide.titulo} onError={handleImageError} />
                     <span className="guide-card__duration">{guide.duracionDias} días</span>
@@ -189,7 +189,7 @@ export default function HomePage() {
                       {guide.descripcion?.substring(0, 100)}...
                     </p>
                     <div className="guide-card__footer">
-                      <span className="guide-card__price">Desde {formatPrice(guide.precio)}</span>
+                      <span className="guide-card__price">Entradas desde {formatPrice(guide.precio)}</span>
                       <span className="guide-card__cta">Ver más →</span>
                     </div>
                   </div>
@@ -199,7 +199,7 @@ export default function HomePage() {
           )}
 
           <div className="section__action">
-            <Link to="/guias" className="btn btn--primary btn--lg">Ver todos los circuitos</Link>
+            <Link to="/rutas" className="btn btn--primary btn--lg">Ver todas las rutas</Link>
           </div>
         </div>
       </section>
@@ -246,7 +246,7 @@ export default function HomePage() {
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-card__icon">🗺️</div>
-              <h3>Guías personalizables</h3>
+              <h3>Rutas personalizables</h3>
               <p>Adapta tu itinerario cambiando actividades según tus preferencias y ritmo de viaje</p>
             </div>
             <div className="feature-card">
@@ -275,7 +275,7 @@ export default function HomePage() {
           <p>Empieza a planificar tu viaje hoy mismo</p>
           <div className="hero__actions">
             <Link to="/registro" className="btn btn--primary btn--lg">Crear cuenta gratis</Link>
-            <Link to="/guias" className="btn btn--outline-light btn--lg">Explorar circuitos</Link>
+            <Link to="/rutas" className="btn btn--outline-light btn--lg">Explorar rutas</Link>
           </div>
         </div>
       </section>

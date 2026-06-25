@@ -1,50 +1,44 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useCities } from '../../hooks/useCities';
 import { formatDate } from '../../utils/formatters';
 import '../dashboard/Dashboard.css';
 
 const FIELD_LABELS = {
   nombre: 'Nombre',
+  titulo: 'Título',
   descripcion: 'Descripción',
   ciudad: 'Ciudad',
   categoria: 'Categoría',
-  duracion: 'Duración',
+  duracionHoras: 'Duración (h)',
+  duracionDias: 'Duración (días)',
   precio: 'Precio',
-  precioPorNoche: 'Precio/noche',
-  estrellas: 'Estrellas',
-  aerolinea: 'Aerolínea',
-  origen: 'Origen',
-  destino: 'Destino',
-  fechaSalida: 'Fecha salida',
-  fechaLlegada: 'Fecha llegada',
-  plazas: 'Plazas',
-  direccion: 'Dirección',
-  servicios: 'Servicios',
+  dias: 'Itinerario',
+  consejos: 'Consejos',
 };
 
-function renderStars(n) {
-  return '★'.repeat(n) + '☆'.repeat(5 - n);
-}
-
-function formatValue(key, value) {
+function formatValue(key, value, cityMap) {
   if (value == null || value === '') return '—';
-  if (key === 'estrellas') return renderStars(Number(value));
-  if (key === 'precio' || key === 'precioPorNoche') return `${Number(value).toFixed(2)} €`;
-  if (key === 'fechaSalida' || key === 'fechaLlegada') return formatDate(value);
-  if (Array.isArray(value)) return value.join(', ');
+  if (key === 'precio') return `${Number(value).toFixed(2)} €`;
+  if (key === 'ciudad') return cityMap?.[value] || value;
+  if (key === 'dias' && Array.isArray(value)) {
+    const acts = value.reduce((n, d) => n + (d.actividades?.length || 0), 0);
+    return `${value.length} día(s) · ${acts} actividad(es)`;
+  }
+  if (Array.isArray(value)) return value.map((x) => (typeof x === 'object' ? '' : x)).filter(Boolean).join(', ');
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
 }
 
-function ContentCard({ contenido, tipo }) {
+function ContentCard({ contenido, tipo, cityMap }) {
   const excluded = ['imagen', '_id', '__v', 'createdAt', 'updatedAt'];
   const fields = Object.entries(contenido || {}).filter(([k]) => !excluded.includes(k));
   const imgSrc = contenido?.imagen
     ? (contenido.imagen.startsWith('http') ? contenido.imagen : `${api.defaults.baseURL?.replace('/api', '')}${contenido.imagen}`)
     : null;
 
-  const typeLabels = { ACTIVIDAD: 'Actividad', HOTEL: 'Hotel', VUELO: 'Vuelo' };
+  const typeLabels = { ACTIVIDAD: 'Actividad', RUTA: 'Ruta' };
 
   return (
     <div style={{ background: 'var(--color-bg-alt)', borderRadius: 'var(--border-radius)', overflow: 'hidden', marginBottom: 'var(--space-md)' }}>
@@ -54,7 +48,7 @@ function ContentCard({ contenido, tipo }) {
       <div style={{ padding: 'var(--space-md)' }}>
         <span style={{
           display: 'inline-block',
-          background: tipo === 'HOTEL' ? '#3b82f6' : tipo === 'VUELO' ? '#8b5cf6' : '#f59e0b',
+          background: tipo === 'RUTA' ? '#10b981' : '#f59e0b',
           color: '#fff',
           padding: '2px 10px',
           borderRadius: '12px',
@@ -70,7 +64,7 @@ function ContentCard({ contenido, tipo }) {
               <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {FIELD_LABELS[key] || key}
               </span>
-              <span style={{ fontSize: '14px' }}>{formatValue(key, value)}</span>
+              <span style={{ fontSize: '14px' }}>{formatValue(key, value, cityMap)}</span>
             </div>
           ))}
         </div>
@@ -97,6 +91,8 @@ export default function ApprovalQueuePage() {
   const [result, setResult] = useState({ open: false, success: false, type: null, msg: '' });
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('PENDIENTE');
+  const { cities } = useCities();
+  const cityMap = Object.fromEntries((cities || []).map((c) => [c._id, c.nombre]));
 
   const fetchSubmissions = () => {
     api.get(`/solicitudes?estado=${tab}`)
@@ -182,7 +178,7 @@ export default function ApprovalQueuePage() {
                 </span>
               </div>
 
-              <ContentCard contenido={sub.contenido} tipo={sub.tipoContenido} />
+              <ContentCard contenido={sub.contenido} tipo={sub.tipoContenido} cityMap={cityMap} />
 
               {sub.comentarioAdmin && (
                 <div style={{

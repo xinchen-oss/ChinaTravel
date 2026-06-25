@@ -10,9 +10,10 @@ export default function AboutPage() {
             el idioma y la inmensidad del país. Por eso hemos creado una plataforma que simplifica todo el proceso.
           </p>
           <p style={{ marginBottom: '1.5rem' }}>
-            Ofrecemos guías de viaje detalladas por ciudad, con itinerarios día a día que puedes personalizar
+            Ofrecemos rutas detalladas por ciudad, con itinerarios día a día que puedes personalizar
             según tus intereses. ¿Prefieres gastronomía en lugar de compras? Simplemente intercambia las
-            actividades y crea tu viaje ideal.
+            actividades —o márcalas como actividad por libre— y crea tu viaje ideal. También puedes
+            comprar la entrada a una sola atracción eligiendo día y hora.
           </p>
           <p style={{ marginBottom: '1.5rem' }}>
             Además, nuestra sección cultural te permite sumergirte en las tradiciones, festivales,

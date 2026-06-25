@@ -1,62 +1,161 @@
 import Order from '../models/Order.js';
-import Guide from '../models/Guide.js';
+import Ruta from '../models/Ruta.js';
 import Activity from '../models/Activity.js';
 import ApiError from '../utils/ApiError.js';
 import { sendEmail, readFileAsBase64 } from './emailService.js';
 import { generateTipsPdf, generateFacturaPdf } from './pdfService.js';
-import { formatPrice } from '../utils/helpers.js';
+import { computeRutaPrice } from '../utils/helpers.js';
 import config from '../config/env.js';
 import path from 'path';
 
-export const createOrder = async (user, orderData) => {
-  const { guiaId, actividadesPersonalizadas, hotelId, vueloId } = orderData;
+const POR_LIBRE = { esPorLibre: true, nombre: 'Actividad por libre', descripcion: 'Tiempo libre — organiza tu propia actividad.', precio: 0 };
 
-  const guide = await Guide.findById(guiaId)
+const emailShell = (titulo, subtitulo, inner) => `
+  <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+    <div style="background:#c41e3a;color:white;padding:24px;text-align:center;">
+      <h1 style="margin:0;font-size:28px;letter-spacing:1px;">🇨🇳 ChinaTravel</h1>
+      <p style="margin:6px 0 0;font-size:14px;opacity:0.9;">${subtitulo}</p>
+    </div>
+    <div style="padding:30px 24px;background:#f9f9f9;">
+      ${inner}
+    </div>
+    <div style="padding:16px 24px;text-align:center;background:#1a1a2e;color:rgba(255,255,255,0.5);font-size:11px;">
+      <p style="margin:0;">ChinaTravel &copy; ${new Date().getFullYear()} — Todos los derechos reservados</p>
+      <p style="margin:4px 0 0;">Este email es tu comprobante de compra.</p>
+    </div>
+  </div>
+`;
+
+// ── Single activity ticket order ─────────────────────────────────────────────
+const createActivityOrder = async (user, orderData) => {
+  const { actividadId, fechaVisita, horaVisita } = orderData;
+  const activity = await Activity.findById(actividadId).populate('ciudad', 'nombre');
+  if (!activity) throw new ApiError(404, 'Actividad no encontrada');
+
+  const precioTotal = orderData.precioTotal ?? activity.precio ?? 0;
+
+  const order = await Order.create({
+    usuario: user._id,
+    tipo: 'ACTIVIDAD',
+    actividad: activity._id,
+    fechaVisita: fechaVisita || undefined,
+    horaVisita: horaVisita || undefined,
+    precioTotal,
+  });
+
+  // Factura PDF (reuse the generic invoice with the activity as the concept).
+  let facturaPdfPath = null;
+  try {
+    const facturaUrl = await generateFacturaPdf(order, {
+      titulo: activity.nombre,
+      ciudad: activity.ciudad,
+      precio: activity.precio,
+      duracionDias: null,
+      dias: [],
+    }, user);
+    facturaPdfPath = path.join(process.cwd(), facturaUrl);
+  } catch (err) {
+    console.error('Error generando Factura PDF:', err.message);
+  }
+
+  const attachments = [];
+  if (facturaPdfPath) {
+    const base64 = readFileAsBase64(facturaPdfPath);
+    if (base64) {
+      attachments.push({
+        content: base64,
+        filename: `ChinaTravel-Factura-${order._id.toString().slice(-8).toUpperCase()}.pdf`,
+        type: 'application/pdf',
+      });
+    }
+  }
+
+  const fechaCompra = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+  const fechaVisitaStr = fechaVisita
+    ? new Date(fechaVisita).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })
+    : '—';
+
+  await sendEmail({
+    to: user.email,
+    subject: '🎫 Confirmación de tu entrada - ChinaTravel',
+    html: emailShell('Entrada confirmada', 'Confirmación de entrada', `
+      <h2 style="color:#1a1a2e;margin-top:0;">¡Gracias por tu compra, ${user.nombre}! 🎫</h2>
+      <p style="color:#444;">Tu entrada para <strong>${activity.nombre}</strong> está confirmada.</p>
+      <div style="background:#ffffff;border-radius:10px;padding:20px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">N° Pedido</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;text-align:right;">${order._id.toString().slice(-8).toUpperCase()}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Atracción</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;text-align:right;">${activity.nombre}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Ciudad</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${activity.ciudad?.nombre || ''}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Fecha de visita</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${fechaVisitaStr}${horaVisita ? ` · ${horaVisita}` : ''}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Fecha de compra</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${fechaCompra}</td></tr>
+          <tr style="background:#c41e3a;"><td style="padding:12px 8px;color:white;font-weight:700;font-size:15px;border-radius:0 0 0 6px;">TOTAL</td><td style="padding:12px 8px;color:white;font-weight:700;font-size:18px;text-align:right;border-radius:0 0 6px 0;">${precioTotal}€</td></tr>
+        </table>
+      </div>
+      <div style="text-align:center;margin:24px 0;">
+        <a href="${config.clientUrl}/dashboard" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Ver mi pedido</a>
+      </div>
+    `),
+    attachments,
+  });
+
+  return order;
+};
+
+// ── Whole-ruta order ─────────────────────────────────────────────────────────
+const createRutaOrder = async (user, orderData) => {
+  const { rutaId, actividadesPersonalizadas } = orderData;
+
+  const ruta = await Ruta.findById(rutaId)
     .populate('ciudad', 'nombre')
     .populate('dias.actividades.actividad');
-  if (!guide) throw new ApiError(404, 'Guía no encontrada');
+  if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
 
-  // Build customized guide snapshot
-  let guiaPersonalizada = null;
+  // Build customized ruta snapshot (swaps + "actividad por libre").
+  let rutaPersonalizada = null;
   let allActivities = [];
 
   if (actividadesPersonalizadas && Object.keys(actividadesPersonalizadas).length > 0) {
-    guiaPersonalizada = JSON.parse(JSON.stringify(guide.dias));
-    for (const dia of guiaPersonalizada) {
+    rutaPersonalizada = JSON.parse(JSON.stringify(ruta.dias));
+    for (const dia of rutaPersonalizada) {
       for (const slot of dia.actividades) {
         const actId = slot.actividad._id?.toString() || slot.actividad.toString();
-        if (actividadesPersonalizadas[actId]) {
-          const newAct = await Activity.findById(actividadesPersonalizadas[actId]);
+        const custom = actividadesPersonalizadas[actId];
+        if (custom === 'POR_LIBRE' || custom?.esPorLibre) {
+          slot.actividad = { ...POR_LIBRE };
+        } else if (custom) {
+          const newAct = await Activity.findById(custom);
           if (newAct) slot.actividad = newAct;
         }
         allActivities.push(slot.actividad);
       }
     }
   } else {
-    for (const dia of guide.dias) {
+    for (const dia of ruta.dias) {
       for (const slot of dia.actividades) {
         allActivities.push(slot.actividad);
       }
     }
   }
 
-  const precioTotal = orderData.precioTotal || guide.precio;
+  // Price is always the sum of the (possibly customized) ticket prices.
+  const dias = rutaPersonalizada || ruta.dias;
+  const precioTotal = computeRutaPrice(dias);
 
   const order = await Order.create({
     usuario: user._id,
-    guia: guide._id,
-    guiaPersonalizada,
-    hotel: hotelId || undefined,
-    vuelo: vueloId || undefined,
+    tipo: 'RUTA',
+    ruta: ruta._id,
+    rutaPersonalizada,
     precioTotal,
   });
 
-  // Generate both PDFs
+  // Generate both PDFs (tips only over real, ticketed activities).
   let tipsPdfPath = null;
   let facturaPdfPath = null;
+  const ticketedActivities = allActivities.filter((a) => a && !a.esPorLibre);
 
   try {
-    const tipsPdfUrl = await generateTipsPdf(order, guide, allActivities);
+    const tipsPdfUrl = await generateTipsPdf(order, ruta, ticketedActivities);
     order.tipsPdfUrl = tipsPdfUrl;
     await order.save();
     tipsPdfPath = path.join(process.cwd(), tipsPdfUrl);
@@ -65,15 +164,14 @@ export const createOrder = async (user, orderData) => {
   }
 
   try {
-    const facturaPdfUrl = await generateFacturaPdf(order, guide, user);
+    const facturaPdfUrl = await generateFacturaPdf(order, ruta, user);
     facturaPdfPath = path.join(process.cwd(), facturaPdfUrl);
   } catch (err) {
     console.error('Error generando Factura PDF:', err.message);
   }
 
-  // Build itinerary HTML for email
+  // Itinerary HTML for email.
   let itinerarioHtml = '';
-  const dias = guiaPersonalizada || guide.dias;
   if (dias?.length) {
     itinerarioHtml = '<h3 style="color:#c41e3a;margin-top:20px;">Tu itinerario</h3>';
     for (const dia of dias) {
@@ -87,109 +185,53 @@ export const createOrder = async (user, orderData) => {
     }
   }
 
-  // Build attachments
   const attachments = [];
   if (facturaPdfPath) {
     const base64 = readFileAsBase64(facturaPdfPath);
-    if (base64) {
-      attachments.push({
-        content: base64,
-        filename: `ChinaTravel-Factura-${order._id.toString().slice(-8).toUpperCase()}.pdf`,
-        type: 'application/pdf',
-      });
-    }
+    if (base64) attachments.push({ content: base64, filename: `ChinaTravel-Factura-${order._id.toString().slice(-8).toUpperCase()}.pdf`, type: 'application/pdf' });
   }
   if (tipsPdfPath) {
     const base64 = readFileAsBase64(tipsPdfPath);
-    if (base64) {
-      attachments.push({
-        content: base64,
-        filename: `ChinaTravel-Tips-${guide.titulo.replace(/\s+/g, '_')}.pdf`,
-        type: 'application/pdf',
-      });
-    }
+    if (base64) attachments.push({ content: base64, filename: `ChinaTravel-Tips-${ruta.titulo.replace(/\s+/g, '_')}.pdf`, type: 'application/pdf' });
   }
 
-  const fecha = new Date().toLocaleDateString('es-ES', {
-    day: '2-digit', month: 'long', year: 'numeric'
-  });
+  const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
 
-  // Send confirmation email with both PDFs
   await sendEmail({
     to: user.email,
     subject: `¡Gracias por tu compra! Confirmación de pedido - ChinaTravel`,
-    html: `
-      <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-        <div style="background:#c41e3a;color:white;padding:24px;text-align:center;">
-          <h1 style="margin:0;font-size:28px;letter-spacing:1px;">🇨🇳 ChinaTravel</h1>
-          <p style="margin:6px 0 0;font-size:14px;opacity:0.9;">Confirmación de compra</p>
-        </div>
-        <div style="padding:30px 24px;background:#f9f9f9;">
-          <h2 style="color:#1a1a2e;margin-top:0;">¡Gracias por tu compra, ${user.nombre}! 🎉</h2>
-          <p style="color:#444;">Tu reserva ha sido confirmada. Estamos preparando todo para que disfrutes de una experiencia increíble en China.</p>
-
-          <div style="background:#ffffff;border-radius:10px;padding:20px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-            <h3 style="margin:0 0 12px;color:#1a1a2e;">Resumen de la factura</h3>
-            <table style="width:100%;border-collapse:collapse;">
-              <tr>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">N° Pedido</td>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;text-align:right;">${order._id.toString().slice(-8).toUpperCase()}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Fecha</td>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${fecha}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Circuito</td>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;text-align:right;">${guide.titulo}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Ciudad</td>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${guide.ciudad?.nombre || ''}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Duración</td>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${guide.duracionDias} días</td>
-              </tr>
-              ${order.descuento > 0 ? `
-              <tr>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;color:#2e7d32;font-size:13px;">Descuento${order.cupon ? ` (${order.cupon})` : ''}</td>
-                <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;color:#2e7d32;">-${order.descuento}€</td>
-              </tr>
-              ` : ''}
-              <tr style="background:#c41e3a;">
-                <td style="padding:12px 8px;color:white;font-weight:700;font-size:15px;border-radius:0 0 0 6px;">TOTAL</td>
-                <td style="padding:12px 8px;color:white;font-weight:700;font-size:18px;text-align:right;border-radius:0 0 6px 0;">${precioTotal}€</td>
-              </tr>
-            </table>
-          </div>
-
-          ${itinerarioHtml}
-
-          <div style="background:#e8f5e9;padding:16px;border-radius:8px;margin:20px 0;">
-            <p style="margin:0;font-size:13px;color:#2e7d32;">
-              <strong>📎 Archivos adjuntos:</strong><br>
-              1. <strong>Factura</strong> — Tu comprobante de compra con todos los detalles.<br>
-              2. <strong>Tips de viaje</strong> — Consejos útiles para cada actividad de tu itinerario.
-            </p>
-          </div>
-
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${config.clientUrl}/dashboard" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Ver mi pedido</a>
-          </div>
-
-          <p style="color:#888;font-size:12px;text-align:center;">
-            ¿Tienes dudas? Visita nuestra sección de <a href="${config.clientUrl}/ayuda" style="color:#c41e3a;">Ayuda</a>.
-          </p>
-        </div>
-        <div style="padding:16px 24px;text-align:center;background:#1a1a2e;color:rgba(255,255,255,0.5);font-size:11px;">
-          <p style="margin:0;">ChinaTravel &copy; ${new Date().getFullYear()} — Todos los derechos reservados</p>
-          <p style="margin:4px 0 0;">Este email es tu comprobante de compra.</p>
-        </div>
+    html: emailShell('Confirmación', 'Confirmación de compra', `
+      <h2 style="color:#1a1a2e;margin-top:0;">¡Gracias por tu compra, ${user.nombre}! 🎉</h2>
+      <p style="color:#444;">Tu reserva ha sido confirmada. Estamos preparando todo para que disfrutes de una experiencia increíble en China.</p>
+      <div style="background:#ffffff;border-radius:10px;padding:20px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 12px;color:#1a1a2e;">Resumen de la factura</h3>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">N° Pedido</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;text-align:right;">${order._id.toString().slice(-8).toUpperCase()}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Fecha</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${fecha}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Ruta</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;text-align:right;">${ruta.titulo}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Ciudad</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${ruta.ciudad?.nombre || ''}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#666;font-size:13px;">Duración</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${ruta.duracionDias} días</td></tr>
+          ${order.descuento > 0 ? `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#2e7d32;font-size:13px;">Descuento${order.cupon ? ` (${order.cupon})` : ''}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;color:#2e7d32;">-${order.descuento}€</td></tr>` : ''}
+          <tr style="background:#c41e3a;"><td style="padding:12px 8px;color:white;font-weight:700;font-size:15px;border-radius:0 0 0 6px;">TOTAL</td><td style="padding:12px 8px;color:white;font-weight:700;font-size:18px;text-align:right;border-radius:0 0 6px 0;">${precioTotal}€</td></tr>
+        </table>
       </div>
-    `,
+      ${itinerarioHtml}
+      <div style="background:#e8f5e9;padding:16px;border-radius:8px;margin:20px 0;">
+        <p style="margin:0;font-size:13px;color:#2e7d32;"><strong>📎 Archivos adjuntos:</strong><br>1. <strong>Factura</strong> — Tu comprobante de compra.<br>2. <strong>Tips de viaje</strong> — Consejos útiles para cada actividad de tu itinerario.</p>
+      </div>
+      <div style="text-align:center;margin:24px 0;">
+        <a href="${config.clientUrl}/dashboard" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Ver mi pedido</a>
+      </div>
+    `),
     attachments,
   });
 
   return order;
+};
+
+export const createOrder = async (user, orderData) => {
+  if (orderData.tipo === 'ACTIVIDAD' || orderData.actividadId) {
+    return createActivityOrder(user, orderData);
+  }
+  return createRutaOrder(user, orderData);
 };

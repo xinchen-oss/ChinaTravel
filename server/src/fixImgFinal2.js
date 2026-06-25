@@ -1,5 +1,5 @@
 import connectDB from './config/db.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 import City from './models/City.js';
 
 // 90 COMPLETELY UNIQUE photo IDs for guides — verified no repeats
@@ -217,10 +217,10 @@ const run = async () => {
   for (const slug of CITY_ORDER) {
     const city = await City.findOne({ slug });
     if (!city) continue;
-    const guides = await Guide.find({ ciudad: city._id }).sort('createdAt');
+    const guides = await Ruta.find({ ciudad: city._id }).sort('createdAt');
     for (let i = 0; i < guides.length; i++) {
       const photoId = cleanGuidePhotos[guideIdx];
-      await Guide.findByIdAndUpdate(guides[i]._id, {
+      await Ruta.findByIdAndUpdate(guides[i]._id, {
         imagen: `https://images.unsplash.com/${photoId}?w=800&q=80`
       });
       guideIdx++;
@@ -231,7 +231,7 @@ const run = async () => {
 
   // Step 4: Final verification
   const cities = await City.find({}, 'nombre imagenPortada');
-  const guides2 = await Guide.find({}, 'titulo imagen').populate('ciudad','nombre');
+  const guides2 = await Ruta.find({}, 'titulo imagen').populate('ciudad','nombre');
   const allImgBases = new Map();
   let dupes = 0;
 

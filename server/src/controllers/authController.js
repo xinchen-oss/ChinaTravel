@@ -90,13 +90,13 @@ export const register = asyncHandler(async (req, res) => {
         </div>
         <p>Con ChinaTravel podrás:</p>
         <ul style="color:#444;line-height:2;">
-          <li>Descubrir guías de viaje personalizadas</li>
+          <li>Descubrir rutas de viaje personalizadas</li>
           <li>Explorar la cultura, gastronomía y ciudades de China</li>
-          <li>Reservar circuitos con itinerarios a tu medida</li>
+          <li>Reservar rutas con itinerarios a tu medida</li>
           <li>Participar en el foro de viajeros</li>
         </ul>
         <div style="text-align:center;margin:24px 0;">
-          <a href="${config.clientUrl}/guias" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Explorar circuitos</a>
+          <a href="${config.clientUrl}/rutas" style="background:#c41e3a;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Explorar rutas</a>
         </div>
         <p style="color:#666;font-size:13px;">¡Esperamos que disfrutes descubriendo China!</p>
       `),

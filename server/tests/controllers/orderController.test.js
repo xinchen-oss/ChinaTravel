@@ -10,7 +10,7 @@ jest.unstable_mockModule('../../src/models/Order.js', () => ({
 jest.unstable_mockModule('../../src/models/User.js', () => ({
   default: { find: jest.fn(), findById: jest.fn() },
 }));
-jest.unstable_mockModule('../../src/models/Guide.js', () => ({
+jest.unstable_mockModule('../../src/models/Ruta.js', () => ({
   default: { findById: jest.fn() },
 }));
 jest.unstable_mockModule('../../src/models/Coupon.js', () => ({
@@ -28,7 +28,7 @@ jest.unstable_mockModule('../../src/services/emailService.js', () => ({
 
 const { default: Order } = await import('../../src/models/Order.js');
 const { default: User } = await import('../../src/models/User.js');
-const { default: Guide } = await import('../../src/models/Guide.js');
+const { default: Ruta } = await import('../../src/models/Ruta.js');
 const { default: Notification } = await import('../../src/models/Notification.js');
 const { createOrder } = await import('../../src/services/orderService.js');
 const { default: ApiError } = await import('../../src/utils/ApiError.js');
@@ -49,8 +49,8 @@ describe('orderController.placeOrder', () => {
     const order = { _id: 'o1' };
     createOrder.mockResolvedValue(order);
     const res = mockRes();
-    await placeOrder({ user: { _id: 'u1' }, body: { guiaId: 'g1' } }, res);
-    expect(createOrder).toHaveBeenCalledWith({ _id: 'u1' }, { guiaId: 'g1' });
+    await placeOrder({ user: { _id: 'u1' }, body: { rutaId: 'r1' } }, res);
+    expect(createOrder).toHaveBeenCalledWith({ _id: 'u1' }, { rutaId: 'r1' });
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({ ok: true, data: order });
   });
@@ -96,6 +96,7 @@ describe('orderController.cancelOrder', () => {
   it('marca PENDIENTE_CANCELACION cuando el pedido está CONFIRMADO', async () => {
     const order = {
       usuario: { toString: () => 'u1' },
+      ruta: 'r1',
       estado: 'CONFIRMADO',
       createdAt: new Date(),
       save: jest.fn().mockResolvedValue(),
@@ -103,7 +104,7 @@ describe('orderController.cancelOrder', () => {
     Order.findById.mockResolvedValue(order);
     User.find.mockResolvedValue([]);
     User.findById.mockResolvedValue({ nombre: 'T' });
-    Guide.findById.mockReturnValue(chainable({ titulo: 'G' }));
+    Ruta.findById.mockReturnValue(chainable({ titulo: 'G', ciudad: { nombre: 'C' } }));
 
     const res = mockRes();
     await cancelOrder(
@@ -133,11 +134,12 @@ describe('orderController.approveCancellation', () => {
     const order = {
       estado: 'PENDIENTE_CANCELACION',
       usuario: 'u1',
+      ruta: 'r1',
       save: jest.fn().mockResolvedValue(),
     };
     Order.findById.mockResolvedValue(order);
     User.findById.mockResolvedValue({ email: 'u@t.com', nombre: 'T' });
-    Guide.findById.mockReturnValue(chainable({ titulo: 'G' }));
+    Ruta.findById.mockReturnValue(chainable({ titulo: 'G', ciudad: { nombre: 'C' } }));
     const res = mockRes();
     await approveCancellation({ params: { id: '1' } }, res);
     expect(order.estado).toBe('REEMBOLSADO');
@@ -174,7 +176,7 @@ describe('orderController.placeBatchOrder', () => {
     createOrder.mockResolvedValue({ precioTotal: 100, save: jest.fn(), descuento: 0 });
     const res = mockRes();
     await placeBatchOrder(
-      { user: { _id: 'u1' }, body: { items: [{ guiaId: 'g1', precioTotal: 100 }] } },
+      { user: { _id: 'u1' }, body: { items: [{ rutaId: 'r1', tipo: 'RUTA', precioTotal: 100 }] } },
       res
     );
     expect(createOrder).toHaveBeenCalled();

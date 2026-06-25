@@ -2,19 +2,29 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useCart } from '../../context/CartContext';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice } from '../../utils/formatters';
 import './Checkout.css';
+
+const formatVisitDate = (d) => {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch { return d; }
+};
+
+const itemSubtitle = (item) => {
+  if (item.tipo === 'ACTIVIDAD') {
+    const parts = [item.ciudad, item.fechaVisita && formatVisitDate(item.fechaVisita), item.horaVisita].filter(Boolean);
+    return `Entrada · ${parts.join(' · ')}`;
+  }
+  return `Ruta · ${item.ciudad} · ${item.duracionDias} días`;
+};
 
 export default function BatchCheckoutPage() {
   const navigate = useNavigate();
   const { items, clearCart } = useCart();
 
   const [step, setStep] = useState(1);
-  const [guides, setGuides] = useState([]);
-  const [hotels, setHotels] = useState([]);
-  const [flights, setFlights] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,49 +33,15 @@ export default function BatchCheckoutPage() {
   const [couponError, setCouponError] = useState('');
 
   // Card form
-  const [cardData, setCardData] = useState({
-    titular: '',
-    numero: '',
-    mes: '',
-    anio: '',
-    cvv: '',
-  });
+  const [cardData, setCardData] = useState({ titular: '', numero: '', mes: '', anio: '', cvv: '' });
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [cardErrors, setCardErrors] = useState({});
 
   useEffect(() => {
-    if (items.length === 0) {
-      navigate('/carrito');
-      return;
-    }
-    Promise.all([
-      Promise.all(items.map((item) => api.get(`/guias/${item.guideId}`))),
-      api.get('/hoteles'),
-      api.get('/vuelos'),
-    ])
-      .then(([guideResponses, hotelsRes, flightsRes]) => {
-        setGuides(guideResponses.map((r) => r.data.data));
-        setHotels(hotelsRes.data.data);
-        setFlights(flightsRes.data.data);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    if (items.length === 0) navigate('/carrito');
+  }, [items.length, navigate]);
 
-  const calcSubtotal = () => {
-    let total = 0;
-    guides.forEach((guide, i) => {
-      const cartItem = items[i];
-      total += guide?.precio || 0;
-      if (cartItem?.hotelPrecio) {
-        total += cartItem.hotelPrecio * (guide?.duracionDias || 1);
-      }
-      if (cartItem?.flightPrecio) {
-        total += cartItem.flightPrecio;
-      }
-    });
-    return total;
-  };
+  const calcSubtotal = () => items.reduce((total, item) => total + (item.precio || 0), 0);
 
   const descuento = couponData?.descuento || 0;
   const calcTotal = () => Math.max(0, calcSubtotal() - descuento);
@@ -129,23 +105,21 @@ export default function BatchCheckoutPage() {
     setSubmitting(true);
     setError('');
     try {
-      const batchItems = guides.map((guide, i) => {
-        const cartItem = items[i];
-        let itemPrice = guide.precio;
-        if (cartItem?.hotelId) {
-          const hotel = hotels.find((h) => h._id === cartItem.hotelId);
-          if (hotel) itemPrice += hotel.precioPorNoche * guide.duracionDias;
-        }
-        if (cartItem?.flightId) {
-          const flight = flights.find((f) => f._id === cartItem.flightId);
-          if (flight) itemPrice += flight.precio;
+      const batchItems = items.map((item) => {
+        if (item.tipo === 'ACTIVIDAD') {
+          return {
+            tipo: 'ACTIVIDAD',
+            actividadId: item.id,
+            fechaVisita: item.fechaVisita || undefined,
+            horaVisita: item.horaVisita || undefined,
+            precioTotal: item.precio,
+          };
         }
         return {
-          guiaId: guide._id,
-          actividadesPersonalizadas: cartItem?.customizations || {},
-          hotelId: cartItem?.hotelId || undefined,
-          vueloId: cartItem?.flightId || undefined,
-          precioTotal: itemPrice,
+          tipo: 'RUTA',
+          rutaId: item.id,
+          actividadesPersonalizadas: item.customizations || {},
+          precioTotal: item.precio,
         };
       });
 
@@ -164,10 +138,26 @@ export default function BatchCheckoutPage() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
-  if (guides.length === 0) return <div className="page"><div className="container"><p>No se encontraron circuitos</p></div></div>;
+  if (items.length === 0) return null;
 
   const cardBrand = detectCardBrand();
+
+  const SummaryList = () => (
+    <>
+      {items.map((item) => (
+        <div key={`${item.tipo}:${item.id}`} className="checkout-item">
+          <span>{item.titulo}</span>
+          <span>{formatPrice(item.precio)}</span>
+        </div>
+      ))}
+      {descuento > 0 && (
+        <div className="checkout-item" style={{ color: 'var(--color-success)' }}>
+          <span>Descuento ({couponData.codigo})</span>
+          <span>-{formatPrice(descuento)}</span>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <div className="page">
@@ -191,36 +181,23 @@ export default function BatchCheckoutPage() {
             <div className="checkout-layout">
               <div className="checkout-options">
                 <div className="checkout-section">
-                  <h2>Tus circuitos ({guides.length})</h2>
-                  {guides.map((guide, i) => {
-                    const cartItem = items[i];
-                    return (
-                      <div key={guide._id} className="checkout-section" style={{ marginBottom: '12px', padding: '12px', background: 'var(--color-bg-alt, #f9f9f9)', borderRadius: '8px' }}>
-                        <div className="checkout-item">
-                          <span>{guide.titulo} ({guide.duracionDias} dias) - {guide.ciudad?.nombre}</span>
-                          <span>{formatPrice(guide.precio)}</span>
-                        </div>
-                        {/* Show customized activities if any */}
-                        {cartItem?.customizations && Object.keys(cartItem.customizations).length > 0 && (
-                          <div style={{ fontSize: '0.8rem', color: 'var(--color-primary)', marginTop: '4px' }}>
-                            {Object.keys(cartItem.customizations).length} actividad(es) personalizada(s)
-                          </div>
-                        )}
-                        {cartItem?.hotelNombre && (
-                          <div className="checkout-item" style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                            <span>Hotel: {cartItem.hotelNombre} ({guide.duracionDias} noches)</span>
-                            <span>{formatPrice(cartItem.hotelPrecio * guide.duracionDias)}</span>
-                          </div>
-                        )}
-                        {cartItem?.flightNombre && (
-                          <div className="checkout-item" style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                            <span>Vuelo: {cartItem.flightNombre}</span>
-                            <span>{formatPrice(cartItem.flightPrecio)}</span>
-                          </div>
-                        )}
+                  <h2>Tus artículos ({items.length})</h2>
+                  {items.map((item) => (
+                    <div key={`${item.tipo}:${item.id}`} className="checkout-section" style={{ marginBottom: '12px', padding: '12px', background: 'var(--color-bg-alt, #f9f9f9)', borderRadius: '8px' }}>
+                      <div className="checkout-item">
+                        <span>{item.titulo}</span>
+                        <span>{formatPrice(item.precio)}</span>
                       </div>
-                    );
-                  })}
+                      <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                        {itemSubtitle(item)}
+                      </div>
+                      {item.tipo === 'RUTA' && item.customizations && Object.keys(item.customizations).length > 0 && (
+                        <div style={{ fontSize: '0.8rem', color: 'var(--color-primary)', marginTop: '4px' }}>
+                          {Object.keys(item.customizations).length} actividad(es) personalizada(s)
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
                 <div className="checkout-section">
@@ -247,24 +224,7 @@ export default function BatchCheckoutPage() {
 
               <div className="checkout-summary">
                 <h2>Resumen del pedido</h2>
-                {guides.map((guide, i) => {
-                  const cartItem = items[i];
-                  let itemTotal = guide.precio;
-                  if (cartItem?.hotelPrecio) itemTotal += cartItem.hotelPrecio * guide.duracionDias;
-                  if (cartItem?.flightPrecio) itemTotal += cartItem.flightPrecio;
-                  return (
-                    <div key={guide._id} className="checkout-item">
-                      <span>{guide.titulo}</span>
-                      <span>{formatPrice(itemTotal)}</span>
-                    </div>
-                  );
-                })}
-                {descuento > 0 && (
-                  <div className="checkout-item" style={{ color: 'var(--color-success)' }}>
-                    <span>Descuento ({couponData.codigo})</span>
-                    <span>-{formatPrice(descuento)}</span>
-                  </div>
-                )}
+                <SummaryList />
                 <div className="checkout-total">
                   <span>Total</span>
                   <span>{formatPrice(calcTotal())}</span>
@@ -428,24 +388,7 @@ export default function BatchCheckoutPage() {
 
               <div className="checkout-summary">
                 <h2>Resumen del pedido</h2>
-                {guides.map((guide, i) => {
-                  const cartItem = items[i];
-                  let itemTotal = guide.precio;
-                  if (cartItem?.hotelPrecio) itemTotal += cartItem.hotelPrecio * guide.duracionDias;
-                  if (cartItem?.flightPrecio) itemTotal += cartItem.flightPrecio;
-                  return (
-                    <div key={guide._id} className="checkout-item">
-                      <span>{guide.titulo}</span>
-                      <span>{formatPrice(itemTotal)}</span>
-                    </div>
-                  );
-                })}
-                {descuento > 0 && (
-                  <div className="checkout-item" style={{ color: 'var(--color-success)' }}>
-                    <span>Descuento ({couponData.codigo})</span>
-                    <span>-{formatPrice(descuento)}</span>
-                  </div>
-                )}
+                <SummaryList />
                 <div className="checkout-total">
                   <span>Total a pagar</span>
                   <span>{formatPrice(calcTotal())}</span>

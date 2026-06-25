@@ -234,11 +234,11 @@ export const generateFacturaPdf = async (order, guide, user) => {
     // Table rows
     let rowY = tableTop + 28;
 
-    // Guide row
+    // Concept row (ruta or single activity ticket)
     doc.fontSize(10).fillColor('#444444');
-    doc.text(`Circuito: ${guide.titulo}`, col1 + 8, rowY, { width: 240 });
-    doc.text(`${guide.duracionDias} días`, col2 + 8, rowY, { width: 110 });
-    doc.text(`${guide.precio}€`, col3 + 8, rowY, { width: 80 });
+    doc.text(`${guide.duracionDias ? 'Ruta' : 'Entrada'}: ${guide.titulo}`, col1 + 8, rowY, { width: 240 });
+    doc.text(guide.duracionDias ? `${guide.duracionDias} días` : 'Entrada', col2 + 8, rowY, { width: 110 });
+    doc.text(`${order.precioTotal}€`, col3 + 8, rowY, { width: 80 });
     rowY += 22;
 
     doc.moveTo(col1, rowY).lineTo(doc.page.width - 50, rowY).stroke('#e0e0e0');
@@ -272,7 +272,7 @@ export const generateFacturaPdf = async (order, guide, user) => {
 
     // Itinerary summary
     doc.moveDown(4);
-    const dias = order.guiaPersonalizada || guide.dias;
+    const dias = order.rutaPersonalizada || guide.dias;
     if (dias?.length) {
       const itinY = rowY + 50;
       doc.fontSize(14).fillColor('#1a1a2e').text('Resumen del itinerario', col1, itinY);
@@ -297,7 +297,7 @@ export const generateFacturaPdf = async (order, guide, user) => {
     doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke('#e0e0e0');
     doc.moveDown(0.8);
     doc.fontSize(9).fillColor('#999999');
-    doc.text('ChinaTravel — Guías de viaje personalizadas a China', { align: 'center' });
+    doc.text('ChinaTravel — Rutas de viaje personalizadas a China', { align: 'center' });
     doc.text(`Documento generado el ${fecha}`, { align: 'center' });
     doc.text('Este documento sirve como comprobante de compra.', { align: 'center' });
 

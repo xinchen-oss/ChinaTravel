@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 
 const fixAll = async () => {
   await connectDB();
@@ -207,9 +207,9 @@ const fixAll = async () => {
   for (const city of allCities) {
     const imgs = guideImages[city.slug];
     if (!imgs) continue;
-    const cityGuides = await Guide.find({ ciudad: city._id }).sort('createdAt');
+    const cityGuides = await Ruta.find({ ciudad: city._id }).sort('createdAt');
     for (let i = 0; i < cityGuides.length; i++) {
-      await Guide.findByIdAndUpdate(cityGuides[i]._id, { imagen: imgs[i % imgs.length] });
+      await Ruta.findByIdAndUpdate(cityGuides[i]._id, { imagen: imgs[i % imgs.length] });
       guideCount++;
     }
   }

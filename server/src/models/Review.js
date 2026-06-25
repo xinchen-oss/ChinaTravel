@@ -3,9 +3,9 @@ import mongoose from 'mongoose';
 const reviewSchema = new mongoose.Schema(
   {
     usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    tipo: { type: String, enum: ['GUIA', 'HOTEL', 'ACTIVIDAD'], required: true },
+    tipo: { type: String, enum: ['RUTA', 'ACTIVIDAD'], required: true },
     referencia: { type: mongoose.Schema.Types.ObjectId, required: true, refPath: 'tipoRef' },
-    tipoRef: { type: String, enum: ['Guide', 'Hotel', 'Activity'], required: true },
+    tipoRef: { type: String, enum: ['Ruta', 'Activity'], required: true },
     puntuacion: { type: Number, required: true, min: 1, max: 5 },
     titulo: { type: String, trim: true, maxlength: 100 },
     comentario: { type: String, required: true, maxlength: 1000 },

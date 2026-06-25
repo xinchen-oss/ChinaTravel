@@ -19,10 +19,11 @@ const FAQ_DATA = [
     ],
   },
   {
-    categoria: 'Circuitos y reservas',
+    categoria: 'Rutas y reservas',
     preguntas: [
-      { q: '¿Puedo personalizar mi itinerario?', a: 'Sí, en cada circuito puedes cambiar actividades por alternativas de la misma categoría. Antes de pagar verás tu itinerario personalizado completo.' },
-      { q: '¿Qué incluye el precio del circuito?', a: 'Incluye el itinerario con todas las actividades y entradas. Hotel, vuelo y seguro se seleccionan y pagan por separado durante el checkout.' },
+      { q: '¿Puedo personalizar mi itinerario?', a: 'Sí, en cada ruta puedes cambiar actividades por alternativas de la misma categoría, o marcarlas como "actividad por libre" si prefieres organizar ese tiempo a tu aire. Antes de pagar verás tu itinerario personalizado completo.' },
+      { q: '¿Qué incluye el precio de la ruta?', a: 'El precio de una ruta es únicamente la suma de las entradas a las atracciones de su itinerario. No incluye hoteles ni vuelos: tú los organizas por tu cuenta. Las atracciones gratuitas no añaden coste.' },
+      { q: '¿Puedo comprar la entrada a una sola atracción?', a: 'Sí. En la sección de Actividades puedes comprar la entrada a una atracción concreta y elegir el día y la hora de tu visita, sin necesidad de reservar una ruta completa.' },
       { q: '¿Puedo cancelar mi reserva?', a: 'Sí. Cancelaciones dentro de las primeras 48 horas reciben reembolso completo. Después de 48 horas no se aplica reembolso. Puedes cancelar desde tu panel de usuario.' },
       { q: '¿Cómo recibo mi factura?', a: 'Al confirmar tu pedido, recibirás un email con la factura detallada y un PDF con tips de viaje.' },
     ],
@@ -32,7 +33,7 @@ const FAQ_DATA = [
     preguntas: [
       { q: '¿Cuál es la mejor época para viajar a China?', a: 'Primavera (abril-mayo) y otoño (septiembre-noviembre) son ideales. Evita la Semana Dorada (1-7 octubre) y el Año Nuevo Chino por aglomeraciones.' },
       { q: '¿Funciona internet normalmente en China?', a: 'Google, WhatsApp, Facebook e Instagram están bloqueados. Necesitarás una VPN. Recomendamos descargarla antes de viajar.' },
-      { q: '¿Los guías hablan español?', a: 'Sí, todos nuestros circuitos incluyen guía profesional de habla hispana.' },
+      { q: '¿La información está en español?', a: 'Sí, toda la información de nuestras rutas y actividades, así como la documentación de tu pedido, está en español.' },
       { q: '¿Es seguro viajar a China?', a: 'Sí, China es uno de los países más seguros del mundo para turistas. La criminalidad violenta es muy baja. Solo hay que tener precauciones normales con pertenencias en zonas concurridas.' },
     ],
   },

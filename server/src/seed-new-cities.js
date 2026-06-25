@@ -2,9 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
-import Hotel from './models/Hotel.js';
-import Flight from './models/Flight.js';
+import Ruta from './models/Ruta.js';
 import CultureArticle from './models/CultureArticle.js';
 
 const seed = async () => {
@@ -95,16 +93,20 @@ const seed = async () => {
 
   console.log('Actividades creadas para 4 ciudades nuevas');
 
-  // ========== GUIDES ==========
-  const guides = [];
+  // Lookup de precios de actividades para calcular el precio de cada ruta
+  const actPrice = new Map();
+  [xianActs, gzActs, csActs, whActs].flat().forEach(a => actPrice.set(a._id.toString(), a.precio));
+  const sumRuta = (dias) => dias.reduce((t, d) => t + (d.actividades || []).reduce((s, sl) => s + (actPrice.get(String(sl.actividad)) || 0), 0), 0);
+
+  // ========== RUTAS ==========
+  const rutas = [];
 
   // --- XI'AN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: "Xi'an Histórica - Ruta de la Seda",
     descripcion: 'Viaje de 3 días al pasado imperial de China: los Guerreros de Terracota, la muralla medieval en bicicleta, el Barrio Musulmán y la gastronomía de la Ruta de la Seda. Un viaje en el tiempo de 3.000 años.',
     ciudad: xian._id,
     duracionDias: 3,
-    precio: 289,
     imagen: 'https://images.unsplash.com/photo-1553808991-e39e7611442c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Los Guerreros del Emperador', actividades: [
@@ -124,12 +126,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: "Xi'an Express - 2 Días",
     descripcion: 'Los imprescindibles de Xi\'an en un fin de semana: Guerreros de Terracota por la mañana, muralla en bicicleta por la tarde y cena en el Barrio Musulmán.',
     ciudad: xian._id,
     duracionDias: 2,
-    precio: 199,
     imagen: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guerreros y Muralla', actividades: [
@@ -145,12 +146,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: "Xi'an y Montaña Huashan - 4 Días",
     descripcion: 'Circuito completo: Guerreros de Terracota, muralla, Barrio Musulmán y la aventura extrema del Monte Huashan, una de las montañas más peligrosas y bellas del mundo.',
     ciudad: xian._id,
     duracionDias: 4,
-    precio: 399,
     imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada e Historia', actividades: [
@@ -174,12 +174,11 @@ const seed = async () => {
   });
 
   // --- GUANGZHOU: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Cantón Gastronómico - 3 Días',
     descripcion: 'Un viaje de 3 días dedicado a la mejor gastronomía de China. Dim sum al amanecer, char siu al mediodía y crucero nocturno por el Río de las Perlas. La cuna de la cocina cantonesa.',
     ciudad: guangzhou._id,
     duracionDias: 3,
-    precio: 259,
     imagen: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Dim Sum y Templos', actividades: [
@@ -201,12 +200,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Cantón Express - 2 Días',
     descripcion: 'Lo esencial de Guangzhou en un fin de semana: dim sum, la Torre de Cantón, Isla Shamian y crucero nocturno por el Río de las Perlas.',
     ciudad: guangzhou._id,
     duracionDias: 2,
-    precio: 179,
     imagen: 'https://images.unsplash.com/photo-1506158669146-619067262a00?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Dim Sum y Torre', actividades: [
@@ -223,12 +221,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Cantón Completo - 4 Días',
     descripcion: 'Circuito completo por Guangzhou: dim sum, templos ancestrales, isla colonial, mercados exóticos, torre panorámica, gastronomía cantonesa y crucero nocturno.',
     ciudad: guangzhou._id,
     duracionDias: 4,
-    precio: 349,
     imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Río de las Perlas', actividades: [
@@ -253,12 +250,11 @@ const seed = async () => {
   });
 
   // --- CHANGSHA: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Changsha - Sabor de Hunan',
     descripcion: '3 días en la capital de Hunan: tofu apestoso, té con leche que solo existe aquí, la estatua de Mao joven, una momia de 2.100 años y la comida más picante de China.',
     ciudad: changsha._id,
     duracionDias: 3,
-    precio: 239,
     imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada Picante', actividades: [
@@ -279,12 +275,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Changsha Express - 2 Días',
     descripcion: 'Lo esencial de Changsha en un fin de semana: Isla Naranja, la momia de Lady Dai, tofu apestoso y el té con leche más famoso de China.',
     ciudad: changsha._id,
     duracionDias: 2,
-    precio: 159,
     imagen: 'https://images.unsplash.com/photo-1506158669146-619067262a00?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Historia y Gastronomía', actividades: [
@@ -301,12 +296,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Changsha y Zhangjiajie - 5 Días',
     descripcion: 'Changsha a fondo más excursión a las montañas que inspiraron Avatar. Historia, gastronomía picante, naturaleza y diversión en 5 días completos.',
     ciudad: changsha._id,
     duracionDias: 5,
-    precio: 429,
     imagen: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a Changsha', actividades: [
@@ -335,12 +329,11 @@ const seed = async () => {
   });
 
   // --- WUHAN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Wuhan - Ciudad de los Ríos',
     descripcion: '3 días en la ciudad donde el Yangtsé y el Han se encuentran: la Torre de la Grulla Amarilla, campanas de bronce milenarias, fideos secos calientes y cerezos en flor.',
     ciudad: wuhan._id,
     duracionDias: 3,
-    precio: 249,
     imagen: 'https://images.unsplash.com/photo-1506158669146-619067262a00?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'La Grulla Amarilla', actividades: [
@@ -362,12 +355,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Wuhan Express - 2 Días',
     descripcion: 'Lo imprescindible de Wuhan: la torre más poética de China, fideos con sésamo al amanecer, campanas de bronce de 2.400 años y ferry por el Yangtsé.',
     ciudad: wuhan._id,
     duracionDias: 2,
-    precio: 169,
     imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Torre y Río', actividades: [
@@ -384,12 +376,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Wuhan Completo - 4 Días',
     descripcion: 'Wuhan a fondo: historia, naturaleza, gastronomía y vida local. Incluye las campanas milenarias, la Torre de la Grulla Amarilla, cerezos en flor, Lago del Este y la mejor comida callejera de China central.',
     ciudad: wuhan._id,
     duracionDias: 4,
-    precio: 339,
     imagen: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Exploración', actividades: [
@@ -414,31 +405,11 @@ const seed = async () => {
     ],
   });
 
-  await Guide.create(guides);
-  console.log('12 nuevas guías creadas');
+  rutas.forEach(r => { r.precio = sumRuta(r.dias); });
+  await Ruta.create(rutas);
+  console.log('12 nuevas rutas creadas');
 
-  // ========== NEW HOTELS ==========
-  await Hotel.create([
-    { nombre: "Xi'an Ancient Wall Hotel", ciudad: xian._id, estrellas: 4, precioPorNoche: 65, descripcion: 'Junto a la muralla medieval con decoración de la dinastía Tang.' },
-    { nombre: 'Terracotta Warriors Hotel', ciudad: xian._id, estrellas: 3, precioPorNoche: 45, descripcion: 'Hotel temático cerca de los Guerreros de Terracota.' },
-    { nombre: 'White Swan Hotel Guangzhou', ciudad: guangzhou._id, estrellas: 5, precioPorNoche: 130, descripcion: 'Hotel icónico en la Isla Shamian con vistas al Río de las Perlas.' },
-    { nombre: 'Canton Garden Hotel', ciudad: guangzhou._id, estrellas: 4, precioPorNoche: 70, descripcion: 'Hotel con jardín cantonés en el centro histórico.' },
-    { nombre: 'Changsha Riverside Hotel', ciudad: changsha._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel moderno con vistas al río Xiang y la Isla Naranja.' },
-    { nombre: 'Hunan Grand Hotel', ciudad: changsha._id, estrellas: 5, precioPorNoche: 95, descripcion: 'El hotel más lujoso de Changsha con restaurante de cocina hunanesa.' },
-    { nombre: 'Yellow Crane Tower Hotel', ciudad: wuhan._id, estrellas: 4, precioPorNoche: 60, descripcion: 'Hotel junto a la Torre de la Grulla Amarilla con vistas al Yangtsé.' },
-    { nombre: 'Wuhan Yangtze Hotel', ciudad: wuhan._id, estrellas: 3, precioPorNoche: 40, descripcion: 'Hotel económico en el centro, ideal para explorar a pie.' },
-  ]);
-  console.log('Hoteles creados');
 
-  // ========== NEW FLIGHTS ==========
-  await Flight.create([
-    { aerolinea: 'Air China', origen: 'Madrid', destino: "Xi'an", ciudadDestino: xian._id, precio: 560, duracionHoras: 12 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Cantón', ciudadDestino: guangzhou._id, precio: 510, duracionHoras: 12.5 },
-    { aerolinea: 'China Southern', origen: 'Barcelona', destino: 'Cantón', ciudadDestino: guangzhou._id, precio: 530, duracionHoras: 12 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Changsha (escala Shanghái)', ciudadDestino: changsha._id, precio: 590, duracionHoras: 14 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Wuhan', ciudadDestino: wuhan._id, precio: 570, duracionHoras: 13 },
-  ]);
-  console.log('Vuelos creados');
 
   // ========== NEW CULTURE ARTICLES ==========
   await CultureArticle.create([
@@ -476,10 +447,8 @@ const seed = async () => {
   console.log('\n✓ Seed de nuevas ciudades completado');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log("Ciudades añadidas: Xi'an, Cantón, Changsha, Wuhan");
-  console.log('Guías añadidas: 12 (3 por ciudad)');
+  console.log('Rutas añadidas: 12 (3 por ciudad)');
   console.log('Actividades añadidas: 36');
-  console.log('Hoteles añadidos: 8');
-  console.log('Vuelos añadidos: 5');
   console.log('Artículos añadidos: 4');
 
   process.exit(0);

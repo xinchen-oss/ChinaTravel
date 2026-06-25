@@ -53,7 +53,7 @@ export default function ComercialDashboard() {
                   />
                 )}
                 <div className="order-card__info">
-                  <h3>{sub.tipoContenido}: {sub.contenido?.nombre || sub.contenido?.aerolinea || ''}</h3>
+                  <h3>{sub.tipoContenido === 'RUTA' ? 'Ruta' : 'Actividad'}: {sub.contenido?.nombre || sub.contenido?.titulo || ''}</h3>
                   <p>{formatDate(sub.createdAt)}</p>
                   <span className={`badge badge--${statusColor(sub.estado)}`}>{sub.estado}</span>
                   {sub.comentarioAdmin && <p style={{ marginTop: '8px', fontSize: '0.875rem', color: '#666' }}>Admin: {sub.comentarioAdmin}</p>}

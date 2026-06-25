@@ -188,9 +188,11 @@ export default function UserDashboard() {
   };
 
   const getItinerary = (order) => {
-    if (order.guiaPersonalizada?.length) return order.guiaPersonalizada;
-    return order.guia?.dias || [];
+    if (order.rutaPersonalizada?.length) return order.rutaPersonalizada;
+    return order.ruta?.dias || [];
   };
+
+  const orderTitle = (order) => (order.tipo === 'ACTIVIDAD' ? (order.actividad?.nombre || 'Entrada') : (order.ruta?.titulo || 'Ruta'));
 
   return (
     <div className="page">
@@ -230,7 +232,7 @@ export default function UserDashboard() {
             ) : orders.length === 0 ? (
               <div className="empty-state">
                 <h3>No tienes pedidos aún</h3>
-                <p>Explora nuestras <Link to="/guias">guías de viaje</Link> para comenzar</p>
+                <p>Explora nuestras <Link to="/rutas">rutas</Link> y <Link to="/actividades">actividades</Link> para comenzar</p>
               </div>
             ) : (
               <div className="orders-list">
@@ -239,10 +241,14 @@ export default function UserDashboard() {
                   const isExpanded = expandedOrder === order._id;
                   return (
                     <div key={order._id} className="order-card-full">
-                      <div className="order-card" onClick={() => toggleOrder(order._id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleOrder(order._id); } }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-expanded={isExpanded} aria-label={`Pedido: ${order.guia?.titulo || 'Guía'}`}>
+                      <div className="order-card" onClick={() => toggleOrder(order._id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleOrder(order._id); } }} style={{ cursor: 'pointer' }} role="button" tabIndex={0} aria-expanded={isExpanded} aria-label={`Pedido: ${orderTitle(order)}`}>
                         <div className="order-card__info">
-                          <h3>{order.guia?.titulo || 'Guía'}</h3>
-                          <p>{formatDate(order.createdAt)} | {order.guia?.duracionDias || '—'} días | {order.guia?.ciudad?.nombre || ''}</p>
+                          <h3>{orderTitle(order)}</h3>
+                          {order.tipo === 'ACTIVIDAD' ? (
+                            <p>{formatDate(order.createdAt)} | Entrada{order.fechaVisita ? ` · Visita: ${formatDate(order.fechaVisita)}` : ''}{order.horaVisita ? ` · ${order.horaVisita}` : ''}</p>
+                          ) : (
+                            <p>{formatDate(order.createdAt)} | {order.ruta?.duracionDias || '—'} días | {order.ruta?.ciudad?.nombre || ''}</p>
+                          )}
                           <span className={`badge badge--${order.estado === 'CONFIRMADO' ? 'success' : order.estado === 'REEMBOLSADO' ? 'info' : 'warning'}`}>
                             {order.estado === 'PENDIENTE_CANCELACION' ? 'Cancelación pendiente' : order.estado}
                           </span>
@@ -269,17 +275,24 @@ export default function UserDashboard() {
 
                       {isExpanded && (
                         <div className="order-itinerary">
+                          {order.tipo === 'ACTIVIDAD' ? (
+                            <>
+                              <h4 className="order-itinerary__title">Detalle de la entrada</h4>
+                              <div className="itinerary-day">
+                                <div className="itinerary-day__activities">
+                                  <div className="itinerary-slot">
+                                    <div className="itinerary-slot__time">{order.horaVisita || '—'}</div>
+                                    <div className="itinerary-slot__info">
+                                      <strong>{order.actividad?.nombre || 'Entrada'}</strong>
+                                      {order.fechaVisita && <span className="itinerary-slot__category">Visita: {formatDate(order.fechaVisita)}</span>}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                          <>
                           <h4 className="order-itinerary__title">Itinerario y horarios</h4>
-                          {order.hotel && (
-                            <div className="order-extras">
-                              <span>Hotel: {order.hotel.nombre} {'★'.repeat(order.hotel.estrellas)}</span>
-                            </div>
-                          )}
-                          {order.vuelo && (
-                            <div className="order-extras">
-                              <span>Vuelo: {order.vuelo.aerolinea} ({order.vuelo.origen} → {order.vuelo.destino})</span>
-                            </div>
-                          )}
                           {itinerary.length > 0 ? (
                             itinerary.map((dia) => (
                               <div key={dia.numeroDia} className="itinerary-day">
@@ -306,6 +319,8 @@ export default function UserDashboard() {
                             ))
                           ) : (
                             <p className="text-muted">No hay itinerario disponible</p>
+                          )}
+                          </>
                           )}
                         </div>
                       )}

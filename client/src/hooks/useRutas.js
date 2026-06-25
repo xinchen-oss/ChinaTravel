@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 
-export const useGuides = (cityId) => {
-  const [guides, setGuides] = useState([]);
+export const useRutas = (cityId) => {
+  const [rutas, setRutas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const params = cityId ? { ciudad: cityId } : {};
-    api.get('/guias', { params })
-      .then((res) => setGuides(res.data.data))
-      .catch((err) => setError(err.response?.data?.error || 'Error cargando guías'))
+    api.get('/rutas', { params })
+      .then((res) => setRutas(res.data.data))
+      .catch((err) => setError(err.response?.data?.error || 'Error cargando rutas'))
       .finally(() => setLoading(false));
   }, [cityId]);
 
-  return { guides, loading, error };
+  return { rutas, loading, error };
 };

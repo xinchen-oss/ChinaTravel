@@ -2,9 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
-import Hotel from './models/Hotel.js';
-import Flight from './models/Flight.js';
+import Ruta from './models/Ruta.js';
 import CultureArticle from './models/CultureArticle.js';
 
 const seed = async () => {
@@ -141,14 +139,19 @@ const seed = async () => {
 
   console.log('Actividades creadas para 8 ciudades nuevas');
 
-  // ========== GUIDES ==========
-  const guides = [];
+  // Lookup de precios de actividades para calcular el precio de cada ruta
+  const actPrice = new Map();
+  [hzActs, glActs, lhActs, szActs, ljActs, dhActs, kmActs, szhActs].flat().forEach(a => actPrice.set(a._id.toString(), a.precio));
+  const sumRuta = (dias) => dias.reduce((t, d) => t + (d.actividades || []).reduce((s, sl) => s + (actPrice.get(String(sl.actividad)) || 0), 0), 0);
+
+  // ========== RUTAS ==========
+  const rutas = [];
 
   // --- HANGZHOU ---
-  guides.push({
+  rutas.push({
     titulo: 'Hangzhou - Paraíso del Lago del Oeste',
     descripcion: '3 días en la ciudad más romántica de China: el Lago del Oeste en barco, plantaciones de té Longjing, templos budistas milenarios y el pollo mendigante más famoso de la gastronomía china.',
-    ciudad: hangzhou._id, duracionDias: 3, precio: 289,
+    ciudad: hangzhou._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Lago del Oeste', actividades: [
@@ -168,10 +171,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Hangzhou Express - 2 Días',
     descripcion: 'Lo esencial de Hangzhou: el Lago del Oeste, té Longjing y el templo Lingyin en un fin de semana perfecto.',
-    ciudad: hangzhou._id, duracionDias: 2, precio: 199,
+    ciudad: hangzhou._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Lago y Gastronomía', actividades: [
@@ -187,10 +190,10 @@ const seed = async () => {
   });
 
   // --- GUILIN ---
-  guides.push({
+  rutas.push({
     titulo: 'Guilin y Yangshuo - Montañas de Sueño',
     descripcion: '4 días entre las montañas kársticas más bellas del mundo: crucero por el río Li, arrozales en terraza, rafting en bambú y la mejor comida del sur de China.',
-    ciudad: guilin._id, duracionDias: 4, precio: 399,
+    ciudad: guilin._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1537531383496-e3cdba5e457c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a Guilin', actividades: [
@@ -212,10 +215,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Guilin Express - 2 Días',
     descripcion: 'Lo imprescindible de Guilin: crucero por el río Li y Yangshuo en un fin de semana entre montañas kársticas.',
-    ciudad: guilin._id, duracionDias: 2, precio: 219,
+    ciudad: guilin._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1537531383496-e3cdba5e457c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guilin y Cueva', actividades: [
@@ -231,10 +234,10 @@ const seed = async () => {
   });
 
   // --- LHASA ---
-  guides.push({
+  rutas.push({
     titulo: 'Lhasa - El Techo del Mundo',
     descripcion: '4 días en el Tíbet: el Palacio de Potala, templos sagrados, debates de monjes, té de mantequilla de yak y una excursión al lago sagrado Namtso. Experiencia espiritual única.',
-    ciudad: lhasa._id, duracionDias: 4, precio: 599,
+    ciudad: lhasa._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Aclimatación', actividades: [
@@ -256,10 +259,10 @@ const seed = async () => {
   });
 
   // --- SUZHOU ---
-  guides.push({
+  rutas.push({
     titulo: 'Suzhou - La Venecia de Oriente',
     descripcion: '3 días en la ciudad de los jardines y los canales: jardines UNESCO, paseos en barco por canales milenarios, pagodas y la mejor seda de China.',
-    ciudad: suzhou._id, duracionDias: 3, precio: 269,
+    ciudad: suzhou._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardines y Canales', actividades: [
@@ -278,10 +281,10 @@ const seed = async () => {
   });
 
   // --- LIJIANG ---
-  guides.push({
+  rutas.push({
     titulo: 'Lijiang - Ciudad Naxi y Montaña de Jade',
     descripcion: '3 días en la antigua ciudad Naxi al pie de la Montaña del Dragón de Jade: calles empedradas, cultura ancestral, nieve eterna y música milenaria.',
-    ciudad: lijiang._id, duracionDias: 3, precio: 349,
+    ciudad: lijiang._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad Antigua', actividades: [
@@ -299,10 +302,10 @@ const seed = async () => {
   });
 
   // --- DUNHUANG ---
-  guides.push({
+  rutas.push({
     titulo: 'Dunhuang - Ruta de la Seda',
     descripcion: '3 días en el oasis del desierto del Gobi: cuevas budistas milenarias, dunas de arena cantantes, camellos al atardecer y la Puerta de Jade hacia Occidente.',
-    ciudad: dunhuang._id, duracionDias: 3, precio: 379,
+    ciudad: dunhuang._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Cuevas de Mogao', actividades: [
@@ -320,10 +323,10 @@ const seed = async () => {
   });
 
   // --- KUNMING ---
-  guides.push({
+  rutas.push({
     titulo: 'Kunming - Eterna Primavera',
     descripcion: '3 días en la puerta de Yunnan: bosques de piedra milenarios, lagos rodeados de montañas, mercados de flores y los fideos más famosos del suroeste de China.',
-    ciudad: kunming._id, duracionDias: 3, precio: 249,
+    ciudad: kunming._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1558005137-d9619a5c539f?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
@@ -341,10 +344,10 @@ const seed = async () => {
   });
 
   // --- SHENZHEN ---
-  guides.push({
+  rutas.push({
     titulo: 'Shenzhen - La Ciudad del Futuro',
     descripcion: '2 días en la capital tecnológica del mundo: arquitectura futurista, arte urbano, gastronomía internacional y el pueblo de pintores más surrealista de China.',
-    ciudad: shenzhen._id, duracionDias: 2, precio: 179,
+    ciudad: shenzhen._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1533552689071-33be96f7d31e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Tecnología y Arte', actividades: [
@@ -358,34 +361,11 @@ const seed = async () => {
     ],
   });
 
-  await Guide.create(guides);
-  console.log(`${guides.length} nuevas guías creadas`);
+  rutas.forEach(r => { r.precio = sumRuta(r.dias); });
+  await Ruta.create(rutas);
+  console.log(`${rutas.length} nuevas rutas creadas`);
 
-  // ========== HOTELS ==========
-  await Hotel.create([
-    { nombre: 'West Lake State Hotel', ciudad: hangzhou._id, estrellas: 5, precioPorNoche: 120, descripcion: 'Hotel de lujo junto al Lago del Oeste con vistas a las pagodas.' },
-    { nombre: 'Guilin Riverside Hotel', ciudad: guilin._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel junto al río Li con vistas a las montañas kársticas.' },
-    { nombre: 'Yangshuo Mountain Retreat', ciudad: guilin._id, estrellas: 4, precioPorNoche: 70, descripcion: 'Hotel boutique en Yangshuo rodeado de montañas.' },
-    { nombre: 'Lhasa Potala View Hotel', ciudad: lhasa._id, estrellas: 4, precioPorNoche: 85, descripcion: 'Hotel con vistas al Palacio de Potala y oxígeno en habitación.' },
-    { nombre: 'Suzhou Garden Hotel', ciudad: suzhou._id, estrellas: 4, precioPorNoche: 65, descripcion: 'Hotel estilo jardín clásico junto al canal Pingjiang.' },
-    { nombre: 'Lijiang Ancient Town Hotel', ciudad: lijiang._id, estrellas: 4, precioPorNoche: 60, descripcion: 'Hotel Naxi tradicional dentro del casco antiguo.' },
-    { nombre: 'Dunhuang Silk Road Hotel', ciudad: dunhuang._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel con decoración de la Ruta de la Seda junto a las dunas.' },
-    { nombre: 'Kunming Spring Hotel', ciudad: kunming._id, estrellas: 4, precioPorNoche: 50, descripcion: 'Hotel moderno en el centro con jardín tropical.' },
-    { nombre: 'Shenzhen Tech Hotel', ciudad: shenzhen._id, estrellas: 4, precioPorNoche: 75, descripcion: 'Hotel inteligente con domótica completa en Futian.' },
-  ]);
-  console.log('Hoteles creados');
 
-  // ========== FLIGHTS ==========
-  await Flight.create([
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Hangzhou', ciudadDestino: hangzhou._id, precio: 540, duracionHoras: 13 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Guilin', ciudadDestino: guilin._id, precio: 580, duracionHoras: 14 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Lhasa (escala Chengdú)', ciudadDestino: lhasa._id, precio: 720, duracionHoras: 16 },
-    { aerolinea: 'China Eastern', origen: 'Barcelona', destino: 'Hangzhou', ciudadDestino: hangzhou._id, precio: 550, duracionHoras: 12.5 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Kunming', ciudadDestino: kunming._id, precio: 560, duracionHoras: 14 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Shenzhen', ciudadDestino: shenzhen._id, precio: 500, duracionHoras: 12 },
-    { aerolinea: 'Hainan Airlines', origen: 'Madrid', destino: 'Lijiang (escala Pekín)', ciudadDestino: lijiang._id, precio: 650, duracionHoras: 15 },
-  ]);
-  console.log('Vuelos creados');
 
   // ========== CULTURE ARTICLES ==========
   await CultureArticle.create([
@@ -431,10 +411,8 @@ const seed = async () => {
   console.log('\n✅ Seed de expansión completado');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('Ciudades añadidas: 8 (Hangzhou, Guilin, Lhasa, Suzhou, Kunming, Lijiang, Shenzhen, Dunhuang)');
-  console.log('Guías añadidas: 11');
+  console.log('Rutas añadidas: 11');
   console.log('Actividades añadidas: ~50');
-  console.log('Hoteles añadidos: 9');
-  console.log('Vuelos añadidos: 7');
   console.log('Artículos añadidos: 6');
 
   process.exit(0);

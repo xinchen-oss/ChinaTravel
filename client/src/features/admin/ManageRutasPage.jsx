@@ -6,58 +6,58 @@ import { formatPrice } from '../../utils/formatters';
 import { useCities } from '../../hooks/useCities';
 import '../dashboard/Dashboard.css';
 
-const emptyForm = { titulo: '', descripcion: '', ciudad: '', duracionDias: '', precio: '', imagen: '' };
+const emptyForm = { titulo: '', descripcion: '', ciudad: '', duracionDias: '', imagen: '' };
 
-export default function ManageGuidesPage() {
-  const [guides, setGuides] = useState([]);
+export default function ManageRutasPage() {
+  const [rutas, setRutas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState(null);
   const { cities } = useCities();
 
-  const fetchGuides = () => {
-    api.get('/guias')
-      .then((res) => setGuides(res.data.data))
+  const fetchRutas = () => {
+    api.get('/rutas')
+      .then((res) => setRutas(res.data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchGuides(); }, []);
+  useEffect(() => { fetchRutas(); }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = { ...form, duracionDias: Number(form.duracionDias), precio: Number(form.precio) };
+      // Price is derived from the ruta's activity tickets on the server.
+      const data = { ...form, duracionDias: Number(form.duracionDias) };
       if (editing) {
-        await api.put(`/guias/${editing}`, data);
+        await api.put(`/rutas/${editing}`, data);
       } else {
-        await api.post('/guias', data);
+        await api.post('/rutas', data);
       }
       setForm(emptyForm);
       setEditing(null);
-      fetchGuides();
+      fetchRutas();
     } catch (err) {
       alert(err.response?.data?.error || 'Error');
     }
   };
 
-  const handleEdit = (guide) => {
-    setEditing(guide._id);
+  const handleEdit = (ruta) => {
+    setEditing(ruta._id);
     setForm({
-      titulo: guide.titulo || '',
-      descripcion: guide.descripcion || '',
-      ciudad: guide.ciudad?._id || '',
-      duracionDias: guide.duracionDias || '',
-      precio: guide.precio || '',
-      imagen: guide.imagen || '',
+      titulo: ruta.titulo || '',
+      descripcion: ruta.descripcion || '',
+      ciudad: ruta.ciudad?._id || '',
+      duracionDias: ruta.duracionDias || '',
+      imagen: ruta.imagen || '',
     });
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('¿Eliminar esta guía?')) return;
+    if (!confirm('¿Eliminar esta ruta?')) return;
     try {
-      await api.delete(`/guias/${id}`);
-      fetchGuides();
+      await api.delete(`/rutas/${id}`);
+      fetchRutas();
     } catch (err) {
       alert(err.response?.data?.error || 'Error');
     }
@@ -67,10 +67,10 @@ export default function ManageGuidesPage() {
 
   return (
     <div>
-      <h1 className="page-title">Gestionar guías</h1>
+      <h1 className="page-title">Gestionar rutas</h1>
 
       <form onSubmit={handleSubmit} className="submission-form" style={{ marginBottom: 'var(--space-xl)' }}>
-        <h2>{editing ? 'Editar guía' : 'Nueva guía'}</h2>
+        <h2>{editing ? 'Editar ruta' : 'Nueva ruta'}</h2>
         <div className="form-group">
           <label>Título</label>
           <input value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} required />
@@ -86,16 +86,13 @@ export default function ManageGuidesPage() {
             {cities.map((c) => <option key={c._id} value={c._id}>{c.nombre}</option>)}
           </select>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <div className="form-group" style={{ flex: 1 }}>
-            <label>Duración (días)</label>
-            <input type="number" value={form.duracionDias} onChange={(e) => setForm({ ...form, duracionDias: e.target.value })} min={1} required />
-          </div>
-          <div className="form-group" style={{ flex: 1 }}>
-            <label>Precio (EUR)</label>
-            <input type="number" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} min={0} required />
-          </div>
+        <div className="form-group">
+          <label>Duración (días)</label>
+          <input type="number" value={form.duracionDias} onChange={(e) => setForm({ ...form, duracionDias: e.target.value })} min={1} required />
         </div>
+        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light, #6b7280)', margin: '0 0 12px' }}>
+          El precio de la ruta se calcula automáticamente como la suma de las entradas de sus actividades.
+        </p>
         <ImageUploadField
           value={form.imagen}
           onChange={(url) => setForm({ ...form, imagen: url })}
@@ -117,21 +114,21 @@ export default function ManageGuidesPage() {
             <th>Título</th>
             <th>Ciudad</th>
             <th>Días</th>
-            <th>Precio</th>
+            <th>Precio (entradas)</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {guides.map((guide) => (
-            <tr key={guide._id}>
-              <td>{guide.titulo}</td>
-              <td>{guide.ciudad?.nombre}</td>
-              <td>{guide.duracionDias}</td>
-              <td>{formatPrice(guide.precio)}</td>
+          {rutas.map((ruta) => (
+            <tr key={ruta._id}>
+              <td>{ruta.titulo}</td>
+              <td>{ruta.ciudad?.nombre}</td>
+              <td>{ruta.duracionDias}</td>
+              <td>{formatPrice(ruta.precio)}</td>
               <td>
                 <div className="table-actions">
-                  <button className="btn btn--outline btn--sm" onClick={() => handleEdit(guide)}>Editar</button>
-                  <button className="btn btn--danger btn--sm" onClick={() => handleDelete(guide._id)}>Eliminar</button>
+                  <button className="btn btn--outline btn--sm" onClick={() => handleEdit(ruta)}>Editar</button>
+                  <button className="btn btn--danger btn--sm" onClick={() => handleDelete(ruta._id)}>Eliminar</button>
                 </div>
               </td>
             </tr>

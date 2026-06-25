@@ -20,7 +20,8 @@ export default function OrderConfirmationPage() {
   if (loading) return <LoadingSpinner />;
   if (!order) return <div className="page"><div className="container"><p>Pedido no encontrado</p></div></div>;
 
-  const itinerary = order.guiaPersonalizada?.length ? order.guiaPersonalizada : (order.guia?.dias || []);
+  const isActivity = order.tipo === 'ACTIVIDAD';
+  const itinerary = order.rutaPersonalizada?.length ? order.rutaPersonalizada : (order.ruta?.dias || []);
 
   return (
     <div className="page">
@@ -31,34 +32,45 @@ export default function OrderConfirmationPage() {
           <p className="confirmation__subtitle">Gracias por tu compra. Recibirás un email de confirmación con tu factura y PDF de tips adjunto.</p>
 
           <div className="confirmation__details">
-            <div className="checkout-item">
-              <span>Guía</span>
-              <span>{order.guia?.titulo}</span>
-            </div>
-            <div className="checkout-item">
-              <span>Destino</span>
-              <span>{order.guia?.ciudad?.nombre || '—'}</span>
-            </div>
-            <div className="checkout-item">
-              <span>Duración</span>
-              <span>{order.guia?.duracionDias} días</span>
-            </div>
+            {isActivity ? (
+              <>
+                <div className="checkout-item">
+                  <span>Entrada</span>
+                  <span>{order.actividad?.nombre}</span>
+                </div>
+                {order.fechaVisita && (
+                  <div className="checkout-item">
+                    <span>Fecha de visita</span>
+                    <span>{formatDate(order.fechaVisita)}</span>
+                  </div>
+                )}
+                {order.horaVisita && (
+                  <div className="checkout-item">
+                    <span>Hora</span>
+                    <span>{order.horaVisita}</span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="checkout-item">
+                  <span>Ruta</span>
+                  <span>{order.ruta?.titulo}</span>
+                </div>
+                <div className="checkout-item">
+                  <span>Destino</span>
+                  <span>{order.ruta?.ciudad?.nombre || '—'}</span>
+                </div>
+                <div className="checkout-item">
+                  <span>Duración</span>
+                  <span>{order.ruta?.duracionDias} días</span>
+                </div>
+              </>
+            )}
             <div className="checkout-item">
               <span>Fecha</span>
               <span>{formatDate(order.createdAt)}</span>
             </div>
-            {order.hotel && (
-              <div className="checkout-item">
-                <span>Hotel</span>
-                <span>{order.hotel.nombre} {'★'.repeat(order.hotel.estrellas || 0)}</span>
-              </div>
-            )}
-            {order.vuelo && (
-              <div className="checkout-item">
-                <span>Vuelo</span>
-                <span>{order.vuelo.aerolinea} ({order.vuelo.origen} → {order.vuelo.destino})</span>
-              </div>
-            )}
             <div className="checkout-item">
               <span>Estado</span>
               <span className="badge badge--success">{order.estado}</span>
@@ -112,7 +124,7 @@ export default function OrderConfirmationPage() {
 
           <div className="confirmation__links">
             <Link to="/dashboard">Ver mis pedidos</Link>
-            <Link to="/guias">Explorar más guías</Link>
+            <Link to="/rutas">Explorar más rutas</Link>
           </div>
         </div>
       </div>

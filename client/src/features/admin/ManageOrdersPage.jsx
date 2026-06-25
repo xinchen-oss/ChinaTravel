@@ -114,7 +114,7 @@ export default function ManageOrdersPage() {
         <thead>
           <tr>
             <th>Usuario</th>
-            <th>Guía</th>
+            <th>Concepto</th>
             <th>Total</th>
             <th>Estado</th>
             <th>Fecha</th>
@@ -130,7 +130,11 @@ export default function ManageOrdersPage() {
                 <div>{order.usuario?.nombre}</div>
                 <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{order.usuario?.email}</div>
               </td>
-              <td>{order.guia?.titulo || 'Guía eliminada'}</td>
+              <td>
+                {order.tipo === 'ACTIVIDAD'
+                  ? `🎫 ${order.actividad?.nombre || 'Entrada'}`
+                  : (order.ruta?.titulo || 'Ruta eliminada')}
+              </td>
               <td>{formatPrice(order.precioTotal)}</td>
               <td>
                 <span className={`badge ${badgeClass(order.estado)}`}>
@@ -191,14 +195,15 @@ export default function ManageOrdersPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 16px' }}>
               <DetailItem label="Usuario" value={detail.usuario?.nombre} />
               <DetailItem label="Email" value={detail.usuario?.email} />
-              <DetailItem label="Guía" value={detail.guia?.titulo || detail.guiaPersonalizada?.titulo || '—'} />
+              <DetailItem label="Tipo" value={detail.tipo === 'ACTIVIDAD' ? 'Entrada' : 'Ruta'} />
+              <DetailItem label="Concepto" value={detail.tipo === 'ACTIVIDAD' ? (detail.actividad?.nombre || '—') : (detail.ruta?.titulo || '—')} />
               <DetailItem label="Precio total" value={formatPrice(detail.precioTotal)} />
               {detail.descuento > 0 && <DetailItem label="Descuento" value={formatPrice(detail.descuento)} />}
               {detail.cupon && <DetailItem label="Cupón" value={detail.cupon} />}
               <DetailItem label="Estado" value={badgeLabel(detail.estado)} />
               <DetailItem label="Fecha" value={formatDate(detail.createdAt)} />
-              {detail.hotel && <DetailItem label="Hotel" value={detail.hotel.nombre || detail.hotel} />}
-              {detail.vuelo && <DetailItem label="Vuelo" value={detail.vuelo.aerolinea || detail.vuelo} />}
+              {detail.tipo === 'ACTIVIDAD' && detail.fechaVisita && <DetailItem label="Fecha visita" value={formatDate(detail.fechaVisita)} />}
+              {detail.tipo === 'ACTIVIDAD' && detail.horaVisita && <DetailItem label="Hora visita" value={detail.horaVisita} />}
               {detail.motivoCancelacion && <DetailItem label="Motivo cancelación" value={detail.motivoCancelacion} />}
               {detail.fechaCancelacion && <DetailItem label="Fecha cancelación" value={formatDate(detail.fechaCancelacion)} />}
             </div>

@@ -3,9 +3,7 @@ import connectDB from './config/db.js';
 import User from './models/User.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
-import Hotel from './models/Hotel.js';
-import Flight from './models/Flight.js';
+import Ruta from './models/Ruta.js';
 import CultureArticle from './models/CultureArticle.js';
 
 const seed = async () => {
@@ -15,9 +13,7 @@ const seed = async () => {
     User.deleteMany({}),
     City.deleteMany({}),
     Activity.deleteMany({}),
-    Guide.deleteMany({}),
-    Hotel.deleteMany({}),
-    Flight.deleteMany({}),
+    Ruta.deleteMany({}),
     CultureArticle.deleteMany({}),
   ]);
   console.log('Base de datos limpiada');
@@ -414,16 +410,20 @@ const seed = async () => {
 
   console.log('Actividades creadas');
 
-  // ========== GUIDES ==========
-  const guides = [];
+  // Lookup de precios de actividades para calcular el precio de cada ruta
+  const actPrice = new Map();
+  [pekinActs, shanghaiActs, chengduActs, chongqingActs, harbinActs, xianActs, guangzhouActs, hangzhouActs, guilinActs, lhasaActs, daliActs, xiamenActs, suzhouActs, lijiangActs, zhangjiajieActs, kunmingActs, nanjingActs, dunhuangActs, sanyaActs, pingyaoActs].flat().forEach(a => actPrice.set(a._id.toString(), a.precio));
+  const sumRuta = (dias) => dias.reduce((t, d) => t + (d.actividades || []).reduce((s, sl) => s + (actPrice.get(String(sl.actividad)) || 0), 0), 0);
+
+  // ========== RUTAS ==========
+  const rutas = [];
 
   // --- PEKÍN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Pekín Imperial - Lo Esencial',
     descripcion: 'Descubre lo mejor de la capital china en 3 días: desde la majestuosa Ciudad Prohibida hasta la Gran Muralla, pasando por la gastronomía local y los hutongs tradicionales. Un viaje completo por la historia imperial de China.',
     ciudad: pekin._id,
     duracionDias: 3,
-    precio: 299,
     imagen: 'https://images.unsplash.com/photo-1584266032559-fe81b45d3169?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Historia Imperial', actividades: [
@@ -445,12 +445,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Pekín Express - Fin de Semana',
     descripcion: 'Un recorrido intenso de 2 días por los imprescindibles de Pekín. Perfecto para quienes tienen poco tiempo pero no quieren perderse lo esencial de la capital china.',
     ciudad: pekin._id,
     duracionDias: 2,
-    precio: 199,
     imagen: 'https://images.unsplash.com/photo-1529921879218-f99546d03a27?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pekín Histórico', actividades: [
@@ -465,12 +464,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Pekín Completo - 5 Días',
     descripcion: 'El circuito más completo por Pekín. 5 días para explorar cada rincón de la capital: palacios, murallas, templos, arte contemporáneo, gastronomía y vida nocturna. Sin prisas.',
     ciudad: pekin._id,
     duracionDias: 5,
-    precio: 459,
     imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bienvenida a Pekín', actividades: [
@@ -498,12 +496,11 @@ const seed = async () => {
   });
 
   // --- SHANGHÁI: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Shanghái Moderna y Clásica',
     descripcion: 'Descubre el contraste único de Shanghái en 3 días: rascacielos futuristas frente a jardines centenarios, dumplings al vapor junto a cocina de autor. La ciudad que nunca duerme.',
     ciudad: shanghai._id,
     duracionDias: 3,
-    precio: 319,
     imagen: 'https://images.unsplash.com/photo-1474181628009-58356aaafef4?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Iconos de Shanghái', actividades: [
@@ -524,12 +521,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Shanghái Express - 2 Días',
     descripcion: 'Lo mejor de Shanghái en un fin de semana: el Bund, Pudong, xiaolongbao y un crucero nocturno por el río Huangpu.',
     ciudad: shanghai._id,
     duracionDias: 2,
-    precio: 219,
     imagen: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Bund y Pudong', actividades: [
@@ -545,12 +541,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Shanghái y Alrededores - 4 Días',
     descripcion: 'Shanghái a fondo más una excursión al pueblo acuático de Zhujiajiao. Cultura, gastronomía, historia y naturaleza en 4 días completos.',
     ciudad: shanghai._id,
     duracionDias: 4,
-    precio: 419,
     imagen: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Bund', actividades: [
@@ -574,12 +569,11 @@ const seed = async () => {
   });
 
   // --- CHENGDÚ: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Chengdú - Pandas y Sabores',
     descripcion: 'Un viaje de 3 días al corazón de Sichuan: pandas gigantes, hot pot legendario, espectáculos de ópera y templos milenarios. Una experiencia que despierta todos los sentidos.',
     ciudad: chengdu._id,
     duracionDias: 3,
-    precio: 279,
     imagen: 'https://images.unsplash.com/photo-1600112356623-90c0ad8a5224?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pandas y Cultura', actividades: [
@@ -599,12 +593,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Chengdú Express - 2 Días',
     descripcion: 'Los imprescindibles de Chengdú en un fin de semana: pandas por la mañana, hot pot al mediodía y cambio de caras por la noche.',
     ciudad: chengdu._id,
     duracionDias: 2,
-    precio: 189,
     imagen: 'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pandas y Gastronomía', actividades: [
@@ -620,12 +613,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Chengdú y el Buda de Leshan - 4 Días',
     descripcion: 'Circuito completo por Chengdú y sus alrededores. Incluye excursión al Buda Gigante de Leshan (Patrimonio UNESCO), Monte Qingcheng, pandas y la mejor gastronomía sichuanesa.',
     ciudad: chengdu._id,
     duracionDias: 4,
-    precio: 399,
     imagen: 'https://images.unsplash.com/photo-1598887142487-3c854d51eabb?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Centro', actividades: [
@@ -649,12 +641,11 @@ const seed = async () => {
   });
 
   // --- CHONGQING: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Chongqing - La Ciudad Montaña',
     descripcion: '3 días en la ciudad más espectacular de China: edificios colgantes sobre acantilados, hot pot de fuego, monorraíl atravesando edificios y cruceros por el Yangtsé.',
     ciudad: chongqing._id,
     duracionDias: 3,
-    precio: 269,
     imagen: 'https://images.unsplash.com/photo-1607500535696-51e0ea71de0e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bienvenida Ardiente', actividades: [
@@ -675,12 +666,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Chongqing Nocturna - 2 Días',
     descripcion: 'Chongqing brilla de noche. Un circuito de 2 días centrado en las experiencias nocturnas: Hongya Cave iluminada, crucero por el Yangtsé, hot pot y vida urbana.',
     ciudad: chongqing._id,
     duracionDias: 2,
-    precio: 179,
     imagen: 'https://images.unsplash.com/photo-1566438480900-0609be27a4be?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Hot Pot', actividades: [
@@ -696,12 +686,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Chongqing Completo - 5 Días',
     descripcion: 'El circuito definitivo por Chongqing: ciudad, arte rupestre de Dazu (UNESCO), crucero por el Yangtsé, gastronomía picante y la experiencia del monorraíl más surrealista del mundo.',
     ciudad: chongqing._id,
     duracionDias: 5,
-    precio: 449,
     imagen: 'https://images.unsplash.com/photo-1528702748617-c64d49f918af?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a la Ciudad Montaña', actividades: [
@@ -729,12 +718,11 @@ const seed = async () => {
   });
 
   // --- HARBIN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Harbin - Reino del Hielo',
     descripcion: 'Vive el invierno más espectacular del mundo en 3 días: esculturas de hielo gigantes iluminadas, nieve infinita, tigres siberianos, aguas termales rodeadas de nieve y gastronomía ruso-china.',
     ciudad: harbin._id,
     duracionDias: 3,
-    precio: 349,
     imagen: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada al Hielo', actividades: [
@@ -754,12 +742,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Harbin Express - 2 Días',
     descripcion: 'Lo esencial de Harbin en un fin de semana invernal: el Festival de Hielo de noche, esculturas de nieve de día, arquitectura rusa y gastronomía única.',
     ciudad: harbin._id,
     duracionDias: 2,
-    precio: 229,
     imagen: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Hielo y Fuego', actividades: [
@@ -775,12 +762,11 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Harbin y Aldea de la Nieve - 5 Días',
     descripcion: 'La experiencia invernal definitiva: Festival de Hielo, esquí en Yabuli, aguas termales, tigres siberianos y excursión a la mágica Aldea de la Nieve (Xuexiang). Un viaje de cuento de hadas helado.',
     ciudad: harbin._id,
     duracionDias: 5,
-    precio: 549,
     imagen: 'https://images.unsplash.com/photo-1517299321609-52687d1bc55a?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bienvenida a Harbin', actividades: [
@@ -808,10 +794,10 @@ const seed = async () => {
   });
 
   // --- XI'AN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: "Xi'an Histórica - Guerreros y Murallas",
     descripcion: 'Sumérgete en 3.000 años de historia china: el Ejército de Terracota, la Ruta de la Seda, murallas medievales en bicicleta y la mejor comida callejera de China en el barrio musulmán.',
-    ciudad: xian._id, duracionDias: 3, precio: 289,
+    ciudad: xian._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1591122947157-26bad3a117d2?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guerreros de Terracota', actividades: [
@@ -831,10 +817,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: "Xi'an Express - 2 Días",
     descripcion: 'Los imprescindibles de Xi\'an en un fin de semana: los legendarios Guerreros de Terracota, la muralla en bici y el sabor del barrio musulmán.',
-    ciudad: xian._id, duracionDias: 2, precio: 199,
+    ciudad: xian._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Terracota y Muralla', actividades: [
@@ -849,10 +835,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: "Xi'an Aventurera - Monte Huashan - 4 Días",
     descripcion: 'Historia y adrenalina: Guerreros de Terracota, barrio musulmán, murallas y la escalada al Monte Huashan, una de las montañas más peligrosas y bellas del mundo.',
-    ciudad: xian._id, duracionDias: 4, precio: 389,
+    ciudad: xian._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1586007600822-3d78e2bb43fe?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Centro', actividades: [
@@ -875,10 +861,10 @@ const seed = async () => {
   });
 
   // --- CANTÓN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Cantón Gastronómico - 3 Días',
     descripcion: 'La capital mundial del dim sum en 3 días: desayunos de vaporeras, pato asado cantonés, crucero nocturno por el río Perla y arquitectura colonial. Un festín para los sentidos.',
-    ciudad: guangzhou._id, duracionDias: 3, precio: 259,
+    ciudad: guangzhou._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1589254065878-42c2a0fd6ae0?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Dim Sum y Torre Canton', actividades: [
@@ -899,10 +885,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Cantón Express - 2 Días',
     descripcion: 'Lo esencial de Cantón en 48 horas: dim sum de ensueño, torre Canton, isla Shamian colonial y crucero nocturno por el río Perla.',
-    ciudad: guangzhou._id, duracionDias: 2, precio: 179,
+    ciudad: guangzhou._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Gastronomía y Vistas', actividades: [
@@ -918,10 +904,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Cantón y Hong Kong Puerta a Puerta - 5 Días',
     descripcion: 'Circuito completo por Cantón con excursión gastronómica extendida. Dim sum, pato cantonés, medicina china, arquitectura colonial, parques y mercados durante 5 días inolvidables.',
-    ciudad: guangzhou._id, duracionDias: 5, precio: 429,
+    ciudad: guangzhou._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Río Perla', actividades: [
@@ -948,10 +934,10 @@ const seed = async () => {
   });
 
   // --- HANGZHOU: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Hangzhou - Paraíso en la Tierra',
     descripcion: 'Marco Polo la llamó la ciudad más bella del mundo. 3 días entre el Lago del Oeste, templos budistas, plantaciones de té y una gastronomía refinada.',
-    ciudad: hangzhou._id, duracionDias: 3, precio: 299,
+    ciudad: hangzhou._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Lago del Oeste', actividades: [
@@ -972,10 +958,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Hangzhou Express - 2 Días',
     descripcion: 'Lago del Oeste, té Longjing y cocina de Hangzhou: lo esencial en un fin de semana perfecto.',
-    ciudad: hangzhou._id, duracionDias: 2, precio: 209,
+    ciudad: hangzhou._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Lago y Espectáculo', actividades: [
@@ -990,10 +976,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Hangzhou Completo - 4 Días',
     descripcion: 'El circuito más completo por Hangzhou: cada rincón del Lago del Oeste, plantaciones de té, templos budistas, museos, pagodas y la mejor gastronomía del este de China.',
-    ciudad: hangzhou._id, duracionDias: 4, precio: 399,
+    ciudad: hangzhou._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1548427607-d0f8fda39066?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Lago del Oeste', actividades: [
@@ -1017,10 +1003,10 @@ const seed = async () => {
   });
 
   // --- GUILIN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Guilin y Yangshuo - Paisajes de Pintura',
     descripcion: '3 días entre las montañas kársticas más bellas del mundo: crucero por el río Li, arrozales en terrazas, rafting, cuevas y espectáculos nocturnos sobre el agua.',
-    ciudad: guilin._id, duracionDias: 3, precio: 309,
+    ciudad: guilin._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guilin Ciudad', actividades: [
@@ -1040,10 +1026,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Guilin Express - 2 Días',
     descripcion: 'Crucero por el río Li y exploración de Yangshuo en un fin de semana entre paisajes de ensueño.',
-    ciudad: guilin._id, duracionDias: 2, precio: 219,
+    ciudad: guilin._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1529937944600-d31ec1010777?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guilin y Río Li', actividades: [
@@ -1058,10 +1044,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Guilin Completo con Terrazas de Longji - 5 Días',
     descripcion: 'La experiencia definitiva de Guilin: río Li, Yangshuo, arrozales en terrazas de Longji, cuevas, rafting y arte. Naturaleza en estado puro durante 5 días.',
-    ciudad: guilin._id, duracionDias: 5, precio: 479,
+    ciudad: guilin._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a Guilin', actividades: [
@@ -1087,10 +1073,10 @@ const seed = async () => {
   });
 
   // --- LHASA: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Lhasa Espiritual - 3 Días',
     descripcion: 'Viaje al techo del mundo: Palacio Potala, templos sagrados, debates de monjes y paisajes tibetanos que transforman el alma. Una experiencia espiritual única.',
-    ciudad: lhasa._id, duracionDias: 3, precio: 399,
+    ciudad: lhasa._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Aclimatación y Templos', actividades: [
@@ -1109,10 +1095,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Lhasa Express - 2 Días',
     descripcion: 'Los imprescindibles del Tíbet en 2 días: Potala, Jokhang, Barkhor y la espiritualidad tibetana condensada.',
-    ciudad: lhasa._id, duracionDias: 2, precio: 289,
+    ciudad: lhasa._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1476900543704-4312b7810781?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Templos Sagrados', actividades: [
@@ -1127,10 +1113,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Lhasa y Lago Namtso - 5 Días',
     descripcion: 'Tíbet en profundidad: Potala, monasterios, debate de monjes, lago sagrado Namtso a 4.700m y la espiritualidad más pura del planeta.',
-    ciudad: lhasa._id, duracionDias: 5, precio: 599,
+    ciudad: lhasa._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1503641926155-5c17619a9e10?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Aclimatación', actividades: [
@@ -1156,10 +1142,10 @@ const seed = async () => {
   });
 
   // --- DALI: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Dali Bohemia - 3 Días',
     descripcion: 'Yunnan alternativo: ciudad antigua, lago Erhai, cultura Bai, montañas Cangshan, tie-dye artesanal y cerveza artesanal con vistas a las montañas.',
-    ciudad: dali._id, duracionDias: 3, precio: 239,
+    ciudad: dali._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad Antigua', actividades: [
@@ -1179,10 +1165,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Dali Express - 2 Días',
     descripcion: 'Ciudad antigua, Tres Pagodas y lago Erhai en un fin de semana entre montañas y agua.',
-    ciudad: dali._id, duracionDias: 2, precio: 169,
+    ciudad: dali._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad y Pagodas', actividades: [
@@ -1197,10 +1183,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Dali y Cangshan - 4 Días',
     descripcion: 'Dali en profundidad: trekking por Cangshan, lago Erhai en bicicleta, artesanía Bai, mercados locales y atardeceres desde Shuanglang.',
-    ciudad: dali._id, duracionDias: 4, precio: 329,
+    ciudad: dali._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Ciudad', actividades: [
@@ -1223,10 +1209,10 @@ const seed = async () => {
   });
 
   // --- XIAMEN: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Xiamen y Gulangyu - 3 Días',
     descripcion: 'Isla de pianos, templos sobre el mar, tulou circulares y mariscos frescos. 3 días en la joya costera del sur de Fujian.',
-    ciudad: xiamen._id, duracionDias: 3, precio: 279,
+    ciudad: xiamen._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Gulangyu', actividades: [
@@ -1246,10 +1232,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Xiamen Express - 2 Días',
     descripcion: 'Gulangyu y lo mejor de Xiamen en un fin de semana junto al mar.',
-    ciudad: xiamen._id, duracionDias: 2, precio: 189,
+    ciudad: xiamen._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Isla de Gulangyu', actividades: [
@@ -1264,10 +1250,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Xiamen y Tulou de Fujian - 4 Días',
     descripcion: 'Costa, islas, té oolong y las increíbles casas circulares Tulou del pueblo Hakka (Patrimonio UNESCO). Xiamen y la esencia profunda de Fujian.',
-    ciudad: xiamen._id, duracionDias: 4, precio: 369,
+    ciudad: xiamen._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Gulangyu', actividades: [
@@ -1290,10 +1276,10 @@ const seed = async () => {
   });
 
   // --- SUZHOU: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Suzhou - Jardines y Canales',
     descripcion: '3 días en la Venecia de Oriente: jardines Patrimonio UNESCO, canales en góndola, ópera kunqu nocturna y la tradición milenaria de la seda.',
-    ciudad: suzhou._id, duracionDias: 3, precio: 279,
+    ciudad: suzhou._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1504567961542-e24d9439a724?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardines Clásicos', actividades: [
@@ -1312,10 +1298,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Suzhou Express - 2 Días',
     descripcion: 'Lo mejor de Suzhou en un fin de semana: jardín UNESCO, canales en góndola y ópera kunqu bajo las estrellas.',
-    ciudad: suzhou._id, duracionDias: 2, precio: 189,
+    ciudad: suzhou._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1414609245224-afa02bfb3fda?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardines y Canales', actividades: [
@@ -1330,10 +1316,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Suzhou y Tongli - 4 Días',
     descripcion: 'Suzhou a fondo: todos los jardines UNESCO, canales, seda, ópera kunqu, gastronomía refinada y excursión al pueblo acuático de Tongli.',
-    ciudad: suzhou._id, duracionDias: 4, precio: 369,
+    ciudad: suzhou._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1464278533981-50106e6176b1?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardín y Ópera', actividades: [
@@ -1357,10 +1343,10 @@ const seed = async () => {
   });
 
   // --- LIJIANG: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Lijiang - Ciudad Naxi y Montaña de Jade',
     descripcion: '3 días en el corazón de Yunnan: ciudad antigua Naxi, Montaña del Dragón de Jade a 4.680m, música ancestral y la garganta más profunda del mundo.',
-    ciudad: lijiang._id, duracionDias: 3, precio: 319,
+    ciudad: lijiang._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1446292532430-3e76f6ab6444?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad Antigua', actividades: [
@@ -1377,10 +1363,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Lijiang Express - 2 Días',
     descripcion: 'Ciudad antigua Naxi y Montaña del Dragón de Jade en un intenso fin de semana en Yunnan.',
-    ciudad: lijiang._id, duracionDias: 2, precio: 219,
+    ciudad: lijiang._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1500259571355-332da5cb07aa?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad y Cultura', actividades: [
@@ -1394,10 +1380,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Lijiang Aventurera - Garganta y Lago Lugu - 5 Días',
     descripcion: 'Yunnan salvaje: ciudad antigua, Montaña de Jade, Garganta del Salto del Tigre, Lago Lugu con los Mosuo y música Dongba. Aventura y cultura.',
-    ciudad: lijiang._id, duracionDias: 5, precio: 499,
+    ciudad: lijiang._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada', actividades: [
@@ -1422,10 +1408,10 @@ const seed = async () => {
   });
 
   // --- ZHANGJIAJIE: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Zhangjiajie - Montañas de Avatar',
     descripcion: '3 días entre los pilares de piedra que inspiraron Pandora: parque nacional, puente de cristal, Montaña Tianmen y la gastronomía picante de Hunan.',
-    ciudad: zhangjiajie._id, duracionDias: 3, precio: 329,
+    ciudad: zhangjiajie._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pilares de Avatar', actividades: [
@@ -1443,10 +1429,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Zhangjiajie Express - 2 Días',
     descripcion: 'Los pilares de Avatar y la Montaña Tianmen en un fin de semana de vértigo.',
-    ciudad: zhangjiajie._id, duracionDias: 2, precio: 229,
+    ciudad: zhangjiajie._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Parque Nacional', actividades: [
@@ -1460,10 +1446,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Zhangjiajie y Fenghuang - 5 Días',
     descripcion: 'Avatar, puente de cristal, Tianmen, la ciudad del Fénix sobre pilotes y la gastronomía picante de Hunan. Naturaleza e historia en 5 días épicos.',
-    ciudad: zhangjiajie._id, duracionDias: 5, precio: 479,
+    ciudad: zhangjiajie._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Arroyo', actividades: [
@@ -1489,10 +1475,10 @@ const seed = async () => {
   });
 
   // --- KUNMING: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Kunming - Eterna Primavera',
     descripcion: '3 días en la ciudad más agradable de China: Bosque de Piedra, lago Dian, diversidad étnica, mercados de flores y gastronomía única de Yunnan.',
-    ciudad: kunming._id, duracionDias: 3, precio: 259,
+    ciudad: kunming._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
@@ -1510,10 +1496,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Kunming Express - 2 Días',
     descripcion: 'Bosque de Piedra y lo esencial de Kunming en un fin de semana primaveral.',
-    ciudad: kunming._id, duracionDias: 2, precio: 179,
+    ciudad: kunming._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1500534623283-312aade485b7?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
@@ -1526,10 +1512,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Kunming Completo - 4 Días',
     descripcion: 'Kunming al completo: Bosque de Piedra, pueblo étnico, mercado de flores, montañas, lago Dian y toda la gastronomía de Yunnan.',
-    ciudad: kunming._id, duracionDias: 4, precio: 349,
+    ciudad: kunming._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
@@ -1552,10 +1538,10 @@ const seed = async () => {
   });
 
   // --- NANJING: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Nanjing - Capital de Seis Dinastías',
     descripcion: '3 días de historia y naturaleza: mausoleo de Sun Yat-sen, murallas imperiales, templo de Confucio iluminado y la montaña Púrpura.',
-    ciudad: nanjing._id, duracionDias: 3, precio: 269,
+    ciudad: nanjing._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Montaña Púrpura', actividades: [
@@ -1574,10 +1560,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Nanjing Express - 2 Días',
     descripcion: 'Mausoleo de Sun Yat-sen, muralla y templo nocturno de Confucio en un fin de semana histórico.',
-    ciudad: nanjing._id, duracionDias: 2, precio: 179,
+    ciudad: nanjing._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Montaña y Mausoleo', actividades: [
@@ -1592,10 +1578,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Nanjing Completo - 4 Días',
     descripcion: 'Todo Nanjing: mausoleo, muralla, lago, montaña Púrpura, memorial, templo nocturno y los ginkgos dorados de otoño.',
-    ciudad: nanjing._id, duracionDias: 4, precio: 359,
+    ciudad: nanjing._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Montaña Púrpura', actividades: [
@@ -1619,10 +1605,10 @@ const seed = async () => {
   });
 
   // --- DUNHUANG: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Dunhuang - Ruta de la Seda',
     descripcion: '3 días en el oasis del Gobi: las Cuevas de Mogao (1.000 años de arte budista), dunas doradas, camellos al atardecer y estrellas en el desierto.',
-    ciudad: dunhuang._id, duracionDias: 3, precio: 369,
+    ciudad: dunhuang._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1465056836900-8f1e940f1904?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Cuevas de Mogao', actividades: [
@@ -1640,10 +1626,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Dunhuang Express - 2 Días',
     descripcion: 'Mogao y dunas: lo esencial de la Ruta de la Seda en un fin de semana en el desierto del Gobi.',
-    ciudad: dunhuang._id, duracionDias: 2, precio: 259,
+    ciudad: dunhuang._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Mogao', actividades: [
@@ -1657,10 +1643,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Dunhuang y el Gobi - 5 Días',
     descripcion: 'La experiencia completa de la Ruta de la Seda: Mogao, dunas, camellos, Paso de Jade, Yardang, estrellas y la magia del desierto durante 5 días.',
-    ciudad: dunhuang._id, duracionDias: 5, precio: 529,
+    ciudad: dunhuang._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada al Oasis', actividades: [
@@ -1686,10 +1672,10 @@ const seed = async () => {
   });
 
   // --- SANYA: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Sanya Tropical - 3 Días',
     descripcion: '3 días en el Hawái de China: playas de arena blanca, snorkel en Wuzhizhou, selva tropical, templo de Guanyin y mariscos frescos.',
-    ciudad: sanya._id, duracionDias: 3, precio: 299,
+    ciudad: sanya._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1496950866446-3253e1470e8e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Playa y Templo', actividades: [
@@ -1707,10 +1693,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Sanya Express - 2 Días',
     descripcion: 'Playa, snorkel y mariscos: lo mejor de la isla tropical de Hainan en un fin de semana.',
-    ciudad: sanya._id, duracionDias: 2, precio: 209,
+    ciudad: sanya._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Playa y Guanyin', actividades: [
@@ -1724,10 +1710,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Sanya Aventura Tropical - 5 Días',
     descripcion: 'Hainan completo: todas las playas, isla Wuzhizhou, selva, surf, templo de Guanyin, ruta del coco y atardeceres tropicales durante 5 días.',
-    ciudad: sanya._id, duracionDias: 5, precio: 459,
+    ciudad: sanya._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Playa', actividades: [
@@ -1753,10 +1739,10 @@ const seed = async () => {
   });
 
   // --- PINGYAO: 3 guías ---
-  guides.push({
+  rutas.push({
     titulo: 'Pingyao - Viaje al Pasado Imperial',
     descripcion: '3 días en la ciudad amurallada más auténtica de China: murallas Ming, primer banco, templos, vinagre artesanal, fideos y teatro inmersivo.',
-    ciudad: pingyao._id, duracionDias: 3, precio: 239,
+    ciudad: pingyao._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1527549993586-dff825b37782?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Muralla y Centro', actividades: [
@@ -1775,10 +1761,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Pingyao Express - 2 Días',
     descripcion: 'Murallas, banco imperial y teatro inmersivo: la esencia de la China Ming en un fin de semana.',
-    ciudad: pingyao._id, duracionDias: 2, precio: 169,
+    ciudad: pingyao._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Muralla y Banco', actividades: [
@@ -1793,10 +1779,10 @@ const seed = async () => {
       ]},
     ],
   });
-  guides.push({
+  rutas.push({
     titulo: 'Pingyao y Templos de Shanxi - 4 Días',
     descripcion: 'La China más profunda: murallas, bancos imperiales, templos de esculturas pintadas, vinagre, fideos cortados con cuchillo y noches en casas patio Qing.',
-    ciudad: pingyao._id, duracionDias: 4, precio: 329,
+    ciudad: pingyao._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Muralla y Centro', actividades: [
@@ -1819,81 +1805,9 @@ const seed = async () => {
     ],
   });
 
-  await Guide.create(guides);
-  console.log('Guías creadas (60 guías para 20 ciudades)');
-
-  // ========== HOTELS ==========
-  await Hotel.create([
-    { nombre: 'Hotel Pekín Imperial', ciudad: pekin._id, estrellas: 5, precioPorNoche: 120, descripcion: 'Hotel de lujo junto a la Ciudad Prohibida con spa y restaurante gourmet.' },
-    { nombre: 'Hutong Boutique Inn', ciudad: pekin._id, estrellas: 3, precioPorNoche: 45, descripcion: 'Encantador hotel boutique en un hutong tradicional restaurado.' },
-    { nombre: 'The Bund Riverside Hotel', ciudad: shanghai._id, estrellas: 5, precioPorNoche: 150, descripcion: 'Vistas panorámicas al Bund y Pudong desde cada habitación.' },
-    { nombre: 'Shanghai Garden Hotel', ciudad: shanghai._id, estrellas: 4, precioPorNoche: 80, descripcion: 'Hotel con jardín en la Concesión Francesa. Tranquilo y elegante.' },
-    { nombre: 'Chengdu Panda Inn', ciudad: chengdu._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel temático de pandas con decoración divertida cerca del centro.' },
-    { nombre: 'Jinli Heritage Hotel', ciudad: chengdu._id, estrellas: 5, precioPorNoche: 95, descripcion: 'Hotel boutique de lujo junto a la calle Jinli con estilo tradicional sichuanés.' },
-    { nombre: 'Chongqing Hilltop Hotel', ciudad: chongqing._id, estrellas: 4, precioPorNoche: 65, descripcion: 'Hotel con vistas al río Yangtsé desde la cima de la colina.' },
-    { nombre: 'Hongya Cave Hotel', ciudad: chongqing._id, estrellas: 3, precioPorNoche: 40, descripcion: 'Hotel económico junto a Hongya Cave con vistas nocturnas espectaculares.' },
-    { nombre: 'Harbin Ice Hotel', ciudad: harbin._id, estrellas: 4, precioPorNoche: 70, descripcion: 'Hotel temático de hielo con calefacción de primera. A 5 min del Festival de Hielo.' },
-    { nombre: 'Sofia Art Hotel', ciudad: harbin._id, estrellas: 5, precioPorNoche: 110, descripcion: 'Hotel de estilo ruso junto a la Catedral de Santa Sofía. Elegancia y confort.' },
-    { nombre: 'Xi\'an Terracotta Hotel', ciudad: xian._id, estrellas: 4, precioPorNoche: 60, descripcion: 'Hotel con decoración de la dinastía Tang junto a la muralla sur.' },
-    { nombre: 'Bell Tower Heritage Inn', ciudad: xian._id, estrellas: 3, precioPorNoche: 35, descripcion: 'Alojamiento céntrico junto a la Torre de la Campana con azotea panorámica.' },
-    { nombre: 'White Swan Hotel', ciudad: guangzhou._id, estrellas: 5, precioPorNoche: 130, descripcion: 'Hotel icónico en la isla Shamian con jardín interior y vistas al río Perla.' },
-    { nombre: 'Guangzhou Garden Inn', ciudad: guangzhou._id, estrellas: 3, precioPorNoche: 45, descripcion: 'Hotel económico con desayuno dim sum incluido en el centro de la ciudad.' },
-    { nombre: 'West Lake State House', ciudad: hangzhou._id, estrellas: 5, precioPorNoche: 140, descripcion: 'Hotel de lujo con jardín privado a orillas del Lago del Oeste. Vistas de ensueño.' },
-    { nombre: 'Longjing Tea Garden Hotel', ciudad: hangzhou._id, estrellas: 4, precioPorNoche: 75, descripcion: 'Hotel boutique rodeado de plantaciones de té Longjing con ceremonia de té incluida.' },
-    { nombre: 'Guilin Bravo Hotel', ciudad: guilin._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel junto al río Li con terraza con vistas a las montañas kársticas.' },
-    { nombre: 'Yangshuo Mountain Retreat', ciudad: guilin._id, estrellas: 3, precioPorNoche: 40, descripcion: 'Eco-lodge entre arrozales y montañas kársticas. Tranquilidad absoluta.' },
-    { nombre: 'St. Regis Lhasa Resort', ciudad: lhasa._id, estrellas: 5, precioPorNoche: 160, descripcion: 'Resort de lujo con spa y oxígeno suplementario en las habitaciones a 3.650m.' },
-    { nombre: 'Yak Hotel', ciudad: lhasa._id, estrellas: 3, precioPorNoche: 30, descripcion: 'Hotel mochilero legendario junto al Barkhor. Punto de encuentro de viajeros.' },
-    { nombre: 'Dali Landscape Hotel', ciudad: dali._id, estrellas: 4, precioPorNoche: 50, descripcion: 'Hotel con terraza frente al lago Erhai y vistas a las montañas Cangshan.' },
-    { nombre: 'Old Town Courtyard Inn', ciudad: dali._id, estrellas: 3, precioPorNoche: 28, descripcion: 'Casa patio Bai tradicional convertida en hotel boutique en la ciudad antigua.' },
-    { nombre: 'Xiamen Harbour Hotel', ciudad: xiamen._id, estrellas: 4, precioPorNoche: 70, descripcion: 'Hotel moderno frente al puerto de ferris a Gulangyu con vistas al mar.' },
-    { nombre: 'Gulangyu Piano Inn', ciudad: xiamen._id, estrellas: 3, precioPorNoche: 55, descripcion: 'Encantador B&B en Gulangyu con decoración musical y jardín tropical.' },
-    { nombre: 'Suzhou Tonino Lamborghini Hotel', ciudad: suzhou._id, estrellas: 5, precioPorNoche: 120, descripcion: 'Hotel de lujo junto al canal Pingjiang con jardín clásico privado.' },
-    { nombre: 'Canal Garden Inn', ciudad: suzhou._id, estrellas: 3, precioPorNoche: 40, descripcion: 'Hotel boutique en casa Ming restaurada junto al canal con patio interior.' },
-    { nombre: 'Lijiang Zen Garden Hotel', ciudad: lijiang._id, estrellas: 4, precioPorNoche: 65, descripcion: 'Hotel Naxi con patio de flores y vistas a la Montaña del Dragón de Jade.' },
-    { nombre: 'Old Town Naxi Inn', ciudad: lijiang._id, estrellas: 3, precioPorNoche: 30, descripcion: 'Casa de madera Naxi en el corazón de la ciudad antigua con chimenea.' },
-    { nombre: 'Zhangjiajie Pullman', ciudad: zhangjiajie._id, estrellas: 5, precioPorNoche: 100, descripcion: 'Hotel de lujo junto al parque nacional con vistas a los pilares de piedra.' },
-    { nombre: 'Avatar Mountain Lodge', ciudad: zhangjiajie._id, estrellas: 3, precioPorNoche: 35, descripcion: 'Lodge rústico junto a la entrada del parque con restaurante hunanés.' },
-    { nombre: 'Green Lake Hotel', ciudad: kunming._id, estrellas: 4, precioPorNoche: 60, descripcion: 'Hotel junto al Lago Verde con jardín tropical y desayuno yunnanés.' },
-    { nombre: 'Kunming Spring City Inn', ciudad: kunming._id, estrellas: 3, precioPorNoche: 32, descripcion: 'Hotel económico céntrico con terraza y flores todo el año.' },
-    { nombre: 'Nanjing Grand Hotel', ciudad: nanjing._id, estrellas: 5, precioPorNoche: 110, descripcion: 'Hotel de lujo junto al lago Xuanwu con spa y restaurante de pato salado.' },
-    { nombre: 'Purple Mountain Youth Hostel', ciudad: nanjing._id, estrellas: 3, precioPorNoche: 28, descripcion: 'Hostal acogedor cerca de la Montaña Púrpura con ambiente universitario.' },
-    { nombre: 'Dunhuang Silk Road Hotel', ciudad: dunhuang._id, estrellas: 4, precioPorNoche: 75, descripcion: 'Hotel temático de la Ruta de la Seda con decoración de las Cuevas de Mogao.' },
-    { nombre: 'Desert Moon Inn', ciudad: dunhuang._id, estrellas: 3, precioPorNoche: 35, descripcion: 'Alojamiento junto a las dunas con terraza para observar estrellas.' },
-    { nombre: 'Sanya Atlantis Resort', ciudad: sanya._id, estrellas: 5, precioPorNoche: 200, descripcion: 'Mega-resort con acuario, parque acuático y playa privada en Haitang Bay.' },
-    { nombre: 'Dadonghai Beach Hotel', ciudad: sanya._id, estrellas: 3, precioPorNoche: 50, descripcion: 'Hotel frente a la playa de Dadonghai con acceso directo al mar.' },
-    { nombre: 'Pingyao Yide Hotel', ciudad: pingyao._id, estrellas: 4, precioPorNoche: 45, descripcion: 'Casa patio Qing de 200 años con cama kang caliente y patio con farolillos.' },
-    { nombre: 'Harmony Guesthouse', ciudad: pingyao._id, estrellas: 3, precioPorNoche: 22, descripcion: 'Pensión familiar en casa patio tradicional con comida casera de Shanxi.' },
-  ]);
-  console.log('Hoteles creados');
-
-  // ========== FLIGHTS ==========
-  await Flight.create([
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Pekín', ciudadDestino: pekin._id, precio: 550, duracionHoras: 11 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Shanghái', ciudadDestino: shanghai._id, precio: 520, duracionHoras: 12 },
-    { aerolinea: 'Iberia', origen: 'Madrid', destino: 'Shanghái', ciudadDestino: shanghai._id, precio: 620, duracionHoras: 11.5 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Pekín', ciudadDestino: pekin._id, precio: 570, duracionHoras: 11.5 },
-    { aerolinea: 'Sichuan Airlines', origen: 'Madrid', destino: 'Chengdú', ciudadDestino: chengdu._id, precio: 580, duracionHoras: 12 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Chongqing', ciudadDestino: chongqing._id, precio: 560, duracionHoras: 12.5 },
-    { aerolinea: 'Hainan Airlines', origen: 'Madrid', destino: 'Pekín (escala Harbin)', ciudadDestino: harbin._id, precio: 620, duracionHoras: 14 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Shanghái', ciudadDestino: shanghai._id, precio: 540, duracionHoras: 12 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: "Xi'an", ciudadDestino: xian._id, precio: 590, duracionHoras: 13 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Cantón', ciudadDestino: guangzhou._id, precio: 510, duracionHoras: 12 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Hangzhou', ciudadDestino: hangzhou._id, precio: 560, duracionHoras: 13 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Guilin', ciudadDestino: guilin._id, precio: 600, duracionHoras: 14 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Lhasa (vía Chengdú)', ciudadDestino: lhasa._id, precio: 720, duracionHoras: 16 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Kunming (vía Dali)', ciudadDestino: dali._id, precio: 610, duracionHoras: 14.5 },
-    { aerolinea: 'Xiamen Airlines', origen: 'Madrid', destino: 'Xiamen', ciudadDestino: xiamen._id, precio: 530, duracionHoras: 13 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Shanghái (vía Suzhou)', ciudadDestino: suzhou._id, precio: 520, duracionHoras: 12.5 },
-    { aerolinea: 'China Eastern', origen: 'Barcelona', destino: 'Kunming (vía Lijiang)', ciudadDestino: lijiang._id, precio: 640, duracionHoras: 15 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Changsha (vía Zhangjiajie)', ciudadDestino: zhangjiajie._id, precio: 580, duracionHoras: 13.5 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Kunming', ciudadDestino: kunming._id, precio: 590, duracionHoras: 13 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Nanjing', ciudadDestino: nanjing._id, precio: 540, duracionHoras: 12 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Lanzhou (vía Dunhuang)', ciudadDestino: dunhuang._id, precio: 670, duracionHoras: 15 },
-    { aerolinea: 'Hainan Airlines', origen: 'Madrid', destino: 'Sanya (Hainan)', ciudadDestino: sanya._id, precio: 600, duracionHoras: 13.5 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Taiyuan (vía Pingyao)', ciudadDestino: pingyao._id, precio: 610, duracionHoras: 14 },
-  ]);
-  console.log('Vuelos creados');
+  rutas.forEach(r => { r.precio = sumRuta(r.dias); });
+  await Ruta.create(rutas);
+  console.log('Rutas creadas (60 rutas para 20 ciudades)');
 
   // ========== CULTURE ARTICLES ==========
   await CultureArticle.create([
@@ -1950,10 +1864,8 @@ const seed = async () => {
   console.log('\n✓ Seed completado exitosamente');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('Ciudades: 20');
-  console.log('Guías: 60 (3 por ciudad)');
+  console.log('Rutas: 60 (3 por ciudad)');
   console.log('Actividades: 174');
-  console.log('Hoteles: 40');
-  console.log('Vuelos: 24');
   console.log('Artículos: 7');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('Credenciales:');

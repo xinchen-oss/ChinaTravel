@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 
 const seed = async () => {
   await connectDB();
@@ -102,15 +102,20 @@ const seed = async () => {
 
   console.log('Nuevas actividades creadas para todas las ciudades');
 
-  // ==================== NEW GUIDES (CIRCUITOS) ====================
-  const guides = [];
+  // Lookup de precios de actividades para calcular el precio de cada ruta
+  const actPrice = new Map();
+  [pekinNew, shanghaiNew, chengduNew, hangzhouNew, guilinNew, lhasaNew, suzhouNew, kunmingNew, shenzhenNew, lijangNew, dunhuangNew].flat().forEach(a => actPrice.set(a._id.toString(), a.precio));
+  const sumRuta = (dias) => dias.reduce((t, d) => t + (d.actividades || []).reduce((s, sl) => s + (actPrice.get(String(sl.actividad)) || 0), 0), 0);
 
-  // --- PEKÍN: 2 new guides ---
+  // ==================== NEW RUTAS (CIRCUITOS) ====================
+  const rutas = [];
+
+  // --- PEKÍN: 2 new rutas ---
   const pekinOldActs = await Activity.find({ ciudad: cityMap.pekin._id, nombre: { $nin: pekinNew.map(a => a.nombre) } });
-  guides.push({
+  rutas.push({
     titulo: 'Pekín Nocturno y Gastronómico',
     descripcion: '3 días descubriendo el lado nocturno y gastronómico de Pekín: pato laqueado, ópera, hutones, mercado de Wangfujing y arte contemporáneo en el 798.',
-    ciudad: cityMap.pekin._id, duracionDias: 3, precio: 279,
+    ciudad: cityMap.pekin._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Hutones y Pato Pekinés', actividades: [
@@ -129,10 +134,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Pekín Completo - 5 Días',
     descripcion: '5 días para ver todo Pekín: Gran Muralla, Ciudad Prohibida, Templo del Cielo, hutones, arte contemporáneo, gastronomía y ópera. El circuito definitivo.',
-    ciudad: cityMap.pekin._id, duracionDias: 5, precio: 459,
+    ciudad: cityMap.pekin._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Hutones', actividades: [
@@ -157,11 +162,11 @@ const seed = async () => {
     ],
   });
 
-  // --- SHANGHÁI: 2 new guides ---
-  guides.push({
+  // --- SHANGHÁI: 2 new rutas ---
+  rutas.push({
     titulo: 'Shanghái Moderno y Nocturno',
     descripcion: '3 días en el lado más moderno de Shanghái: rascacielos futuristas, barrio francés en bicicleta, acróbatas, crucero nocturno y la mejor gastronomía cosmopolita.',
-    ciudad: cityMap.shanghai._id, duracionDias: 3, precio: 299,
+    ciudad: cityMap.shanghai._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Rascacielos y Bund', actividades: [
@@ -181,10 +186,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Shanghái Express Gastronómico - 2 Días',
     descripcion: 'Fin de semana gastronómico en Shanghái: xiaolongbao, cocina shanghainesa, Tianzifang, crucero nocturno y el skyline más impresionante de Asia.',
-    ciudad: cityMap.shanghai._id, duracionDias: 2, precio: 189,
+    ciudad: cityMap.shanghai._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Sabores y Rascacielos', actividades: [
@@ -199,11 +204,11 @@ const seed = async () => {
     ],
   });
 
-  // --- CHENGDU: 2 new guides ---
-  guides.push({
+  // --- CHENGDU: 2 new rutas ---
+  rutas.push({
     titulo: 'Chengdu Cultura y Picante - 4 Días',
     descripcion: '4 días de inmersión en la cultura del Sichuan: pandas, hot pot, cambio de cara, Buda Gigante de Leshan, mapo tofu y vida callejera nocturna en Jinli.',
-    ciudad: cityMap.chengdu._id, duracionDias: 4, precio: 389,
+    ciudad: cityMap.chengdu._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1533552689071-33be96f7d31e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Callejones', actividades: [
@@ -226,10 +231,10 @@ const seed = async () => {
     ],
   });
 
-  guides.push({
+  rutas.push({
     titulo: 'Chengdu Nocturno - 2 Días',
     descripcion: 'Fin de semana en el lado nocturno de Chengdu: calle Jinli iluminada, cambio de cara, hot pot a medianoche y callejones históricos.',
-    ciudad: cityMap.chengdu._id, duracionDias: 2, precio: 169,
+    ciudad: cityMap.chengdu._id, duracionDias: 2,
     imagen: 'https://images.unsplash.com/photo-1533552689071-33be96f7d31e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Callejones y Noche', actividades: [
@@ -245,10 +250,10 @@ const seed = async () => {
   });
 
   // --- HANGZHOU: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Hangzhou Gastronómico y Cultural - 4 Días',
     descripcion: '4 días para los amantes del té y la buena mesa: plantaciones de Longjing, cerdo Dongpo, el Gran Canal, el Lago del Oeste y espectáculo nocturno de Zhang Yimou.',
-    ciudad: cityMap.hangzhou._id, duracionDias: 4, precio: 369,
+    ciudad: cityMap.hangzhou._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Lago y Gastronomía', actividades: [
@@ -270,10 +275,10 @@ const seed = async () => {
   });
 
   // --- GUILIN: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Guilin Aventura Total - 5 Días',
     descripcion: '5 días de aventura: crucero por el río Li, escalada en roca, rafting en bambú, arrozales en terraza, espectáculo nocturno y la mejor gastronomía del sur de China.',
-    ciudad: cityMap.guilin._id, duracionDias: 5, precio: 479,
+    ciudad: cityMap.guilin._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1537531383496-e3cdba5e457c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a Guilin', actividades: [
@@ -296,10 +301,10 @@ const seed = async () => {
   });
 
   // --- SUZHOU: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Suzhou Artístico - 4 Días',
     descripcion: '4 días para los amantes del arte y la belleza: jardines UNESCO, ópera Kunqu, canales, seda, pueblo acuático de Tongli y la elegancia eterna de la Venecia de Oriente.',
-    ciudad: cityMap.suzhou._id, duracionDias: 4, precio: 339,
+    ciudad: cityMap.suzhou._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardines y Canales', actividades: [
@@ -320,10 +325,10 @@ const seed = async () => {
   });
 
   // --- KUNMING: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Kunming Cultural - 4 Días',
     descripcion: '4 días explorando la diversidad de Yunnan: bosque de piedra, minorías étnicas, templos, gastronomía del suroeste, mercado de flores y el pollo al vapor más puro de China.',
-    ciudad: cityMap.kunming._id, duracionDias: 4, precio: 329,
+    ciudad: cityMap.kunming._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1558005137-d9619a5c539f?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Templo y Ciudad', actividades: [
@@ -344,10 +349,10 @@ const seed = async () => {
   });
 
   // --- SHENZHEN: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Shenzhen Tech & Culture - 3 Días',
     descripcion: '3 días en la capital mundial de la tecnología: mercado electrónico de Huaqiangbei, arte urbano, arquitectura futurista, frontera con Hong Kong y vida nocturna junto al mar.',
-    ciudad: cityMap.shenzhen._id, duracionDias: 3, precio: 229,
+    ciudad: cityMap.shenzhen._id, duracionDias: 3,
     imagen: 'https://images.unsplash.com/photo-1533552689071-33be96f7d31e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Tecnología', actividades: [
@@ -365,10 +370,10 @@ const seed = async () => {
   });
 
   // --- LIJIANG: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Lijiang Naturaleza y Cultura Naxi - 4 Días',
     descripcion: '4 días de inmersión en la cultura Naxi y la naturaleza de Yunnan: casco antiguo, Montaña del Dragón de Jade, Valle de la Luna Azul, pueblo de Shuhe, música ancestral y hot pot de setas.',
-    ciudad: cityMap.lijiang._id, duracionDias: 4, precio: 419,
+    ciudad: cityMap.lijiang._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad Antigua', actividades: [
@@ -390,10 +395,10 @@ const seed = async () => {
   });
 
   // --- DUNHUANG: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Dunhuang - Aventura en el Desierto',
     descripcion: '4 días de aventura en el desierto del Gobi: cuevas budistas milenarias, amanecer en las dunas, camellos, pasos de la Gran Muralla y noches estrelladas en el oasis.',
-    ciudad: cityMap.dunhuang._id, duracionDias: 4, precio: 449,
+    ciudad: cityMap.dunhuang._id, duracionDias: 4,
     imagen: 'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada al Oasis', actividades: [
@@ -413,10 +418,10 @@ const seed = async () => {
   });
 
   // --- LHASA: 1 new guide ---
-  guides.push({
+  rutas.push({
     titulo: 'Lhasa Espiritual - 5 Días',
     descripcion: '5 días de inmersión espiritual en el Tíbet: Palacio de Potala, tres grandes monasterios, debates de monjes, yogur de yak, Barkhor kora y el lago sagrado Namtso.',
-    ciudad: cityMap.lhasa._id, duracionDias: 5, precio: 699,
+    ciudad: cityMap.lhasa._id, duracionDias: 5,
     imagen: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Aclimatación', actividades: [
@@ -440,13 +445,14 @@ const seed = async () => {
     ],
   });
 
-  await Guide.create(guides);
-  console.log(`${guides.length} nuevos circuitos (guías) creados`);
+  rutas.forEach(r => { r.precio = sumRuta(r.dias); });
+  await Ruta.create(rutas);
+  console.log(`${rutas.length} nuevos circuitos (rutas) creados`);
 
   console.log('\n✓ Seed de enriquecimiento completado');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('Nuevas actividades: ~40 (distribuidas en 15 ciudades)');
-  console.log(`Nuevos circuitos: ${guides.length}`);
+  console.log(`Nuevos circuitos: ${rutas.length}`);
   console.log('Ciudades enriquecidas: Pekín, Shanghái, Chengdu, Hangzhou, Guilin, Lhasa, Suzhou, Kunming, Lijiang, Shenzhen, Dunhuang');
 
   process.exit(0);

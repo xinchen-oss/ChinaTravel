@@ -19,7 +19,7 @@ const knowledgeBase = [
   },
   {
     keywords: ['idioma', 'hablan', 'inglés', 'español', 'comunicar', 'traductor', 'chino'],
-    answer: 'El idioma oficial es el mandarín (普通话). El inglés tiene uso limitado fuera de hoteles internacionales y zonas turísticas. Recomendamos: descargar Google Translate o Pleco con paquete offline, llevar un traductor electrónico, y aprender frases básicas. Nuestros circuitos incluyen guía en español, así que no tendrás problemas de comunicación.',
+    answer: 'El idioma oficial es el mandarín (普通话). El inglés tiene uso limitado fuera de hoteles internacionales y zonas turísticas. Recomendamos: descargar Google Translate o Pleco con paquete offline, llevar un traductor electrónico, y aprender frases básicas. En nuestras rutas, la información de cada actividad está disponible en español.',
   },
   {
     keywords: ['internet', 'vpn', 'wifi', 'google', 'whatsapp', 'redes sociales'],
@@ -27,31 +27,31 @@ const knowledgeBase = [
   },
   {
     keywords: ['seguro', 'seguridad', 'peligro', 'seguro de viaje', 'emergencia'],
-    answer: 'China es un país muy seguro para turistas. La criminalidad violenta es muy baja. Precauciones normales: cuidar pertenencias en zonas turísticas concurridas. Todos nuestros circuitos incluyen seguro de viaje con cobertura médica. En emergencias: policía 110, ambulancia 120, bomberos 119. La embajada española en Pekín: +86 10 6532 3629.',
+    answer: 'China es un país muy seguro para turistas. La criminalidad violenta es muy baja. Precauciones normales: cuidar pertenencias en zonas turísticas concurridas. Te recomendamos contratar tu propio seguro de viaje con cobertura médica. En emergencias: policía 110, ambulancia 120, bomberos 119. La embajada española en Pekín: +86 10 6532 3629.',
   },
   {
     keywords: ['comida', 'comer', 'gastronomía', 'restaurante', 'plato', 'picante', 'vegetariano'],
-    answer: 'La gastronomía china es increíblemente variada. Cada región tiene su estilo: Sichuan (picante), Cantón (dim sum), Pekín (pato laqueado), Shanghái (xiaolongbao). Para vegetarianos, hay opciones en templos budistas y restaurantes modernos. Nuestros circuitos incluyen comidas con platos típicos seleccionados. El agua del grifo NO es potable — bebe siempre agua embotellada.',
+    answer: 'La gastronomía china es increíblemente variada. Cada región tiene su estilo: Sichuan (picante), Cantón (dim sum), Pekín (pato laqueado), Shanghái (xiaolongbao). Para vegetarianos, hay opciones en templos budistas y restaurantes modernos. Muchas de nuestras actividades son experiencias gastronómicas con platos típicos. El agua del grifo NO es potable — bebe siempre agua embotellada.',
   },
   {
     keywords: ['transporte', 'tren', 'avión', 'metro', 'taxi', 'moverse', 'tren bala'],
-    answer: 'China tiene una red de transporte excelente. El tren de alta velocidad (高铁) conecta las principales ciudades a hasta 350 km/h. El metro existe en todas las grandes ciudades. Los taxis son baratos — usa la app DiDi. Vuelos internos son frecuentes y asequibles. Nuestros circuitos incluyen todos los traslados internos.',
+    answer: 'China tiene una red de transporte excelente. El tren de alta velocidad (高铁) conecta las principales ciudades a hasta 350 km/h. El metro existe en todas las grandes ciudades. Los taxis son baratos — usa la app DiDi. Vuelos internos son frecuentes y asequibles. Tú organizas tus traslados, mientras que nosotros nos encargamos de las entradas a las atracciones.',
   },
   {
     keywords: ['hotel', 'alojamiento', 'dormir', 'hospedaje', 'hostal'],
-    answer: 'Nuestros circuitos incluyen hoteles de 4-5 estrellas seleccionados. Si viajas por tu cuenta, hay opciones desde hostales (~50-100 CNY) hasta hoteles de lujo. Booking.com funciona en China pero muchos usan Ctrip/Trip.com. Los hoteles requieren pasaporte para el check-in por ley china.',
+    answer: 'En ChinaTravel nos centramos en las entradas a las atracciones, así que el alojamiento corre por tu cuenta y eliges lo que prefieras. Hay opciones desde hostales (~50-100 CNY) hasta hoteles de lujo. Booking.com funciona en China pero muchos usan Ctrip/Trip.com. Los hoteles requieren pasaporte para el check-in por ley china.',
   },
   {
     keywords: ['precio', 'costo', 'cuánto', 'presupuesto', 'barato', 'caro'],
-    answer: 'China ofrece muy buena relación calidad-precio. Un presupuesto diario orientativo: mochilero ~200-300 CNY, medio ~500-800 CNY, confort ~1000+ CNY. Nuestros circuitos incluyen hotel, comidas, guía en español, transporte y entradas — consulta los precios en la sección de Circuitos.',
+    answer: 'China ofrece muy buena relación calidad-precio. Un presupuesto diario orientativo: mochilero ~200-300 CNY, medio ~500-800 CNY, confort ~1000+ CNY. Nuestras rutas incluyen únicamente las entradas a las atracciones, por lo que el precio es muy ajustado — consulta los precios en la sección de Rutas.',
   },
   {
     keywords: ['muralla', 'gran muralla', 'great wall'],
-    answer: 'La Gran Muralla China tiene más de 21.000 km. Las secciones más populares cerca de Pekín son: Badaling (más accesible, con teleférico), Mutianyu (menos masificada, muy restaurada), Jinshanling (para senderistas) y Simatai (sección original sin restaurar). Recomendamos llevar calzado cómodo y agua. Nuestro circuito de Pekín incluye visita a la muralla.',
+    answer: 'La Gran Muralla China tiene más de 21.000 km. Las secciones más populares cerca de Pekín son: Badaling (más accesible, con teleférico), Mutianyu (menos masificada, muy restaurada), Jinshanling (para senderistas) y Simatai (sección original sin restaurar). Recomendamos llevar calzado cómodo y agua. Nuestra ruta de Pekín incluye la entrada a la muralla.',
   },
   {
-    keywords: ['circuito', 'tour', 'guía', 'itinerario', 'viaje organizado', 'paquete'],
-    answer: 'Ofrecemos circuitos organizados por las principales ciudades de China con guía en español, hoteles 4-5★, comidas incluidas y seguro de viaje. Puedes personalizar tu itinerario cambiando actividades. Consulta todos nuestros circuitos en la sección "Circuitos" de la web. Si tienes necesidades especiales, escríbenos y diseñamos un viaje a medida.',
+    keywords: ['ruta', 'circuito', 'tour', 'itinerario', 'viaje organizado', 'paquete', 'actividad', 'entrada', 'entradas'],
+    answer: 'Ofrecemos rutas por las principales ciudades de China que agrupan las entradas a las mejores atracciones. Solo pagas las entradas, sin hoteles ni vuelos. Puedes personalizar tu itinerario cambiando actividades o eligiendo "actividad por libre", y también puedes comprar la entrada a una sola atracción eligiendo fecha y hora. Consulta todas nuestras rutas y actividades en la web.',
   },
   {
     keywords: ['equipaje', 'maleta', 'llevar', 'ropa', 'qué llevar'],
@@ -59,7 +59,7 @@ const knowledgeBase = [
   },
   {
     keywords: ['hola', 'buenos días', 'buenas tardes', 'hey', 'qué tal'],
-    answer: '¡Hola! 👋 Soy el asistente virtual de ChinaTravel. Puedo ayudarte con información sobre visas, clima, moneda, transporte, gastronomía, seguridad y nuestros circuitos por China. ¿En qué puedo ayudarte?',
+    answer: '¡Hola! 👋 Soy el asistente virtual de ChinaTravel. Puedo ayudarte con información sobre visas, clima, moneda, transporte, gastronomía, seguridad y nuestras rutas por China. ¿En qué puedo ayudarte?',
   },
   {
     keywords: ['gracias', 'muchas gracias', 'genial', 'perfecto'],
@@ -67,7 +67,7 @@ const knowledgeBase = [
   },
   {
     keywords: ['vacuna', 'salud', 'médico', 'enfermedad', 'hospital', 'farmacia'],
-    answer: 'No hay vacunas obligatorias para China, pero se recomienda tener al día: hepatitis A/B, tétanos y fiebre tifoidea. Los hospitales en grandes ciudades son modernos. Hay farmacias (药店) por todas partes. Lleva tus medicamentos con receta traducida al inglés. Nuestros circuitos incluyen seguro médico de viaje.',
+    answer: 'No hay vacunas obligatorias para China, pero se recomienda tener al día: hepatitis A/B, tétanos y fiebre tifoidea. Los hospitales en grandes ciudades son modernos. Hay farmacias (药店) por todas partes. Lleva tus medicamentos con receta traducida al inglés. Te recomendamos contratar un seguro médico de viaje por tu cuenta.',
   },
 ];
 

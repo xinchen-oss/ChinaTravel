@@ -1,6 +1,6 @@
 import connectDB from './config/db.js';
 import City from './models/City.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 import Activity from './models/Activity.js';
 
 const U = (id) => `https://images.unsplash.com/${id}?w=800&q=80`;
@@ -179,7 +179,7 @@ const run = async () => {
   for (const city of allCities) {
     const imgs = GUIDE_IMG[city.slug];
     if (!imgs) continue;
-    const guides = await Guide.find({ ciudad: city._id }).sort('createdAt');
+    const guides = await Ruta.find({ ciudad: city._id }).sort('createdAt');
     for (let i = 0; i < guides.length; i++) {
       let id = imgs[i % imgs.length];
       // Skip if same as city image or already used
@@ -194,7 +194,7 @@ const run = async () => {
         }
       }
       usedGuideIds.add(id);
-      await Guide.findByIdAndUpdate(guides[i]._id, { imagen: U(id) });
+      await Ruta.findByIdAndUpdate(guides[i]._id, { imagen: U(id) });
       gc++;
     }
   }
@@ -229,7 +229,7 @@ const run = async () => {
 
   // 4. Verify
   const cities2 = await City.find({}, 'imagenPortada');
-  const guides2 = await Guide.find({}, 'imagen');
+  const guides2 = await Ruta.find({}, 'imagen');
   const cityBases = new Set(cities2.map(c => c.imagenPortada?.split('?')[0]));
   const guideBases = guides2.map(g => g.imagen?.split('?')[0]);
   const guideUniqueSet = new Set(guideBases);
@@ -237,8 +237,8 @@ const run = async () => {
   for (const b of guideBases) { if (cityBases.has(b)) overlap++; }
 
   console.log(`\nCity unique: ${cityBases.size}/30`);
-  console.log(`Guide unique: ${guideUniqueSet.size}/90`);
-  console.log(`City-Guide overlap: ${overlap}`);
+  console.log(`Ruta unique: ${guideUniqueSet.size}/90`);
+  console.log(`City-Ruta overlap: ${overlap}`);
   console.log(overlap === 0 && guideUniqueSet.size === 90 ? '✅ PERFECT' : '⚠ Still has issues');
 
   process.exit(0);

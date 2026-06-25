@@ -1,11 +1,11 @@
 import Submission from '../models/Submission.js';
 import Activity from '../models/Activity.js';
-import Hotel from '../models/Hotel.js';
-import Flight from '../models/Flight.js';
+import Ruta from '../models/Ruta.js';
 import User from '../models/User.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { SUBMISSION_STATUS } from '../utils/constants.js';
+import { computeRutaPrice } from '../utils/helpers.js';
 import { sendEmail } from '../services/emailService.js';
 
 const emailWrapper = (content) => `
@@ -24,27 +24,25 @@ const emailWrapper = (content) => `
   </div>
 `;
 
-const typeLabels = { ACTIVIDAD: 'Actividad', HOTEL: 'Hotel', VUELO: 'Vuelo' };
-const typeColors = { ACTIVIDAD: '#f59e0b', HOTEL: '#3b82f6', VUELO: '#8b5cf6' };
-const typeIcons = { ACTIVIDAD: '🎯', HOTEL: '🏨', VUELO: '✈️' };
+const typeLabels = { ACTIVIDAD: 'Actividad', RUTA: 'Ruta' };
+const typeColors = { ACTIVIDAD: '#f59e0b', RUTA: '#10b981' };
+const typeIcons = { ACTIVIDAD: '🎯', RUTA: '🗺️' };
 
 function buildContentTable(contenido, tipo) {
   const excluded = ['imagen', '_id', '__v', 'createdAt', 'updatedAt', 'creadoPor', 'isApproved'];
   const labels = {
-    nombre: 'Nombre', descripcion: 'Descripción', ciudad: 'Ciudad', categoria: 'Categoría',
-    duracionHoras: 'Duración (h)', precio: 'Precio', precioPorNoche: 'Precio/noche',
-    estrellas: 'Estrellas', aerolinea: 'Aerolínea', origen: 'Origen', destino: 'Destino',
-    ciudadDestino: 'Ciudad destino', horaSalida: 'Hora salida', horaLlegada: 'Hora llegada',
-    plazas: 'Plazas', direccion: 'Dirección', servicios: 'Servicios',
+    nombre: 'Nombre', titulo: 'Título', descripcion: 'Descripción', ciudad: 'Ciudad', categoria: 'Categoría',
+    duracionHoras: 'Duración (h)', duracionDias: 'Duración (días)', precio: 'Precio',
+    dias: 'Itinerario', consejos: 'Consejos',
   };
 
   const rows = Object.entries(contenido || {})
     .filter(([k]) => !excluded.includes(k))
     .map(([k, v], i) => {
       let val = v;
-      if (k === 'estrellas') val = '★'.repeat(Number(v)) + '☆'.repeat(5 - Number(v));
-      else if (k === 'precio' || k === 'precioPorNoche') val = `${Number(v).toFixed(2)} €`;
-      else if (Array.isArray(v)) val = v.join(', ');
+      if (k === 'precio') val = `${Number(v).toFixed(2)} €`;
+      else if (k === 'dias' && Array.isArray(v)) val = `${v.length} día(s)`;
+      else if (Array.isArray(v)) val = v.map((x) => (typeof x === 'object' ? '' : x)).filter(Boolean).join(', ');
       else if (typeof v === 'object') val = JSON.stringify(v);
 
       return `<tr>
@@ -172,9 +170,15 @@ export const approveSubmission = asyncHandler(async (req, res) => {
   data.creadoPor = submission.comercial._id;
   data.isApproved = true;
 
-  if (submission.tipoContenido === 'ACTIVIDAD') await Activity.create(data);
-  else if (submission.tipoContenido === 'HOTEL') await Hotel.create(data);
-  else if (submission.tipoContenido === 'VUELO') await Flight.create(data);
+  if (submission.tipoContenido === 'ACTIVIDAD') {
+    await Activity.create(data);
+  } else if (submission.tipoContenido === 'RUTA') {
+    const ruta = await Ruta.create(data);
+    // Derive the ruta price from its activity tickets.
+    const populated = await Ruta.findById(ruta._id).populate('dias.actividades.actividad', 'precio');
+    populated.precio = computeRutaPrice(populated.dias);
+    await populated.save();
+  }
 
   const tipo = submission.tipoContenido;
   const label = typeLabels[tipo] || tipo;

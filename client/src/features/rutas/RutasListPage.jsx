@@ -1,17 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useGuides } from '../../hooks/useGuides';
+import { useRutas } from '../../hooks/useRutas';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../api/axios';
 import CitySelector from '../../components/common/CitySelector';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatPrice } from '../../utils/formatters';
 import { getImageUrl, handleImageError } from '../../utils/imageHelper';
-import './Guides.css';
+import './Rutas.css';
 
-export default function GuidesListPage() {
+export default function RutasListPage() {
   const [cityId, setCityId] = useState(null);
-  const { guides, loading } = useGuides(cityId);
+  const { rutas, loading } = useRutas(cityId);
   const { user } = useAuth();
   const [recoIds, setRecoIds] = useState([]);
 
@@ -25,10 +25,10 @@ export default function GuidesListPage() {
       .catch(() => {});
   }, [user]);
 
-  const sortedGuides = useMemo(() => {
-    if (recoIds.length === 0) return guides;
+  const sortedRutas = useMemo(() => {
+    if (recoIds.length === 0) return rutas;
     const recoSet = new Set(recoIds);
-    return [...guides].sort((a, b) => {
+    return [...rutas].sort((a, b) => {
       const aReco = recoSet.has(a._id);
       const bReco = recoSet.has(b._id);
       if (aReco && !bReco) return -1;
@@ -36,7 +36,7 @@ export default function GuidesListPage() {
       if (aReco && bReco) return recoIds.indexOf(a._id) - recoIds.indexOf(b._id);
       return 0;
     });
-  }, [guides, recoIds]);
+  }, [rutas, recoIds]);
 
   return (
     <>
@@ -44,8 +44,8 @@ export default function GuidesListPage() {
       <section className="guides-banner">
         <div className="guides-banner__overlay" />
         <div className="container guides-banner__content">
-          <h1>Circuitos por China</h1>
-          <p>Itinerarios completos con alojamiento, comidas, guía y seguro incluidos</p>
+          <h1>Rutas por China</h1>
+          <p>Itinerarios con las entradas a las mejores atracciones — solo pagas las entradas</p>
         </div>
       </section>
 
@@ -57,50 +57,47 @@ export default function GuidesListPage() {
               <CitySelector value={cityId} onChange={setCityId} />
             </div>
             <p className="guides-toolbar__count">
-              {loading ? '' : `${sortedGuides.length} circuito${sortedGuides.length !== 1 ? 's' : ''} disponible${sortedGuides.length !== 1 ? 's' : ''}`}
+              {loading ? '' : `${sortedRutas.length} ruta${sortedRutas.length !== 1 ? 's' : ''} disponible${sortedRutas.length !== 1 ? 's' : ''}`}
             </p>
           </div>
 
           {loading ? (
             <LoadingSpinner />
-          ) : sortedGuides.length === 0 ? (
+          ) : sortedRutas.length === 0 ? (
             <div className="empty-state">
-              <h3>No hay circuitos disponibles</h3>
+              <h3>No hay rutas disponibles</h3>
               <p>Selecciona otra ciudad o vuelve más tarde</p>
             </div>
           ) : (
             <div className="guides-list">
-              {sortedGuides.map((guide) => {
-                const isRecommended = recoIds.includes(guide._id);
+              {sortedRutas.map((ruta) => {
+                const isRecommended = recoIds.includes(ruta._id);
                 return (
-                <div className={`guide-list-card${isRecommended ? ' guide-list-card--recommended' : ''}`} key={guide._id}>
+                <div className={`guide-list-card${isRecommended ? ' guide-list-card--recommended' : ''}`} key={ruta._id}>
                   {isRecommended && (
                     <div className="guide-list-card__reco-badge">Recomendado para ti</div>
                   )}
                   <div className="guide-list-card__content">
                     <div className="guide-list-card__image">
-                      <img src={getImageUrl(guide.imagen || guide.ciudad?.imagenPortada, guide._id)} alt={guide.titulo} onError={handleImageError} />
-                      <span className="guide-list-card__duration">{guide.duracionDias} días</span>
+                      <img src={getImageUrl(ruta.imagen || ruta.ciudad?.imagenPortada, ruta._id)} alt={ruta.titulo} onError={handleImageError} />
+                      <span className="guide-list-card__duration">{ruta.duracionDias} días</span>
                     </div>
                     <div className="guide-list-card__body">
-                      <span className="guide-list-card__destination">{guide.ciudad?.nombre || 'China'}</span>
-                      <h3 className="guide-list-card__title">{guide.titulo}</h3>
-                      <p className="guide-list-card__desc">{guide.descripcion?.substring(0, 200)}...</p>
+                      <span className="guide-list-card__destination">{ruta.ciudad?.nombre || 'China'}</span>
+                      <h3 className="guide-list-card__title">{ruta.titulo}</h3>
+                      <p className="guide-list-card__desc">{ruta.descripcion?.substring(0, 200)}...</p>
                       <div className="guide-list-card__includes">
-                        <span>🏨 Alojamiento</span>
-                        <span>🍜 Comidas</span>
-                        <span>🧑‍🏫 Guía</span>
-                        <span>🛡️ Seguro</span>
+                        <span>🎫 Entradas incluidas</span>
                       </div>
                     </div>
                     <div className="guide-list-card__aside">
                       <div className="guide-list-card__price">
-                        <span className="guide-list-card__price-label">Desde</span>
-                        <span className="guide-list-card__price-value">{formatPrice(guide.precio)}</span>
+                        <span className="guide-list-card__price-label">Entradas desde</span>
+                        <span className="guide-list-card__price-value">{formatPrice(ruta.precio)}</span>
                       </div>
-                      <Link to={`/guias/${guide._id}`} className="btn btn--primary">Ver circuito</Link>
+                      <Link to={`/rutas/${ruta._id}`} className="btn btn--primary">Ver ruta</Link>
                       {(!user || (user.role !== 'ADMIN' && user.role !== 'COMERCIAL')) && (
-                        <Link to={`/guias/${guide._id}/personalizar`} className="btn btn--outline btn--sm">Personalizar</Link>
+                        <Link to={`/rutas/${ruta._id}/personalizar`} className="btn btn--outline btn--sm">Personalizar</Link>
                       )}
                     </div>
                   </div>

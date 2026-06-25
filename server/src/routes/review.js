@@ -12,7 +12,7 @@ const router = Router();
 // Get reviews for a specific item (public)
 router.get('/:tipo/:referenciaId', asyncHandler(async (req, res) => {
   const { tipo, referenciaId } = req.params;
-  const tipoMap = { guia: 'GUIA', hotel: 'HOTEL', actividad: 'ACTIVIDAD' };
+  const tipoMap = { ruta: 'RUTA', actividad: 'ACTIVIDAD' };
   const tipoVal = tipoMap[tipo];
   if (!tipoVal) throw new ApiError(400, 'Tipo inválido');
 
@@ -38,7 +38,7 @@ router.get('/:tipo/:referenciaId', asyncHandler(async (req, res) => {
 // Create review (authenticated)
 router.post('/', protect, asyncHandler(async (req, res) => {
   const { tipo, referenciaId, puntuacion, titulo, comentario } = req.body;
-  const tipoMap = { GUIA: 'Guide', HOTEL: 'Hotel', ACTIVIDAD: 'Activity' };
+  const tipoMap = { RUTA: 'Ruta', ACTIVIDAD: 'Activity' };
   const tipoRef = tipoMap[tipo];
   if (!tipoRef) throw new ApiError(400, 'Tipo inválido');
 

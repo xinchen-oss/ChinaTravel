@@ -9,7 +9,7 @@ const swaggerSpec = {
     version: '1.0.0',
     description:
       'API REST de la plataforma ChinaTravel: gestión de ciudades, actividades, ' +
-      'guías de viaje, hoteles, vuelos, pedidos, cultura, reseñas, foro y usuarios.\n\n' +
+      'rutas (entradas a atracciones), pedidos, cultura, reseñas, foro y usuarios.\n\n' +
       'Todas las respuestas siguen el formato `{ ok: boolean, data?, message?, error? }`.\n\n' +
       'Los endpoints protegidos requieren un token JWT en la cabecera ' +
       '`Authorization: Bearer <token>`.',
@@ -23,12 +23,10 @@ const swaggerSpec = {
     { name: 'Usuarios', description: 'Administración de usuarios (solo ADMIN)' },
     { name: 'Ciudades', description: 'Destinos de China' },
     { name: 'Actividades', description: 'Actividades turísticas' },
-    { name: 'Guías', description: 'Itinerarios / guías de viaje' },
-    { name: 'Hoteles', description: 'Alojamientos' },
-    { name: 'Vuelos', description: 'Vuelos a ciudades de China' },
+    { name: 'Rutas', description: 'Itinerarios de entradas a atracciones' },
     { name: 'Pedidos', description: 'Reservas de los usuarios' },
     { name: 'Cultura', description: 'Artículos culturales' },
-    { name: 'Reseñas', description: 'Valoraciones de guías, hoteles y actividades' },
+    { name: 'Reseñas', description: 'Valoraciones de rutas y actividades' },
     { name: 'Cupones', description: 'Cupones de descuento' },
     { name: 'Notificaciones', description: 'Notificaciones del usuario' },
     { name: 'Foro', description: 'Foro de la comunidad' },
@@ -161,7 +159,7 @@ const swaggerSpec = {
           isApproved: { type: 'boolean' },
         },
       },
-      Guide: {
+      Ruta: {
         type: 'object',
         properties: {
           _id: { type: 'string' },
@@ -169,7 +167,7 @@ const swaggerSpec = {
           descripcion: { type: 'string' },
           ciudad: { type: 'string', description: 'ID de la ciudad' },
           duracionDias: { type: 'number' },
-          precio: { type: 'number' },
+          precio: { type: 'number', description: 'Suma de las entradas de sus actividades (calculado)' },
           imagen: { type: 'string' },
           dias: {
             type: 'array',
@@ -195,44 +193,17 @@ const swaggerSpec = {
           },
         },
       },
-      Hotel: {
-        type: 'object',
-        properties: {
-          _id: { type: 'string' },
-          nombre: { type: 'string' },
-          descripcion: { type: 'string' },
-          ciudad: { type: 'string', description: 'ID de la ciudad' },
-          estrellas: { type: 'integer', minimum: 1, maximum: 5 },
-          precioPorNoche: { type: 'number' },
-          imagen: { type: 'string' },
-          accesibilidad: { $ref: '#/components/schemas/Accesibilidad' },
-          isApproved: { type: 'boolean' },
-        },
-      },
-      Flight: {
-        type: 'object',
-        properties: {
-          _id: { type: 'string' },
-          aerolinea: { type: 'string' },
-          origen: { type: 'string' },
-          destino: { type: 'string' },
-          ciudadDestino: { type: 'string', description: 'ID de la ciudad' },
-          precio: { type: 'number' },
-          horaSalida: { type: 'string' },
-          horaLlegada: { type: 'string' },
-          duracionHoras: { type: 'number' },
-          accesibilidad: { $ref: '#/components/schemas/Accesibilidad' },
-          isApproved: { type: 'boolean' },
-        },
-      },
       Order: {
         type: 'object',
         properties: {
           _id: { type: 'string' },
           usuario: { type: 'string' },
-          guia: { type: 'string' },
-          hotel: { type: 'string' },
-          vuelo: { type: 'string' },
+          tipo: { type: 'string', enum: ['RUTA', 'ACTIVIDAD'] },
+          ruta: { type: 'string', description: 'ID de la ruta (si tipo=RUTA)' },
+          rutaPersonalizada: { type: 'object', description: 'Itinerario personalizado (opcional)' },
+          actividad: { type: 'string', description: 'ID de la actividad (si tipo=ACTIVIDAD)' },
+          fechaVisita: { type: 'string', format: 'date' },
+          horaVisita: { type: 'string' },
           precioTotal: { type: 'number' },
           descuento: { type: 'number' },
           cupon: { type: 'string' },
@@ -246,12 +217,13 @@ const swaggerSpec = {
       },
       OrderInput: {
         type: 'object',
-        required: ['guia', 'precioTotal'],
         properties: {
-          guia: { type: 'string', description: 'ID de la guía' },
-          guiaPersonalizada: { type: 'object', description: 'Itinerario personalizado (opcional)' },
-          hotel: { type: 'string' },
-          vuelo: { type: 'string' },
+          tipo: { type: 'string', enum: ['RUTA', 'ACTIVIDAD'], default: 'RUTA' },
+          rutaId: { type: 'string', description: 'ID de la ruta (si tipo=RUTA)' },
+          actividadesPersonalizadas: { type: 'object', description: 'Mapa { actividadOriginalId: actividadNuevaId | "POR_LIBRE" }' },
+          actividadId: { type: 'string', description: 'ID de la actividad (si tipo=ACTIVIDAD)' },
+          fechaVisita: { type: 'string', format: 'date' },
+          horaVisita: { type: 'string' },
           precioTotal: { type: 'number' },
           cupon: { type: 'string' },
         },
@@ -276,7 +248,7 @@ const swaggerSpec = {
         properties: {
           _id: { type: 'string' },
           usuario: { type: 'string' },
-          tipo: { type: 'string', enum: ['GUIA', 'HOTEL', 'ACTIVIDAD'] },
+          tipo: { type: 'string', enum: ['RUTA', 'ACTIVIDAD'] },
           referencia: { type: 'string' },
           puntuacion: { type: 'integer', minimum: 1, maximum: 5 },
           titulo: { type: 'string' },
@@ -332,7 +304,7 @@ const swaggerSpec = {
         properties: {
           _id: { type: 'string' },
           comercial: { type: 'string' },
-          tipoContenido: { type: 'string', enum: ['ACTIVIDAD', 'HOTEL', 'VUELO'] },
+          tipoContenido: { type: 'string', enum: ['ACTIVIDAD', 'RUTA'] },
           contenido: { type: 'object' },
           estado: { type: 'string', enum: ['PENDIENTE', 'APROBADO', 'RECHAZADO'] },
           comentarioAdmin: { type: 'string' },
@@ -566,106 +538,42 @@ const swaggerSpec = {
       },
     },
 
-    // ---------------- GUIAS ----------------
-    '/guias': {
+    // ---------------- RUTAS ----------------
+    '/rutas': {
       get: {
-        tags: ['Guías'], summary: 'Listar guías',
+        tags: ['Rutas'], summary: 'Listar rutas',
         parameters: [{ name: 'ciudad', in: 'query', schema: { type: 'string' }, description: 'Filtrar por ID de ciudad' }],
-        responses: { 200: { description: 'Lista de guías', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, data: { type: 'array', items: { $ref: '#/components/schemas/Guide' } } } } } } } },
+        responses: { 200: { description: 'Lista de rutas', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, data: { type: 'array', items: { $ref: '#/components/schemas/Ruta' } } } } } } } },
       },
       post: {
-        tags: ['Guías'], summary: 'Crear guía (ADMIN)', security: [{ bearerAuth: [] }],
-        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Guide' } } } },
-        responses: { 201: { description: 'Guía creada' }, 403: { $ref: '#/components/responses/Forbidden' } },
+        tags: ['Rutas'], summary: 'Crear ruta (ADMIN)', security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Ruta' } } } },
+        responses: { 201: { description: 'Ruta creada' }, 403: { $ref: '#/components/responses/Forbidden' } },
       },
     },
-    '/guias/{id}': {
+    '/rutas/{id}': {
       get: {
-        tags: ['Guías'], summary: 'Obtener una guía',
+        tags: ['Rutas'], summary: 'Obtener una ruta',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Guía', content: { 'application/json': { schema: { $ref: '#/components/schemas/Guide' } } } }, 404: { $ref: '#/components/responses/NotFound' } },
+        responses: { 200: { description: 'Ruta', content: { 'application/json': { schema: { $ref: '#/components/schemas/Ruta' } } } }, 404: { $ref: '#/components/responses/NotFound' } },
       },
       put: {
-        tags: ['Guías'], summary: 'Actualizar guía (ADMIN)', security: [{ bearerAuth: [] }],
+        tags: ['Rutas'], summary: 'Actualizar ruta (ADMIN)', security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/Guide' } } } },
-        responses: { 200: { description: 'Guía actualizada' }, 404: { $ref: '#/components/responses/NotFound' } },
+        requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/Ruta' } } } },
+        responses: { 200: { description: 'Ruta actualizada' }, 404: { $ref: '#/components/responses/NotFound' } },
       },
       delete: {
-        tags: ['Guías'], summary: 'Eliminar guía (ADMIN)', security: [{ bearerAuth: [] }],
+        tags: ['Rutas'], summary: 'Eliminar ruta (ADMIN)', security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Guía eliminada' }, 404: { $ref: '#/components/responses/NotFound' } },
+        responses: { 200: { description: 'Ruta eliminada' }, 404: { $ref: '#/components/responses/NotFound' } },
       },
     },
-    '/guias/{id}/actividades-alternativas': {
+    '/rutas/{id}/actividades-alternativas': {
       get: {
-        tags: ['Guías'], summary: 'Actividades alternativas para una guía',
+        tags: ['Rutas'], summary: 'Actividades alternativas para una ruta',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: { 200: { description: 'Actividades alternativas' }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-    },
-
-    // ---------------- HOTELES ----------------
-    '/hoteles': {
-      get: {
-        tags: ['Hoteles'], summary: 'Listar hoteles',
-        parameters: [{ name: 'ciudad', in: 'query', schema: { type: 'string' }, description: 'Filtrar por ID de ciudad' }],
-        responses: { 200: { description: 'Lista de hoteles', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, data: { type: 'array', items: { $ref: '#/components/schemas/Hotel' } } } } } } } },
-      },
-      post: {
-        tags: ['Hoteles'], summary: 'Crear hotel (ADMIN)', security: [{ bearerAuth: [] }],
-        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } } },
-        responses: { 201: { description: 'Hotel creado' }, 403: { $ref: '#/components/responses/Forbidden' } },
-      },
-    },
-    '/hoteles/{id}': {
-      get: {
-        tags: ['Hoteles'], summary: 'Obtener un hotel',
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Hotel', content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } } }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-      put: {
-        tags: ['Hoteles'], summary: 'Actualizar hotel (ADMIN)', security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } } },
-        responses: { 200: { description: 'Hotel actualizado' }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-      delete: {
-        tags: ['Hoteles'], summary: 'Eliminar hotel (ADMIN)', security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Hotel eliminado' }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-    },
-
-    // ---------------- VUELOS ----------------
-    '/vuelos': {
-      get: {
-        tags: ['Vuelos'], summary: 'Listar vuelos',
-        parameters: [{ name: 'ciudadDestino', in: 'query', schema: { type: 'string' }, description: 'Filtrar por ID de ciudad de destino' }],
-        responses: { 200: { description: 'Lista de vuelos', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, data: { type: 'array', items: { $ref: '#/components/schemas/Flight' } } } } } } } },
-      },
-      post: {
-        tags: ['Vuelos'], summary: 'Crear vuelo (ADMIN)', security: [{ bearerAuth: [] }],
-        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Flight' } } } },
-        responses: { 201: { description: 'Vuelo creado' }, 403: { $ref: '#/components/responses/Forbidden' } },
-      },
-    },
-    '/vuelos/{id}': {
-      get: {
-        tags: ['Vuelos'], summary: 'Obtener un vuelo',
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Vuelo', content: { 'application/json': { schema: { $ref: '#/components/schemas/Flight' } } } }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-      put: {
-        tags: ['Vuelos'], summary: 'Actualizar vuelo (ADMIN)', security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/Flight' } } } },
-        responses: { 200: { description: 'Vuelo actualizado' }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-      delete: {
-        tags: ['Vuelos'], summary: 'Eliminar vuelo (ADMIN)', security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Vuelo eliminado' }, 404: { $ref: '#/components/responses/NotFound' } },
       },
     },
 
@@ -787,7 +695,7 @@ const swaggerSpec = {
                 type: 'object',
                 required: ['tipo', 'referenciaId', 'puntuacion', 'comentario'],
                 properties: {
-                  tipo: { type: 'string', enum: ['GUIA', 'HOTEL', 'ACTIVIDAD'] },
+                  tipo: { type: 'string', enum: ['RUTA', 'ACTIVIDAD'] },
                   referenciaId: { type: 'string' },
                   puntuacion: { type: 'integer', minimum: 1, maximum: 5 },
                   titulo: { type: 'string' },
@@ -804,7 +712,7 @@ const swaggerSpec = {
       get: {
         tags: ['Reseñas'], summary: 'Obtener reseñas aprobadas de un elemento',
         parameters: [
-          { name: 'tipo', in: 'path', required: true, schema: { type: 'string', enum: ['guia', 'hotel', 'actividad'] } },
+          { name: 'tipo', in: 'path', required: true, schema: { type: 'string', enum: ['ruta', 'actividad'] } },
           { name: 'referenciaId', in: 'path', required: true, schema: { type: 'string' } },
         ],
         responses: { 200: { description: 'Reseñas, promedio y total', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, data: { type: 'object', properties: { reviews: { type: 'array', items: { $ref: '#/components/schemas/Review' } }, promedio: { type: 'number' }, total: { type: 'integer' } } } } } } } } },
@@ -926,7 +834,7 @@ const swaggerSpec = {
       },
       post: {
         tags: ['Solicitudes'], summary: 'Crear solicitud de contenido (COMERCIAL)', security: [{ bearerAuth: [] }],
-        requestBody: { required: true, content: { 'multipart/form-data': { schema: { type: 'object', properties: { tipoContenido: { type: 'string', enum: ['ACTIVIDAD', 'HOTEL', 'VUELO'] }, contenido: { type: 'string', description: 'JSON con el contenido propuesto' }, imagen: { type: 'string', format: 'binary' } } } } } },
+        requestBody: { required: true, content: { 'multipart/form-data': { schema: { type: 'object', properties: { tipoContenido: { type: 'string', enum: ['ACTIVIDAD', 'RUTA'] }, contenido: { type: 'string', description: 'JSON con el contenido propuesto' }, imagen: { type: 'string', format: 'binary' } } } } } },
         responses: { 201: { description: 'Solicitud creada' }, 403: { $ref: '#/components/responses/Forbidden' } },
       },
     },

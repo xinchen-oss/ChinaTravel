@@ -1,5 +1,5 @@
 import connectDB from './config/db.js';
-import Guide from './models/Guide.js';
+import Ruta from './models/Ruta.js';
 import City from './models/City.js';
 
 const run = async () => {
@@ -183,18 +183,18 @@ const run = async () => {
   for (const city of allCities) {
     const photos = cityGuidePhotos[city.slug];
     if (!photos) { console.log(`  ⚠ No photos for ${city.slug}`); continue; }
-    const guides = await Guide.find({ ciudad: city._id }).sort('createdAt');
+    const guides = await Ruta.find({ ciudad: city._id }).sort('createdAt');
     for (let i = 0; i < guides.length; i++) {
       const photoId = photos[i % photos.length];
       const url = `https://images.unsplash.com/${photoId}?w=800&q=80`;
-      await Guide.findByIdAndUpdate(guides[i]._id, { imagen: url });
+      await Ruta.findByIdAndUpdate(guides[i]._id, { imagen: url });
       count++;
     }
   }
   console.log(`✅ ${count} guías actualizadas`);
 
   // Final verification
-  const all = await Guide.find({}, 'titulo imagen ciudad').populate('ciudad','nombre');
+  const all = await Ruta.find({}, 'titulo imagen ciudad').populate('ciudad','nombre');
   const imgMap = {};
   for (const g of all) {
     const key = g.imagen?.split('?')[0];

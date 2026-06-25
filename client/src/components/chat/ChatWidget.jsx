@@ -12,7 +12,7 @@ const QUICK_QUESTIONS = [
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: '¡Hola! 👋 Soy tu asistente de viajes a China. Puedo ayudarte con información sobre visas, clima, moneda, transporte, gastronomía y nuestros circuitos. ¿En qué puedo ayudarte?' },
+    { sender: 'bot', text: '¡Hola! 👋 Soy tu asistente de viajes a China. Puedo ayudarte con información sobre visas, clima, moneda, transporte, gastronomía y nuestras rutas y actividades. ¿En qué puedo ayudarte?' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

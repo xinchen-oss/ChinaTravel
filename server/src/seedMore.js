@@ -2,9 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
-import Guide from './models/Guide.js';
-import Hotel from './models/Hotel.js';
-import Flight from './models/Flight.js';
+import Ruta from './models/Ruta.js';
 
 const seedMore = async () => {
   await connectDB();
@@ -181,7 +179,7 @@ const seedMore = async () => {
 
   console.log('80 nuevas actividades creadas');
 
-  // ========== GUIDES (3 per city = 30 new) ==========
+  // ========== RUTAS (3 per city = 30 new) ==========
   const allActs = [
     { city: shenzhen, acts: shenzhenActs, name: 'Shenzhen' },
     { city: wuhan, acts: wuhanActs, name: 'Wuhan' },
@@ -195,13 +193,18 @@ const seedMore = async () => {
     { city: guiyang, acts: guiyangActs, name: 'Guiyang' },
   ];
 
-  const guides = [];
+  // Lookup de precios de actividades para calcular el precio de cada ruta
+  const actPrice = new Map();
+  allActs.map(a => a.acts).flat().forEach(a => actPrice.set(a._id.toString(), a.precio));
+  const sumRuta = (dias) => dias.reduce((t, d) => t + (d.actividades || []).reduce((s, sl) => s + (actPrice.get(String(sl.actividad)) || 0), 0), 0);
+
+  const rutas = [];
   for (const { city, acts, name } of allActs) {
-    // Guide 1: 3-day classic
-    guides.push({
+    // Ruta 1: 3-day classic
+    rutas.push({
       titulo: `${name}: Lo esencial en 3 días`,
       descripcion: `Descubre lo mejor de ${name} en un viaje de 3 días con actividades culturales, gastronómicas y de aventura.`,
-      ciudad: city._id, duracionDias: 3, precio: Math.round(80 + Math.random() * 120),
+      ciudad: city._id, duracionDias: 3,
       imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
       dias: [
         { numeroDia: 1, titulo: 'Cultura e historia', actividades: [
@@ -220,11 +223,11 @@ const seedMore = async () => {
         ]},
       ],
     });
-    // Guide 2: 5-day deep dive
-    guides.push({
+    // Ruta 2: 5-day deep dive
+    rutas.push({
       titulo: `${name}: Inmersión completa (5 días)`,
       descripcion: `Una inmersión profunda en ${name} para quienes quieren conocer cada rincón de esta fascinante ciudad.`,
-      ciudad: city._id, duracionDias: 5, precio: Math.round(150 + Math.random() * 150),
+      ciudad: city._id, duracionDias: 5,
       imagen: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80',
       dias: [
         { numeroDia: 1, titulo: 'Llegada y orientación', actividades: [
@@ -251,11 +254,11 @@ const seedMore = async () => {
         ]},
       ],
     });
-    // Guide 3: 2-day weekend
-    guides.push({
+    // Ruta 3: 2-day weekend
+    rutas.push({
       titulo: `${name}: Escapada de fin de semana`,
       descripcion: `Un fin de semana intenso en ${name}: lo imprescindible en solo 2 días.`,
-      ciudad: city._id, duracionDias: 2, precio: Math.round(50 + Math.random() * 80),
+      ciudad: city._id, duracionDias: 2,
       imagen: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?w=800&q=80',
       dias: [
         { numeroDia: 1, titulo: 'Lo imprescindible', actividades: [
@@ -271,78 +274,19 @@ const seedMore = async () => {
     });
   }
 
-  await Guide.create(guides);
-  console.log('30 nuevas guías creadas');
+  rutas.forEach(r => { r.precio = sumRuta(r.dias); });
+  await Ruta.create(rutas);
+  console.log('30 nuevas rutas creadas');
 
-  // ========== HOTELS (3 per city = 30 new) ==========
-  await Hotel.create([
-    { nombre: 'Shenzhen Tech Hub Hotel', ciudad: shenzhen._id, estrellas: 5, precioPorNoche: 130, descripcion: 'Hotel futurista en Futian CBD con habitaciones inteligentes controladas por app.' },
-    { nombre: 'Nanshan Bay Inn', ciudad: shenzhen._id, estrellas: 3, precioPorNoche: 45, descripcion: 'Hotel económico cerca de Sea World con terraza y vistas al puerto.' },
-    { nombre: 'OCT Loft Design Hotel', ciudad: shenzhen._id, estrellas: 4, precioPorNoche: 85, descripcion: 'Hotel boutique en el distrito de arte con decoración de diseñadores locales.' },
-    { nombre: 'Wuhan Yangtze Hotel', ciudad: wuhan._id, estrellas: 5, precioPorNoche: 110, descripcion: 'Hotel de lujo junto al río Yangtsé con vistas a la Torre de la Grulla Amarilla.' },
-    { nombre: 'East Lake Garden Hotel', ciudad: wuhan._id, estrellas: 4, precioPorNoche: 65, descripcion: 'Hotel junto al Lago del Este con jardín de cerezos y restaurante hubeínés.' },
-    { nombre: 'Wuchang Budget Inn', ciudad: wuhan._id, estrellas: 3, precioPorNoche: 30, descripcion: 'Alojamiento económico cerca de la universidad con ambiente joven y cafeterías.' },
-    { nombre: 'Qingdao Seaside Resort', ciudad: qingdao._id, estrellas: 5, precioPorNoche: 140, descripcion: 'Resort frente al mar con playa privada y restaurante de mariscos premium.' },
-    { nombre: 'German Quarter Hotel', ciudad: qingdao._id, estrellas: 4, precioPorNoche: 75, descripcion: 'Hotel en villa colonial alemana restaurada. Desayuno incluye cerveza Tsingtao artesanal.' },
-    { nombre: 'Zhanqiao Hostel', ciudad: qingdao._id, estrellas: 3, precioPorNoche: 32, descripcion: 'Hostal junto al muelle Zhanqiao con terraza con vistas al mar y cocina compartida.' },
-    { nombre: 'Changsha Grand Hotel', ciudad: changsha._id, estrellas: 5, precioPorNoche: 100, descripcion: 'Hotel de lujo en Wuyi Road con spa y el mejor restaurante de cocina hunanesa.' },
-    { nombre: 'Orange Island Hotel', ciudad: changsha._id, estrellas: 4, precioPorNoche: 60, descripcion: 'Hotel moderno con vistas a la Isla Naranja y el río Xiang.' },
-    { nombre: 'Pozi Street Inn', ciudad: changsha._id, estrellas: 3, precioPorNoche: 28, descripcion: 'Alojamiento en plena calle peatonal. Ruidoso pero en el centro de la acción.' },
-    { nombre: 'Tianjin Astor Hotel', ciudad: tianjin._id, estrellas: 5, precioPorNoche: 120, descripcion: 'Hotel histórico de 1863 en la antigua concesión británica. Donde se alojaron Sun Yat-sen y Herbert Hoover.' },
-    { nombre: 'Italian Quarter Hotel', ciudad: tianjin._id, estrellas: 4, precioPorNoche: 70, descripcion: 'Hotel boutique en la antigua concesión italiana con restaurante de fusión china-italiana.' },
-    { nombre: 'Tianjin Central Hostel', ciudad: tianjin._id, estrellas: 3, precioPorNoche: 25, descripcion: 'Hostal moderno cerca de la estación de tren rápido a Pekín (30 min).' },
-    { nombre: 'Chengde Imperial Resort', ciudad: chengde._id, estrellas: 5, precioPorNoche: 95, descripcion: 'Resort junto al palacio de verano con aguas termales y cocina imperial manchú.' },
-    { nombre: 'Mountain View Hotel', ciudad: chengde._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel con vistas a las montañas y los templos. Terraza panorámica.' },
-    { nombre: 'Chengde Guesthouse', ciudad: chengde._id, estrellas: 3, precioPorNoche: 28, descripcion: 'Pensión familiar con comida casera manchú y ambiente acogedor.' },
-    { nombre: 'Huangshan Pine Hotel', ciudad: huangshan._id, estrellas: 5, precioPorNoche: 150, descripcion: 'Hotel de montaña junto a la cima. Despierta entre nubes con vistas a los pinos centenarios.' },
-    { nombre: 'Hongcun Courtyard Hotel', ciudad: huangshan._id, estrellas: 4, precioPorNoche: 65, descripcion: 'Casa patio Hui convertida en hotel boutique dentro del pueblo UNESCO de Hongcun.' },
-    { nombre: 'Tunxi Old Street Inn', ciudad: huangshan._id, estrellas: 3, precioPorNoche: 30, descripcion: 'Hotel en la calle antigua de Tunxi con tiendas de caligrafía y tinta china.' },
-    { nombre: 'Fuzhou Hot Spring Hotel', ciudad: fuzhou._id, estrellas: 4, precioPorNoche: 70, descripcion: 'Hotel con piscinas termales naturales privadas en cada habitación.' },
-    { nombre: 'Sanfang Heritage Inn', ciudad: fuzhou._id, estrellas: 3, precioPorNoche: 38, descripcion: 'Hotel boutique en el barrio histórico de Sanfang Qixiang con patio de bambú.' },
-    { nombre: 'Fuzhou Riverside Hotel', ciudad: fuzhou._id, estrellas: 5, precioPorNoche: 100, descripcion: 'Hotel moderno junto al río Min con restaurante de cocina Fujian premium.' },
-    { nombre: 'Luoyang Peony Hotel', ciudad: luoyang._id, estrellas: 5, precioPorNoche: 90, descripcion: 'Hotel de lujo con jardín de peonías y spa con tratamientos de medicina tradicional china.' },
-    { nombre: 'Longmen Guesthouse', ciudad: luoyang._id, estrellas: 4, precioPorNoche: 50, descripcion: 'Hotel junto a las Grutas de Longmen con vistas a los acantilados budistas.' },
-    { nombre: 'Old Town Luoyang Inn', ciudad: luoyang._id, estrellas: 3, precioPorNoche: 25, descripcion: 'Alojamiento económico en la ciudad antigua con acceso fácil al banquete de sopa de agua.' },
-    { nombre: 'Guiyang Miao Hotel', ciudad: guiyang._id, estrellas: 4, precioPorNoche: 55, descripcion: 'Hotel temático Miao con decoración de plata artesanal y restaurante étnico.' },
-    { nombre: 'Huangguoshu Resort', ciudad: guiyang._id, estrellas: 5, precioPorNoche: 120, descripcion: 'Resort de lujo junto a la cascada Huangguoshu con piscina infinity y spa.' },
-    { nombre: 'Guiyang Backpacker Inn', ciudad: guiyang._id, estrellas: 3, precioPorNoche: 22, descripcion: 'Hostal mochilero cerca del parque Qianling con tours a pueblos étnicos.' },
-  ]);
-  console.log('30 nuevos hoteles creados');
 
-  // ========== FLIGHTS (2 per city = 20 new) ==========
-  await Flight.create([
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Shenzhen', ciudadDestino: shenzhen._id, precio: 520, duracionHoras: 12.5 },
-    { aerolinea: 'Hainan Airlines', origen: 'Barcelona', destino: 'Shenzhen', ciudadDestino: shenzhen._id, precio: 540, duracionHoras: 13 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Wuhan', ciudadDestino: wuhan._id, precio: 560, duracionHoras: 12 },
-    { aerolinea: 'China Eastern', origen: 'Barcelona', destino: 'Wuhan', ciudadDestino: wuhan._id, precio: 580, duracionHoras: 12.5 },
-    { aerolinea: 'Shandong Airlines', origen: 'Madrid', destino: 'Qingdao', ciudadDestino: qingdao._id, precio: 570, duracionHoras: 11.5 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Qingdao', ciudadDestino: qingdao._id, precio: 590, duracionHoras: 12 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Changsha', ciudadDestino: changsha._id, precio: 550, duracionHoras: 13 },
-    { aerolinea: 'Hainan Airlines', origen: 'Barcelona', destino: 'Changsha', ciudadDestino: changsha._id, precio: 570, duracionHoras: 13.5 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Tianjin', ciudadDestino: tianjin._id, precio: 530, duracionHoras: 11 },
-    { aerolinea: 'China Eastern', origen: 'Barcelona', destino: 'Tianjin', ciudadDestino: tianjin._id, precio: 550, duracionHoras: 11.5 },
-    { aerolinea: 'Air China', origen: 'Madrid', destino: 'Pekín (vía Chengde)', ciudadDestino: chengde._id, precio: 580, duracionHoras: 12 },
-    { aerolinea: 'Hainan Airlines', origen: 'Barcelona', destino: 'Pekín (vía Chengde)', ciudadDestino: chengde._id, precio: 600, duracionHoras: 12.5 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Huangshan (Tunxi)', ciudadDestino: huangshan._id, precio: 590, duracionHoras: 13 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Huangshan (Tunxi)', ciudadDestino: huangshan._id, precio: 610, duracionHoras: 13.5 },
-    { aerolinea: 'Xiamen Airlines', origen: 'Madrid', destino: 'Fuzhou', ciudadDestino: fuzhou._id, precio: 540, duracionHoras: 12.5 },
-    { aerolinea: 'China Southern', origen: 'Barcelona', destino: 'Fuzhou', ciudadDestino: fuzhou._id, precio: 560, duracionHoras: 13 },
-    { aerolinea: 'China Eastern', origen: 'Madrid', destino: 'Luoyang (Zhengzhou)', ciudadDestino: luoyang._id, precio: 550, duracionHoras: 12 },
-    { aerolinea: 'Air China', origen: 'Barcelona', destino: 'Luoyang (Zhengzhou)', ciudadDestino: luoyang._id, precio: 570, duracionHoras: 12.5 },
-    { aerolinea: 'China Southern', origen: 'Madrid', destino: 'Guiyang', ciudadDestino: guiyang._id, precio: 580, duracionHoras: 14 },
-    { aerolinea: 'Hainan Airlines', origen: 'Barcelona', destino: 'Guiyang', ciudadDestino: guiyang._id, precio: 600, duracionHoras: 14.5 },
-  ]);
-  console.log('20 nuevos vuelos creados');
 
   console.log('\n✓ Seed adicional completado');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('Nuevas ciudades: 10');
   console.log('Nuevas actividades: 80');
-  console.log('Nuevas guías: 30');
-  console.log('Nuevos hoteles: 30');
-  console.log('Nuevos vuelos: 20');
+  console.log('Nuevas rutas: 30');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('TOTALES: 30 ciudades, 254 actividades, 90 guías, 70 hoteles, 44 vuelos');
+  console.log('TOTALES: 30 ciudades, 254 actividades, 90 rutas');
 
   process.exit(0);
 };

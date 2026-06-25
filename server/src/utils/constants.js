@@ -37,4 +37,4 @@ export const ACTIVITY_CATEGORIES = [
   'HISTORICO',
 ];
 
-export const SUBMISSION_TYPES = ['ACTIVIDAD', 'HOTEL', 'VUELO'];
+export const SUBMISSION_TYPES = ['ACTIVIDAD', 'RUTA'];

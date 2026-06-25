@@ -1,5 +1,5 @@
 import Order from '../models/Order.js';
-import Guide from '../models/Guide.js';
+import Ruta from '../models/Ruta.js';
 import User from '../models/User.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
@@ -7,6 +7,17 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { createOrder } from '../services/orderService.js';
 import { sendEmail } from '../services/emailService.js';
+
+// Resolve a human-readable concept name + city for an order (ruta or single activity).
+const resolveConcepto = async (order) => {
+  if (order.ruta) {
+    const ruta = await Ruta.findById(order.ruta).populate('ciudad');
+    return { nombre: ruta?.titulo || 'Ruta', ciudad: ruta?.ciudad?.nombre || '—' };
+  }
+  const Activity = (await import('../models/Activity.js')).default;
+  const act = await Activity.findById(order.actividad).populate('ciudad');
+  return { nombre: act?.nombre || 'Entrada', ciudad: act?.ciudad?.nombre || '—' };
+};
 
 const emailWrapper = (content) => `
   <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
@@ -32,15 +43,14 @@ export const placeOrder = asyncHandler(async (req, res) => {
 export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ usuario: req.user._id })
     .populate({
-      path: 'guia',
+      path: 'ruta',
       select: 'titulo ciudad duracionDias precio imagen dias',
       populate: [
         { path: 'ciudad', select: 'nombre' },
         { path: 'dias.actividades.actividad', select: 'nombre descripcion categoria duracionHoras' },
       ],
     })
-    .populate('hotel', 'nombre estrellas precioPorNoche')
-    .populate('vuelo', 'aerolinea origen destino precio')
+    .populate('actividad', 'nombre descripcion categoria duracionHoras precio imagen ciudad')
     .sort('-createdAt');
   res.json({ ok: true, data: orders });
 });
@@ -48,14 +58,13 @@ export const getMyOrders = asyncHandler(async (req, res) => {
 export const getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
     .populate({
-      path: 'guia',
+      path: 'ruta',
       populate: [
         { path: 'ciudad', select: 'nombre' },
         { path: 'dias.actividades.actividad' },
       ],
     })
-    .populate('hotel')
-    .populate('vuelo')
+    .populate('actividad')
     .populate('usuario', 'nombre email');
 
   if (!order) throw new ApiError(404, 'Pedido no encontrado');
@@ -68,7 +77,8 @@ export const getOrder = asyncHandler(async (req, res) => {
 export const getAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate('usuario', 'nombre email')
-    .populate('guia', 'titulo precio')
+    .populate('ruta', 'titulo precio')
+    .populate('actividad', 'nombre precio')
     .sort('-createdAt');
   res.json({ ok: true, data: orders });
 });
@@ -109,8 +119,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   // Send email to all admins
   const admins = await User.find({ role: 'ADMIN' });
   const usuario = await User.findById(order.usuario);
-  const orderGuide = await Guide.findById(order.guia).populate('ciudad');
-  const guideName = orderGuide?.titulo || 'Circuito';
+  const { nombre: guideName, ciudad: ciudadNombre } = await resolveConcepto(order);
   const precio = order.precioTotal ? `${order.precioTotal}\u20AC` : '';
 
   const fecha = new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -156,12 +165,12 @@ export const cancelOrder = asyncHandler(async (req, res) => {
             <div style="padding:16px 20px;">
               <table style="width:100%;font-size:14px;color:#374151;border-collapse:collapse;">
                 <tr>
-                  <td style="padding:8px 0;color:#6b7280;width:40%;">Circuito</td>
+                  <td style="padding:8px 0;color:#6b7280;width:40%;">Ruta</td>
                   <td style="padding:8px 0;text-align:right;font-weight:600;">${guideName}</td>
                 </tr>
                 <tr>
                   <td style="padding:8px 0;color:#6b7280;border-top:1px solid #f3f4f6;">Ciudad</td>
-                  <td style="padding:8px 0;text-align:right;border-top:1px solid #f3f4f6;">${orderGuide?.ciudad?.nombre || '—'}</td>
+                  <td style="padding:8px 0;text-align:right;border-top:1px solid #f3f4f6;">${ciudadNombre}</td>
                 </tr>
                 <tr>
                   <td style="padding:8px 0;color:#6b7280;border-top:1px solid #f3f4f6;">Fecha de compra</td>
@@ -226,8 +235,7 @@ export const approveCancellation = asyncHandler(async (req, res) => {
   });
 
   const usuario = await User.findById(order.usuario);
-  const orderGuide = await Guide.findById(order.guia).populate('ciudad');
-  const guideName = orderGuide?.titulo || 'tu circuito';
+  const { nombre: guideName } = await resolveConcepto(order);
   const fecha = new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
   const precio = order.precioTotal ? `${order.precioTotal}\u20AC` : '';
 
@@ -254,7 +262,7 @@ export const approveCancellation = asyncHandler(async (req, res) => {
           <div style="padding:16px 20px;">
             <table style="width:100%;font-size:14px;color:#374151;border-collapse:collapse;">
               <tr>
-                <td style="padding:10px 0;color:#6b7280;">Circuito</td>
+                <td style="padding:10px 0;color:#6b7280;">Ruta</td>
                 <td style="padding:10px 0;text-align:right;font-weight:600;">${guideName}</td>
               </tr>
               <tr>
@@ -311,8 +319,7 @@ export const rejectCancellation = asyncHandler(async (req, res) => {
   });
 
   const usuario = await User.findById(order.usuario);
-  const orderGuide = await Guide.findById(order.guia).populate('ciudad');
-  const guideName = orderGuide?.titulo || 'tu circuito';
+  const { nombre: guideName } = await resolveConcepto(order);
 
   const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
 
@@ -328,7 +335,7 @@ export const rejectCancellation = asyncHandler(async (req, res) => {
         <p style="text-align:center;color:#6b7280;margin:0 0 28px;font-size:14px;">Tu pedido continúa activo</p>
 
         <p style="font-size:15px;line-height:1.6;">Hola <strong>${usuario.nombre}</strong>,</p>
-        <p style="font-size:15px;line-height:1.6;">Lamentamos informarte de que tu solicitud de cancelación para el circuito <strong>${guideName}</strong> ha sido <strong style="color:#dc2626;">rechazada</strong> por nuestro equipo.</p>
+        <p style="font-size:15px;line-height:1.6;">Lamentamos informarte de que tu solicitud de cancelación para la ruta <strong>${guideName}</strong> ha sido <strong style="color:#dc2626;">rechazada</strong> por nuestro equipo.</p>
 
         ${req.body.motivo ? `
         <div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;">
@@ -344,7 +351,7 @@ export const rejectCancellation = asyncHandler(async (req, res) => {
           <div style="padding:16px 20px;">
             <table style="width:100%;font-size:14px;color:#374151;border-collapse:collapse;">
               <tr>
-                <td style="padding:10px 0;color:#6b7280;">Circuito</td>
+                <td style="padding:10px 0;color:#6b7280;">Ruta</td>
                 <td style="padding:10px 0;text-align:right;font-weight:600;">${guideName}</td>
               </tr>
               <tr>
@@ -382,17 +389,17 @@ export const deleteOrder = asyncHandler(async (req, res) => {
 
 // Batch order - purchase multiple guides at once
 export const placeBatchOrder = asyncHandler(async (req, res) => {
-  const { items, hotelId, vueloId, cupon } = req.body;
-  // items: [{ guiaId, actividadesPersonalizadas }]
+  const { items, cupon } = req.body;
+  // items: [{ tipo: 'RUTA'|'ACTIVIDAD', rutaId, actividadesPersonalizadas, actividadId, fechaVisita, horaVisita, precioTotal }]
   if (!items || !Array.isArray(items) || items.length === 0) {
-    throw new ApiError(400, 'Debes incluir al menos un circuito');
+    throw new ApiError(400, 'Debes incluir al menos un elemento');
   }
 
   // Validate coupon once if provided
   let couponData = null;
   if (cupon) {
     const couponDoc = await Coupon.findOne({ codigo: cupon, activo: true });
-    if (couponDoc && couponDoc.usosActuales < couponDoc.usosMaximos) {
+    if (couponDoc && (couponDoc.maxUsos == null || couponDoc.usosActuales < couponDoc.maxUsos)) {
       couponData = couponDoc;
     }
   }
@@ -400,13 +407,13 @@ export const placeBatchOrder = asyncHandler(async (req, res) => {
   const orders = [];
   for (const item of items) {
     const orderData = {
-      guiaId: item.guiaId,
+      tipo: item.tipo || (item.actividadId ? 'ACTIVIDAD' : 'RUTA'),
+      rutaId: item.rutaId,
       actividadesPersonalizadas: item.actividadesPersonalizadas || {},
-      hotelId: item.hotelId || hotelId || undefined,
-      vueloId: item.vueloId || vueloId || undefined,
+      actividadId: item.actividadId,
+      fechaVisita: item.fechaVisita,
+      horaVisita: item.horaVisita,
       precioTotal: item.precioTotal,
-      descuento: 0,
-      cupon: undefined,
     };
     const order = await createOrder(req.user, orderData);
     orders.push(order);
@@ -439,17 +446,17 @@ export const placeBatchOrder = asyncHandler(async (req, res) => {
 export const getRecommendations = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  // 1. Get user's order history
-  const userOrders = await Order.find({ usuario: userId }).populate('guia', 'ciudad duracionDias precio');
-  const orderedGuideIds = userOrders.map((o) => o.guia?._id?.toString()).filter(Boolean);
-  const orderedCityIds = [...new Set(userOrders.map((o) => o.guia?.ciudad?.toString()).filter(Boolean))];
+  // 1. Get user's order history (only ruta orders inform itinerary recommendations)
+  const userOrders = await Order.find({ usuario: userId, tipo: 'RUTA' }).populate('ruta', 'ciudad duracionDias precio');
+  const orderedGuideIds = userOrders.map((o) => o.ruta?._id?.toString()).filter(Boolean);
+  const orderedCityIds = [...new Set(userOrders.map((o) => o.ruta?.ciudad?.toString()).filter(Boolean))];
 
   // 2. Get user's reviews to understand preferences
   const Review = (await import('../models/Review.js')).default;
-  const userReviews = await Review.find({ usuario: userId, tipo: 'GUIA', estado: 'APROBADO' })
-    .populate({ path: 'referencia', select: 'ciudad duracionDias precio', model: 'Guide' });
+  const userReviews = await Review.find({ usuario: userId, tipo: 'RUTA', estado: 'APROBADO' })
+    .populate({ path: 'referencia', select: 'ciudad duracionDias precio', model: 'Ruta' });
 
-  // Build preference profile from high-rated guides (4-5 stars)
+  // Build preference profile from high-rated rutas (4-5 stars)
   const likedCityIds = [];
   let avgDuration = 0;
   let avgPrice = 0;
@@ -464,11 +471,11 @@ export const getRecommendations = asyncHandler(async (req, res) => {
     }
   });
 
-  // Also factor in ordered guides for preference profile
+  // Also factor in ordered rutas for preference profile
   userOrders.forEach((o) => {
-    if (o.guia) {
-      avgDuration += o.guia.duracionDias || 0;
-      avgPrice += o.guia.precio || 0;
+    if (o.ruta) {
+      avgDuration += o.ruta.duracionDias || 0;
+      avgPrice += o.ruta.precio || 0;
       profileCount++;
     }
   });
@@ -478,8 +485,8 @@ export const getRecommendations = asyncHandler(async (req, res) => {
     avgPrice = Math.round(avgPrice / profileCount);
   }
 
-  // 3. Get all available guides (exclude already ordered)
-  const allGuides = await Guide.find({ _id: { $nin: orderedGuideIds } })
+  // 3. Get all available rutas (exclude already ordered)
+  const allGuides = await Ruta.find({ _id: { $nin: orderedGuideIds } })
     .populate('ciudad', 'nombre');
 
   if (allGuides.length === 0) {

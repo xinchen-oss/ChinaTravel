@@ -37,29 +37,34 @@ export default function BatchOrderConfirmationPage() {
 
           {orders.map((order) => (
             <div key={order._id} className="confirmation__details" style={{ marginBottom: '16px' }}>
-              <div className="checkout-item">
-                <span>Guia</span>
-                <span>{order.guia?.titulo}</span>
-              </div>
-              <div className="checkout-item">
-                <span>Destino</span>
-                <span>{order.guia?.ciudad?.nombre || '—'}</span>
-              </div>
-              <div className="checkout-item">
-                <span>Duracion</span>
-                <span>{order.guia?.duracionDias} dias</span>
-              </div>
-              {order.hotel && (
-                <div className="checkout-item">
-                  <span>Hotel</span>
-                  <span>{order.hotel.nombre} {'★'.repeat(order.hotel.estrellas || 0)}</span>
-                </div>
-              )}
-              {order.vuelo && (
-                <div className="checkout-item">
-                  <span>Vuelo</span>
-                  <span>{order.vuelo.aerolinea} ({order.vuelo.origen} → {order.vuelo.destino})</span>
-                </div>
+              {order.tipo === 'ACTIVIDAD' ? (
+                <>
+                  <div className="checkout-item">
+                    <span>Entrada</span>
+                    <span>{order.actividad?.nombre}</span>
+                  </div>
+                  {order.fechaVisita && (
+                    <div className="checkout-item">
+                      <span>Visita</span>
+                      <span>{formatDate(order.fechaVisita)}{order.horaVisita ? ` · ${order.horaVisita}` : ''}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="checkout-item">
+                    <span>Ruta</span>
+                    <span>{order.ruta?.titulo}</span>
+                  </div>
+                  <div className="checkout-item">
+                    <span>Destino</span>
+                    <span>{order.ruta?.ciudad?.nombre || '—'}</span>
+                  </div>
+                  <div className="checkout-item">
+                    <span>Duracion</span>
+                    <span>{order.ruta?.duracionDias} dias</span>
+                  </div>
+                </>
               )}
               <div className="checkout-item">
                 <span>Estado</span>
@@ -81,7 +86,7 @@ export default function BatchOrderConfirmationPage() {
 
           <div className="confirmation__links">
             <Link to="/dashboard">Ver mis pedidos</Link>
-            <Link to="/guias">Explorar mas guias</Link>
+            <Link to="/rutas">Explorar mas rutas</Link>
           </div>
         </div>
       </div>
