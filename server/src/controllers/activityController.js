@@ -6,6 +6,9 @@ export const getActivities = asyncHandler(async (req, res) => {
   const filter = { isApproved: true };
   if (req.query.ciudad) filter.ciudad = req.query.ciudad;
   if (req.query.categoria) filter.categoria = req.query.categoria;
+  // Solo entradas de pago: las gratuitas no se venden, así que la lista
+  // pública las oculta (admin y comercial siguen viéndolas para montar rutas).
+  if (req.query.dePago === 'true') filter.precio = { $gt: 0 };
 
   const activities = await Activity.find(filter).populate('ciudad', 'nombre slug');
   res.json({ ok: true, data: activities });

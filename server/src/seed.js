@@ -4,7 +4,6 @@ import User from './models/User.js';
 import City from './models/City.js';
 import Activity from './models/Activity.js';
 import Ruta from './models/Ruta.js';
-import CultureArticle from './models/CultureArticle.js';
 
 const seed = async () => {
   await connectDB();
@@ -14,7 +13,6 @@ const seed = async () => {
     City.deleteMany({}),
     Activity.deleteMany({}),
     Ruta.deleteMany({}),
-    CultureArticle.deleteMany({}),
   ]);
   console.log('Base de datos limpiada');
 
@@ -1808,58 +1806,6 @@ const seed = async () => {
   rutas.forEach(r => { r.precio = sumRuta(r.dias); });
   await Ruta.create(rutas);
   console.log('Rutas creadas (60 rutas para 20 ciudades)');
-
-  // ========== CULTURE ARTICLES ==========
-  await CultureArticle.create([
-    {
-      titulo: 'El Año Nuevo Chino: La fiesta más importante de Asia',
-      resumen: 'Todo lo que necesitas saber sobre la celebración más grande del mundo: tradiciones, comida, decoraciones y cómo vivirlo.',
-      contenido: '<p>El Año Nuevo Chino (春节) es la celebración más importante del calendario chino, con festividades que duran 15 días. Las calles se llenan de decoraciones rojas y doradas, se realizan danzas del león y del dragón, y las familias se reúnen para cenar juntas.</p><p>Los fuegos artificiales iluminan el cielo y los niños reciben sobres rojos (hongbao) con dinero de la suerte. Si visitas China durante esta época, prepárate para una experiencia inolvidable.</p>',
-      categoria: 'FESTIVALES',
-      ciudad: pekin._id,
-    },
-    {
-      titulo: 'Sichuan: La cocina más picante de China',
-      resumen: 'La pimienta de Sichuan, el ma la y los platos imprescindibles de la provincia más gastronómica de China.',
-      contenido: '<p>La cocina de Sichuan (四川菜) es famosa por su uso audaz de la pimienta de Sichuan (花椒), que produce una sensación de adormecimiento conocida como "ma". El sabor ma la combina este adormecimiento con el picante del chile.</p><p>El hot pot sichuanés es el plato más emblemático. Otros imprescindibles: mapo tofu, kung pao chicken y dan dan noodles.</p>',
-      categoria: 'GASTRONOMIA',
-      ciudad: chengdu._id,
-    },
-    {
-      titulo: 'El Hot Pot de Chongqing: Fuego líquido',
-      resumen: 'La historia del hot pot original de Chongqing y por qué es diferente al de Chengdú.',
-      contenido: '<p>Chongqing es la cuna del hot pot chino. Los trabajadores del puerto del Yangtsé inventaron este plato para calentarse en invierno, usando las partes menos nobles del buey cocinadas en caldo picante.</p><p>A diferencia del hot pot de Chengdú (más suave), el de Chongqing usa más aceite y chile, resultando en un caldo rojo intenso que es un desafío para los no iniciados. Se dice que si sobrevives a un hot pot de Chongqing, puedes con cualquier picante del mundo.</p>',
-      categoria: 'GASTRONOMIA',
-      ciudad: chongqing._id,
-    },
-    {
-      titulo: 'Harbin: La increíble ciudad de hielo',
-      resumen: 'Cómo una ciudad china se convirtió en la capital mundial de las esculturas de hielo.',
-      contenido: '<p>Cada invierno, Harbin se transforma en un mundo de fantasía helada. El Festival Internacional de Esculturas de Hielo y Nieve comenzó en 1963 y se ha convertido en el mayor del mundo.</p><p>Artistas de todo el planeta tallan edificios, castillos y monumentos gigantes en bloques de hielo extraídos del río Songhua. Por la noche, luces LED de colores iluminan las esculturas creando un espectáculo mágico a temperaturas de -30°C.</p>',
-      categoria: 'FESTIVALES',
-      ciudad: harbin._id,
-    },
-    {
-      titulo: 'La ceremonia del té: Ritual milenario',
-      resumen: 'Todo sobre el gongfu cha, los tipos de té chino y la etiqueta para participar en una ceremonia tradicional.',
-      contenido: '<p>El té es la bebida nacional de China y su ceremonia (茶道) refleja la filosofía y espiritualidad china. China produce miles de variedades agrupadas en seis familias: verde, blanco, amarillo, oolong, rojo y pu-erh.</p><p>Cuando alguien te sirve té, toca la mesa con dos dedos como gesto de agradecimiento. Es una tradición de la dinastía Qing.</p>',
-      categoria: 'TRADICIONES',
-    },
-    {
-      titulo: 'Frases básicas en mandarín para viajeros',
-      resumen: 'Las 30 frases esenciales en chino mandarín que todo viajero español debería conocer.',
-      contenido: '<p><strong>Saludos:</strong> Nǐ hǎo (你好) - Hola | Xièxie (谢谢) - Gracias | Zàijiàn (再见) - Adiós</p><p><strong>Básicos:</strong> Duōshao qián? (多少钱?) - ¿Cuánto cuesta? | Wǒ bù dǒng (我不懂) - No entiendo | Cèsuǒ zài nǎlǐ? (厕所在哪里?) - ¿Dónde está el baño?</p><p><strong>Comida:</strong> Hǎo chī (好吃) - Delicioso | Bú là (不辣) - Sin picante | Mǎi dān (买单) - La cuenta</p>',
-      categoria: 'IDIOMA',
-    },
-    {
-      titulo: 'La Gran Muralla: Historia y consejos prácticos',
-      resumen: 'Historia de la construcción más impresionante de la humanidad y guía práctica para visitarla.',
-      contenido: '<p>La Gran Muralla China (长城) se extiende más de 21.000 km, construida a lo largo de más de 2.000 años. Las secciones más accesibles desde Pekín son Mutianyu (recomendada), Badaling (más turística) y Jinshanling (para senderistas).</p><p>Consejos: lleva agua, calzado de montaña, protector solar y ve temprano.</p>',
-      categoria: 'HISTORIA',
-      ciudad: pekin._id,
-    },
-  ]);
-  console.log('Artículos de cultura creados');
 
   console.log('\n✓ Seed completado exitosamente');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

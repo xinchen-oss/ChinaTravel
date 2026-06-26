@@ -14,7 +14,7 @@ export default function Footer() {
           <Link to="/ciudades">Ciudades</Link>
           <Link to="/rutas">Rutas de viaje</Link>
           <Link to="/actividades">Actividades</Link>
-          <Link to="/cultura">Cultura china</Link>
+          <Link to="/foro">Foro de viajeros</Link>
         </nav>
         <nav className="footer__links" aria-label="Enlaces de información">
           <h4>Información</h4>

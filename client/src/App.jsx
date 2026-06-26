@@ -34,10 +34,6 @@ import RutaCustomizePage from './features/rutas/RutaCustomizePage';
 import ActividadesListPage from './features/actividades/ActividadesListPage';
 import ActividadDetailPage from './features/actividades/ActividadDetailPage';
 
-// Culture
-import CulturePage from './features/culture/CulturePage';
-import CultureDetailPage from './features/culture/CultureDetailPage';
-
 // Forum
 import ForumPage from './features/forum/ForumPage';
 import ForumDetailPage from './features/forum/ForumDetailPage';
@@ -58,7 +54,6 @@ import ManageUsersPage from './features/admin/ManageUsersPage';
 import ManageCitiesPage from './features/admin/ManageCitiesPage';
 import ManageRutasPage from './features/admin/ManageRutasPage';
 import ManageActivitiesPage from './features/admin/ManageActivitiesPage';
-import ManageCulturePage from './features/admin/ManageCulturePage';
 import ManageOrdersPage from './features/admin/ManageOrdersPage';
 import ApprovalQueuePage from './features/admin/ApprovalQueuePage';
 import ManageCouponsPage from './features/admin/ManageCouponsPage';
@@ -87,8 +82,6 @@ export default function App() {
             <Route path="rutas/:id" element={<RutaDetailPage />} />
             <Route path="actividades" element={<ActividadesListPage />} />
             <Route path="actividades/:id" element={<ActividadDetailPage />} />
-            <Route path="cultura" element={<CulturePage />} />
-            <Route path="cultura/:id" element={<CultureDetailPage />} />
             <Route path="sobre-nosotros" element={<AboutPage />} />
             <Route path="politica-de-privacidad" element={<PrivacyPolicyPage />} />
              <Route path="foro" element={<ForumPage />} />
@@ -123,7 +116,6 @@ export default function App() {
               <Route path="ciudades" element={<ManageCitiesPage />} />
               <Route path="rutas" element={<ManageRutasPage />} />
               <Route path="actividades" element={<ManageActivitiesPage />} />
-              <Route path="cultura" element={<ManageCulturePage />} />
               <Route path="pedidos" element={<ManageOrdersPage />} />
               <Route path="aprobaciones" element={<ApprovalQueuePage />} />
               <Route path="cupones" element={<ManageCouponsPage />} />

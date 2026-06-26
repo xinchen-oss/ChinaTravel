@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatDate } from '../../utils/formatters';
+import { getImageUrl } from '../../utils/imageHelper';
 import './Forum.css';
 
 export default function ForumDetailPage() {
@@ -147,6 +148,8 @@ export default function ForumDetailPage() {
     );
   }
 
+  const oficial = post.oficial || post.autor?.role === 'ADMIN';
+
   return (
     <div className="page">
       <div className="container">
@@ -156,16 +159,20 @@ export default function ForumDetailPage() {
         </Link>
 
         {/* POST */}
-        <article className="forum-post">
+        <article className={`forum-post ${oficial ? 'forum-post--oficial' : 'forum-post--user'}`}>
+
+          {oficial && (
+            <div className="forum-oficial-tag">✦ Publicación oficial · Equipo ChinaTravel</div>
+          )}
 
           <header className="forum-post__header">
 
-            <h1>{post.titulo}</h1>
+            <h1>{post.titulo || (oficial ? 'Publicación oficial' : 'Experiencia de viajero')}</h1>
 
             <div className="forum-post__meta">
 
               <span className="forum-post__author">
-                {post.autor?.nombre || post.autor}
+                {oficial ? 'Equipo ChinaTravel' : (post.autor?.nombre || post.autor)}
               </span>
 
               {post.ciudad && (
@@ -194,7 +201,7 @@ export default function ForumDetailPage() {
           </header>
 
           {post.imagen && (
-            <img src={post.imagen} alt={post.titulo} className="forum-post__image" />
+            <img src={getImageUrl(post.imagen)} alt={post.titulo || 'Imagen del post'} className="forum-post__image" />
           )}
 
           <div className="forum-post__content">
@@ -215,13 +222,17 @@ export default function ForumDetailPage() {
 
             replies.map(reply => (
 
-              <div key={reply._id} className="forum-reply">
+              <div key={reply._id} className={`forum-reply ${reply.autor?.role === 'ADMIN' ? 'forum-reply--oficial' : ''}`}>
 
                 <div className="forum-reply__meta">
 
                   <strong>
-                    {reply.autor?.nombre || reply.autor}
+                    {reply.autor?.role === 'ADMIN' ? 'Equipo ChinaTravel' : (reply.autor?.nombre || reply.autor)}
                   </strong>
+
+                  {reply.autor?.role === 'ADMIN' && (
+                    <span className="forum-reply__badge">✦ Oficial</span>
+                  )}
 
                   <time>
                     {reply.createdAt ? formatDate(reply.createdAt) : ''}

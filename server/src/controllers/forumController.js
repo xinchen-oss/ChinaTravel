@@ -10,8 +10,8 @@ export const getPosts = asyncHandler(async (req, res) => {
 
   const posts = await ForumPost.find(filter)
     .populate('ciudad', 'nombre slug')
-    .populate('autor', 'nombre email')
-    .sort('-createdAt');
+    .populate('autor', 'nombre email role')
+    .sort({ oficial: -1, createdAt: -1 });
 
   res.json({ ok: true, data: posts });
 });
@@ -19,13 +19,13 @@ export const getPosts = asyncHandler(async (req, res) => {
 // obtener un post con sus respuestas
 export const getPost = asyncHandler(async (req, res) => {
   const post = await ForumPost.findById(req.params.id)
-    .populate('autor', 'nombre')
+    .populate('autor', 'nombre role')
     .populate('ciudad', 'nombre');
 
   if (!post) return res.status(404).json({ message: 'Post no encontrado' });
 
   const replies = await ForumPost.find({ parentPost: post._id })
-    .populate('autor', 'nombre')
+    .populate('autor', 'nombre role')
     .sort({ createdAt: 1 });
 
   res.json({
@@ -41,10 +41,16 @@ export const createPost = asyncHandler(async (req, res) => {
     contenido: req.body.contenido,
     autor: req.user._id, // el autor es el usuario logueado
     ciudad: req.body.ciudad || null,
+    imagen: req.body.imagen || null, // foto opcional subida por el usuario
+    oficial: req.user.role === 'ADMIN', // los posts del equipo son oficiales
     parentPost: null,
   });
 
-  res.status(201).json({ ok: true, data: post });
+  const populated = await ForumPost.findById(post._id)
+    .populate('ciudad', 'nombre slug')
+    .populate('autor', 'nombre email role');
+
+  res.status(201).json({ ok: true, data: populated });
 });
 
 // responder a un post
@@ -52,10 +58,13 @@ export const createReply = asyncHandler(async (req, res) => {
   const reply = await ForumPost.create({
     contenido: req.body.contenido,
     autor: req.user._id,
+    oficial: req.user.role === 'ADMIN',
     parentPost: req.params.postId
   });
 
-  res.status(201).json({ ok: true, data: reply });
+  const populated = await ForumPost.findById(reply._id).populate('autor', 'nombre role');
+
+  res.status(201).json({ ok: true, data: populated });
 });
 
 // eliminar un post y sus respuestas

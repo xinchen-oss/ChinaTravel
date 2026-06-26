@@ -85,7 +85,6 @@ export default function AdminLayout() {
                 <NavLink to="/admin/ciudades" className={linkClass}>Ciudades</NavLink>
                 <NavLink to="/admin/rutas" className={linkClass}>Rutas</NavLink>
                 <NavLink to="/admin/actividades" className={linkClass}>Actividades</NavLink>
-                <NavLink to="/admin/cultura" className={linkClass}>Cultura</NavLink>
                 <div className="admin-sidebar__section">Ventas</div>
                 <NavLink to="/admin/pedidos" className={linkClass}>Pedidos <PendingDot n={pending.cancellations} /></NavLink>
                 <NavLink to="/admin/cupones" className={linkClass}>Cupones</NavLink>

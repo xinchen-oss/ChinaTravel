@@ -7,22 +7,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { SUBMISSION_STATUS } from '../utils/constants.js';
 import { computeRutaPrice } from '../utils/helpers.js';
 import { sendEmail } from '../services/emailService.js';
-
-const emailWrapper = (content) => `
-  <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-    <div style="background:#c41e3a;color:white;padding:24px;text-align:center;">
-      <h1 style="margin:0;font-size:28px;letter-spacing:1px;">ChinaTravel</h1>
-      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">Descubre China con nosotros</p>
-    </div>
-    <div style="padding:30px 24px;background:#f9f9f9;">
-      ${content}
-    </div>
-    <div style="padding:16px 24px;text-align:center;background:#1a1a2e;color:rgba(255,255,255,0.5);font-size:11px;">
-      <p style="margin:0;">ChinaTravel &copy; ${new Date().getFullYear()} — Todos los derechos reservados</p>
-      <p style="margin:4px 0 0;">Este es un email automático, por favor no respondas.</p>
-    </div>
-  </div>
-`;
+import { emailWrapper } from '../utils/emailTemplate.js';
 
 const typeLabels = { ACTIVIDAD: 'Actividad', RUTA: 'Ruta' };
 const typeColors = { ACTIVIDAD: '#f59e0b', RUTA: '#10b981' };

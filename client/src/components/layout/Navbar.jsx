@@ -61,7 +61,6 @@ export default function Navbar() {
             <Link to="/ciudades">Ciudades</Link>
             <Link to="/rutas">Rutas</Link>
             <Link to="/actividades">Actividades</Link>
-            <Link to="/cultura">Cultura</Link>
             <Link to="/foro">Foro</Link>
             <Link to="/sobre-nosotros">Sobre nosotros</Link>
             <Link to="/ayuda">Ayuda</Link>

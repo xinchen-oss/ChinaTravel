@@ -16,8 +16,9 @@ export default function AboutPage() {
             comprar la entrada a una sola atracción eligiendo día y hora.
           </p>
           <p style={{ marginBottom: '1.5rem' }}>
-            Además, nuestra sección cultural te permite sumergirte en las tradiciones, festivales,
-            gastronomía e historia de China antes de tu viaje. Conocer la cultura local hará que tu
+            Además, en nuestro foro de viajeros podrás sumergirte en las tradiciones, festivales,
+            gastronomía e historia de China gracias a las publicaciones oficiales del equipo y a las
+            experiencias compartidas por otros viajeros. Conocer la cultura local hará que tu
             experiencia sea mucho más rica y significativa.
           </p>
           <p>

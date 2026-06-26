@@ -27,8 +27,8 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=1600&q=80',
     title: 'Templos milenarios',
     subtitle: 'Sumérgete en la espiritualidad y la historia de China',
-    link: '/cultura',
-    linkText: 'Cultura china',
+    link: '/foro',
+    linkText: 'Comunidad de viajeros',
   },
   {
     image: 'https://images.unsplash.com/photo-1529921879218-f99546d03a34?w=1600&q=80',
@@ -256,8 +256,8 @@ export default function HomePage() {
             </div>
             <div className="feature-card">
               <div className="feature-card__icon">🏯</div>
-              <h3>Cultura auténtica</h3>
-              <p>Artículos sobre festivales, gastronomía, tradiciones y experiencias únicas</p>
+              <h3>Comunidad de viajeros</h3>
+              <p>Comparte experiencias y descubre cultura, festivales y consejos en nuestro foro</p>
             </div>
             <div className="feature-card">
               <div className="feature-card__icon">💬</div>

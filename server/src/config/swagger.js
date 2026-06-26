@@ -9,7 +9,7 @@ const swaggerSpec = {
     version: '1.0.0',
     description:
       'API REST de la plataforma ChinaTravel: gestión de ciudades, actividades, ' +
-      'rutas (entradas a atracciones), pedidos, cultura, reseñas, foro y usuarios.\n\n' +
+      'rutas (entradas a atracciones), pedidos, reseñas, foro y usuarios.\n\n' +
       'Todas las respuestas siguen el formato `{ ok: boolean, data?, message?, error? }`.\n\n' +
       'Los endpoints protegidos requieren un token JWT en la cabecera ' +
       '`Authorization: Bearer <token>`.',
@@ -25,7 +25,6 @@ const swaggerSpec = {
     { name: 'Actividades', description: 'Actividades turísticas' },
     { name: 'Rutas', description: 'Itinerarios de entradas a atracciones' },
     { name: 'Pedidos', description: 'Reservas de los usuarios' },
-    { name: 'Cultura', description: 'Artículos culturales' },
     { name: 'Reseñas', description: 'Valoraciones de rutas y actividades' },
     { name: 'Cupones', description: 'Cupones de descuento' },
     { name: 'Notificaciones', description: 'Notificaciones del usuario' },
@@ -226,21 +225,6 @@ const swaggerSpec = {
           horaVisita: { type: 'string' },
           precioTotal: { type: 'number' },
           cupon: { type: 'string' },
-        },
-      },
-      CultureArticle: {
-        type: 'object',
-        properties: {
-          _id: { type: 'string' },
-          titulo: { type: 'string' },
-          contenido: { type: 'string' },
-          resumen: { type: 'string' },
-          ciudad: { type: 'string' },
-          categoria: {
-            type: 'string',
-            enum: ['FESTIVALES', 'GASTRONOMIA', 'TRADICIONES', 'HISTORIA', 'ARTE', 'IDIOMA'],
-          },
-          imagen: { type: 'string' },
         },
       },
       Review: {
@@ -649,37 +633,6 @@ const swaggerSpec = {
         tags: ['Pedidos'], summary: 'Rechazar cancelación (ADMIN)', security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: { 200: { description: 'Cancelación rechazada' } },
-      },
-    },
-
-    // ---------------- CULTURA ----------------
-    '/cultura': {
-      get: {
-        tags: ['Cultura'], summary: 'Listar artículos de cultura',
-        responses: { 200: { description: 'Lista de artículos', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, data: { type: 'array', items: { $ref: '#/components/schemas/CultureArticle' } } } } } } } },
-      },
-      post: {
-        tags: ['Cultura'], summary: 'Crear artículo (ADMIN)', security: [{ bearerAuth: [] }],
-        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CultureArticle' } } } },
-        responses: { 201: { description: 'Artículo creado' }, 403: { $ref: '#/components/responses/Forbidden' } },
-      },
-    },
-    '/cultura/{id}': {
-      get: {
-        tags: ['Cultura'], summary: 'Obtener un artículo',
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Artículo', content: { 'application/json': { schema: { $ref: '#/components/schemas/CultureArticle' } } } }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-      put: {
-        tags: ['Cultura'], summary: 'Actualizar artículo (ADMIN)', security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/CultureArticle' } } } },
-        responses: { 200: { description: 'Artículo actualizado' }, 404: { $ref: '#/components/responses/NotFound' } },
-      },
-      delete: {
-        tags: ['Cultura'], summary: 'Eliminar artículo (ADMIN)', security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Artículo eliminado' }, 404: { $ref: '#/components/responses/NotFound' } },
       },
     },
 
