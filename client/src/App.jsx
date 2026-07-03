@@ -63,6 +63,7 @@ import ManageReviewsPage from './features/admin/ManageReviewsPage';
 import ComercialDashboard from './features/comercial/ComercialDashboard';
 import SubmitContentPage from './features/comercial/SubmitContentPage';
 import ManagePublicationsPage from './features/comercial/ManagePublicationsPage';
+import RouteStatsPage from './features/comercial/RouteStatsPage';
 
 // Chat
 import ChatWidget from './components/chat/ChatWidget';
@@ -128,6 +129,7 @@ export default function App() {
               <Route index element={<ComercialDashboard />} />
               <Route path="nueva-solicitud" element={<SubmitContentPage />} />
               <Route path="mis-publicaciones" element={<ManagePublicationsPage />} />
+              <Route path="estadisticas-rutas" element={<RouteStatsPage />} />
             </Route>
           </Routes>
           <ChatWidget />

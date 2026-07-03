@@ -1,5 +1,7 @@
 import Ruta from '../models/Ruta.js';
 import Activity from '../models/Activity.js';
+import Order from '../models/Order.js';
+import Review from '../models/Review.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { computeRutaPrice } from '../utils/helpers.js';
@@ -43,6 +45,66 @@ export const getMyRutas = asyncHandler(async (req, res) => {
     .populate('ciudad', 'nombre slug imagenPortada')
     .sort('-createdAt');
   res.json({ ok: true, data: rutas });
+});
+
+export const getMyRouteStats = asyncHandler(async (req, res) => {
+  const rutas = await Ruta.find({ creadoPor: req.user._id })
+    .select('_id titulo ciudad')
+    .populate('ciudad', 'nombre');
+
+  const routeIds = rutas.map((ruta) => ruta._id);
+
+  const [orders, reviews] = await Promise.all([
+    Order.find({ ruta: { $in: routeIds } }).select('ruta precioTotal'),
+    Review.find({ tipo: 'RUTA', referencia: { $in: routeIds } }).select('referencia puntuacion'),
+  ]);
+
+  const ordersByRoute = orders.reduce((acc, order) => {
+    const key = String(order.ruta);
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  const incomeByRoute = orders.reduce((acc, order) => {
+    const key = String(order.ruta);
+    acc[key] = (acc[key] || 0) + Number(order.precioTotal || 0);
+    return acc;
+  }, {});
+
+  const reviewsByRoute = reviews.reduce((acc, review) => {
+    const key = String(review.referencia);
+    const existing = acc[key] || { count: 0, total: 0 };
+    existing.count += 1;
+    existing.total += Number(review.puntuacion || 0);
+    acc[key] = existing;
+    return acc;
+  }, {});
+
+  const routes = rutas.map((ruta) => {
+    const routeId = String(ruta._id);
+    const ordersCount = ordersByRoute[routeId] || 0;
+    const income = incomeByRoute[routeId] || 0;
+    const reviewData = reviewsByRoute[routeId];
+    const averageRating = reviewData?.count ? Number((reviewData.total / reviewData.count).toFixed(1)) : 0;
+
+    return {
+      _id: ruta._id,
+      titulo: ruta.titulo,
+      ciudad: ruta.ciudad,
+      orders: ordersCount,
+      income,
+      averageRating,
+      popularity: ordersCount > 0 ? 'Alta' : 'Sin pedidos',
+    };
+  }).sort((a, b) => b.orders - a.orders || b.income - a.income);
+
+  const summary = {
+    totalOrders: orders.length,
+    totalIncome: orders.reduce((sum, order) => sum + Number(order.precioTotal || 0), 0),
+    averageRating: reviews.length ? Number((reviews.reduce((sum, review) => sum + Number(review.puntuacion || 0), 0) / reviews.length).toFixed(1)) : 0,
+  };
+
+  res.json({ ok: true, data: { summary, routes } });
 });
 
 export const getAlternativeActivities = asyncHandler(async (req, res) => {
