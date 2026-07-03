@@ -4,19 +4,30 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import config from '../config/env.js';
 
-export const protect = asyncHandler(async (req, res, next) => {
+const attachUser = async (req) => {
   let token;
   if (req.headers.authorization?.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
-  if (!token) {
+  if (!token) return null;
+
+  const decoded = jwt.verify(token, config.jwtSecret);
+  const user = await User.findById(decoded.id);
+  if (!user || !user.isActive) return null;
+  return user;
+};
+
+export const protect = asyncHandler(async (req, res, next) => {
+  const user = await attachUser(req);
+  if (!user) {
     throw new ApiError(401, 'No autorizado, inicia sesión');
   }
-  const decoded = jwt.verify(token, config.jwtSecret);
-  req.user = await User.findById(decoded.id);
-  if (!req.user || !req.user.isActive) {
-    throw new ApiError(401, 'Usuario no encontrado o desactivado');
-  }
+  req.user = user;
+  next();
+});
+
+export const protectOptional = asyncHandler(async (req, res, next) => {
+  req.user = await attachUser(req);
   next();
 });
 

@@ -12,6 +12,7 @@ const forumPostSchema = new mongoose.Schema(
     // Un post oficial es el publicado por el equipo (ADMIN): se muestra con
     // estilo formal y distintivo frente a las experiencias de usuarios.
     oficial: { type: Boolean, default: false },
+    bloqueado: { type: Boolean, default: false },
     parentPost: { type: mongoose.Schema.Types.ObjectId, ref: 'ForumPost', default: null },
   },
   { timestamps: true }

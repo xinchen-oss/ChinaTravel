@@ -136,6 +136,40 @@ export default function ForumDetailPage() {
 
   };
 
+  const handleModeratePost = async () => {
+    if (!user?.role || user.role !== 'ADMIN') return;
+
+    const action = post?.bloqueado ? 'desbloquear' : 'bloquear';
+    if (!window.confirm(`¿${action === 'bloquear' ? 'Bloquear' : 'Desbloquear'} esta publicación?`)) return;
+
+    try {
+      const res = await api.put(`/foro/${post._id}/moderate`, { bloqueado: !post.bloqueado, motivo: 'Moderado por administrador' }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPost((prev) => prev ? { ...prev, ...res.data.data } : prev);
+    } catch (error) {
+      console.error(error);
+      alert('No se pudo actualizar la moderación');
+    }
+  };
+
+  const handleModerateReply = async (replyId, blocked) => {
+    if (!user?.role || user.role !== 'ADMIN') return;
+
+    const action = blocked ? 'desbloquear' : 'bloquear';
+    if (!window.confirm(`¿${action === 'bloquear' ? 'Bloquear' : 'Desbloquear'} este comentario?`)) return;
+
+    try {
+      const res = await api.put(`/foro/${replyId}/moderate`, { bloqueado: !blocked, motivo: 'Moderado por administrador' }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReplies((prev) => prev.map((reply) => reply._id === replyId ? { ...reply, ...res.data.data } : reply));
+    } catch (error) {
+      console.error(error);
+      alert('No se pudo actualizar la moderación');
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   if (!post) {
@@ -187,8 +221,16 @@ export default function ForumDetailPage() {
 
             </div>
 
-            {user && (user.id === post.autor?._id || user.id === post.autor) && (
+            {(user && (user.role === 'ADMIN' || user.id === post.autor?._id || user.id === post.autor)) && (
               <div className="forum-post-actions">
+                {user.role === 'ADMIN' && (
+                  <button
+                    className="btn-delete-soft"
+                    onClick={handleModeratePost}
+                  >
+                    {post.bloqueado ? 'Desbloquear' : 'Bloquear'}
+                  </button>
+                )}
                 <button
                   className="btn-delete-soft"
                   onClick={handleDeletePost}
@@ -205,7 +247,7 @@ export default function ForumDetailPage() {
           )}
 
           <div className="forum-post__content">
-            {post.contenido}
+            {post.bloqueado ? 'Esta publicación ha sido bloqueada por moderación.' : post.contenido}
           </div>
 
         </article>
@@ -240,10 +282,18 @@ export default function ForumDetailPage() {
 
                 </div>
 
-                <p>{reply.contenido}</p>
+                <p>{reply.bloqueado ? 'Este comentario ha sido bloqueado por moderación.' : reply.contenido}</p>
 
-                {user && (user.id === reply.autor?._id || user.id === reply.autor) && (
+                {(user && (user.role === 'ADMIN' || user.id === reply.autor?._id || user.id === reply.autor)) && (
                   <div className="forum-reply-actions">
+                    {user.role === 'ADMIN' && (
+                      <button
+                        className="btn-delete-soft"
+                        onClick={() => handleModerateReply(reply._id, reply.bloqueado)}
+                      >
+                        {reply.bloqueado ? 'Desbloquear' : 'Bloquear'}
+                      </button>
+                    )}
                     <button
                       className="btn-delete-soft"
                       onClick={() => handleDeleteReply(reply._id)}

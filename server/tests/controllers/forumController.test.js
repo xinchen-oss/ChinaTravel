@@ -5,6 +5,7 @@ jest.unstable_mockModule('../../src/models/ForumPost.js', () => ({
   default: {
     find: jest.fn(),
     findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
     create: jest.fn(),
     deleteMany: jest.fn(),
   },
@@ -18,18 +19,20 @@ const {
   createPost,
   createReply,
   deletePost,
+  moderatePost,
 } = await import('../../src/controllers/forumController.js');
 
 beforeEach(() => jest.clearAllMocks());
 
 describe('forumController.getPosts', () => {
-  it('aplica filtros ciudad y search', async () => {
+  it('aplica filtros ciudad y search excluyendo posts bloqueados', async () => {
     const data = [{ titulo: 'X' }];
     ForumPost.find.mockReturnValue(chainable(data));
     const res = mockRes();
     await getPosts({ query: { ciudad: '123', search: 'china' } }, res);
     expect(ForumPost.find).toHaveBeenCalledWith({
       parentPost: null,
+      bloqueado: false,
       ciudad: '123',
       contenido: { $regex: 'china', $options: 'i' },
     });
@@ -39,7 +42,7 @@ describe('forumController.getPosts', () => {
   it('solo posts principales sin filtros', async () => {
     ForumPost.find.mockReturnValue(chainable([]));
     await getPosts({ query: {} }, mockRes());
-    expect(ForumPost.find).toHaveBeenCalledWith({ parentPost: null });
+    expect(ForumPost.find).toHaveBeenCalledWith({ parentPost: null, bloqueado: false });
   });
 });
 
@@ -75,6 +78,9 @@ describe('forumController.createPost', () => {
       contenido: 'C',
       autor: 'u1',
       ciudad: '123',
+      imagen: null,
+      oficial: false,
+      bloqueado: false,
       parentPost: null,
     });
     expect(res.status).toHaveBeenCalledWith(201);
@@ -92,6 +98,8 @@ describe('forumController.createReply', () => {
     expect(ForumPost.create).toHaveBeenCalledWith({
       contenido: 'R',
       autor: 'u1',
+      oficial: false,
+      bloqueado: false,
       parentPost: 'p1',
     });
     expect(res.status).toHaveBeenCalledWith(201);
@@ -101,10 +109,10 @@ describe('forumController.createReply', () => {
 describe('forumController.deletePost', () => {
   it('elimina post y sus respuestas', async () => {
     const deleteOne = jest.fn().mockResolvedValue();
-    ForumPost.findById.mockResolvedValue({ _id: '1', deleteOne });
+    ForumPost.findById.mockResolvedValue({ _id: '1', autor: 'u1', deleteOne });
     ForumPost.deleteMany.mockResolvedValue();
     const res = mockRes();
-    await deletePost({ params: { id: '1' } }, res);
+    await deletePost({ params: { id: '1' }, user: { _id: 'u1', role: 'USER' } }, res);
     expect(ForumPost.deleteMany).toHaveBeenCalledWith({ parentPost: '1' });
     expect(deleteOne).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({ ok: true, message: 'Post eliminado' });
@@ -112,6 +120,26 @@ describe('forumController.deletePost', () => {
 
   it('lanza 404 si el post no existe', async () => {
     ForumPost.findById.mockResolvedValue(null);
-    await expect(deletePost({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
+    await expect(deletePost({ params: { id: '1' }, user: { _id: 'u1', role: 'USER' } }, mockRes())).rejects.toThrow(ApiError);
+  });
+});
+
+describe('forumController.moderatePost', () => {
+  it('permite a un admin bloquear un post', async () => {
+    const post = {
+      _id: '1',
+      bloqueado: false,
+      save: jest.fn().mockResolvedValue(),
+    };
+    ForumPost.findById.mockResolvedValue(post);
+    const res = mockRes();
+
+    await moderatePost({ params: { id: '1' }, body: { bloqueado: true, motivo: 'spam' }, user: { _id: 'admin1', role: 'ADMIN' } }, res);
+
+    expect(post.bloqueado).toBe(true);
+    expect(post.motivoBloqueo).toBe('spam');
+    expect(post.bloqueadoPor).toBe('admin1');
+    expect(post.save).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data: post });
   });
 });

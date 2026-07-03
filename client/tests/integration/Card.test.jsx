@@ -47,4 +47,13 @@ describe('Card', () => {
     const img = screen.getByRole('img', { name: 'Cantón' });
     expect(img).toHaveAttribute('src', 'https://x.com/a.jpg');
   });
+
+  it('no renderiza la imagen cuando no hay imagen', () => {
+    render(
+      <MemoryRouter>
+        <Card title="Sin foto" />
+      </MemoryRouter>
+    );
+    expect(screen.queryByRole('img', { name: 'Sin foto' })).not.toBeInTheDocument();
+  });
 });
