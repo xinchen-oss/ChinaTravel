@@ -97,6 +97,7 @@ export default function AdminLayout() {
               <>
                 <NavLink to="/comercial" end className={linkClass}>Mis solicitudes</NavLink>
                 <NavLink to="/comercial/nueva-solicitud" className={linkClass}>Nueva solicitud</NavLink>
+                <NavLink to="/comercial/mis-publicaciones" className={linkClass}>Mis publicaciones</NavLink>
               </>
             )}
           </nav>

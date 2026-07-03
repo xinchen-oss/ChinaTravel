@@ -15,6 +15,7 @@ const { default: ApiError } = await import('../../src/utils/ApiError.js');
 const {
   getActivities,
   getActivity,
+  getMyActivities,
   createActivity,
   updateActivity,
   deleteActivity,
@@ -30,6 +31,7 @@ describe('activityController.getActivities', () => {
     await getActivities({ query: { ciudad: 'Madrid', categoria: 'Ocio' } }, res);
     expect(Activity.find).toHaveBeenCalledWith({
       isApproved: true,
+      isActive: true,
       ciudad: 'Madrid',
       categoria: 'Ocio',
     });
@@ -43,6 +45,15 @@ describe('activityController.getActivity', () => {
     Activity.findById.mockReturnValue(chainable(data));
     const res = mockRes();
     await getActivity({ params: { id: '1' } }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+
+  it('devuelve las actividades del comercial autenticado', async () => {
+    const data = [{ nombre: 'Act1' }];
+    Activity.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getMyActivities({ user: { _id: 'u1', role: 'COMERCIAL' } }, res);
+    expect(Activity.find).toHaveBeenCalledWith({ creadoPor: 'u1' });
     expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
@@ -67,14 +78,15 @@ describe('activityController.createActivity', () => {
 describe('activityController.updateActivity', () => {
   it('actualiza una actividad', async () => {
     const data = { nombre: 'Updated' };
+    Activity.findById.mockResolvedValue({ creadoPor: 'u1' });
     Activity.findByIdAndUpdate.mockReturnValue(chainable(data));
     const res = mockRes();
-    await updateActivity({ params: { id: '1' }, body: data }, res);
+    await updateActivity({ params: { id: '1' }, body: data, user: { role: 'ADMIN' } }, res);
     expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
   it('lanza 404 si no existe', async () => {
-    Activity.findByIdAndUpdate.mockReturnValue(chainable(null));
+    Activity.findById.mockResolvedValue(null);
     await expect(
       updateActivity({ params: { id: '1' }, body: {} }, mockRes())
     ).rejects.toThrow(ApiError);

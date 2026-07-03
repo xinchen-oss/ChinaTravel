@@ -13,6 +13,7 @@ const activitySchema = new mongoose.Schema(
     consejos: [String],
     creadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     isApproved: { type: Boolean, default: true },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

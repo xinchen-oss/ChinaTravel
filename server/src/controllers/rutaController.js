@@ -14,7 +14,7 @@ const repriceRuta = async (rutaId) => {
 };
 
 export const getRutas = asyncHandler(async (req, res) => {
-  const filter = {};
+  const filter = { isActive: true };
   if (req.query.ciudad) filter.ciudad = req.query.ciudad;
 
   const rutas = await Ruta.find(filter)
@@ -28,7 +28,21 @@ export const getRuta = asyncHandler(async (req, res) => {
     .populate('ciudad', 'nombre slug imagenPortada')
     .populate('dias.actividades.actividad');
   if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
+
+  const isOwner = req.user && (req.user.role === 'ADMIN' || String(ruta.creadoPor) === String(req.user._id));
+  const isInactive = ruta.isActive === false;
+  if (isInactive && !isOwner) {
+    throw new ApiError(404, 'Ruta no encontrada');
+  }
+
   res.json({ ok: true, data: ruta });
+});
+
+export const getMyRutas = asyncHandler(async (req, res) => {
+  const rutas = await Ruta.find({ creadoPor: req.user._id })
+    .populate('ciudad', 'nombre slug imagenPortada')
+    .sort('-createdAt');
+  res.json({ ok: true, data: rutas });
 });
 
 export const getAlternativeActivities = asyncHandler(async (req, res) => {
@@ -51,15 +65,27 @@ export const createRuta = asyncHandler(async (req, res) => {
 });
 
 export const updateRuta = asyncHandler(async (req, res) => {
-  const ruta = await Ruta.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  const ruta = await Ruta.findById(req.params.id);
   if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
-  const priced = await repriceRuta(ruta._id);
-  res.json({ ok: true, data: priced || ruta });
+
+  if (req.user?.role && req.user.role !== 'ADMIN' && String(ruta.creadoPor) !== String(req.user._id)) {
+    throw new ApiError(403, 'No tienes permiso para editar esta ruta');
+  }
+
+  const updated = await Ruta.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  if (!updated) throw new ApiError(404, 'Ruta no encontrada');
+  const priced = await repriceRuta(updated._id);
+  res.json({ ok: true, data: priced || updated });
 });
 
 export const deleteRuta = asyncHandler(async (req, res) => {
   const ruta = await Ruta.findById(req.params.id);
   if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
+
+  if (req.user && req.user.role !== 'ADMIN' && String(ruta.creadoPor) !== String(req.user._id)) {
+    throw new ApiError(403, 'No tienes permiso para eliminar esta ruta');
+  }
+
   await ruta.deleteOne();
   res.json({ ok: true, message: 'Ruta eliminada' });
 });

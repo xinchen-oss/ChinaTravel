@@ -62,6 +62,7 @@ import ManageReviewsPage from './features/admin/ManageReviewsPage';
 // Comercial
 import ComercialDashboard from './features/comercial/ComercialDashboard';
 import SubmitContentPage from './features/comercial/SubmitContentPage';
+import ManagePublicationsPage from './features/comercial/ManagePublicationsPage';
 
 // Chat
 import ChatWidget from './components/chat/ChatWidget';
@@ -126,6 +127,7 @@ export default function App() {
             <Route path="/comercial" element={<ComercialRoute><AdminLayout /></ComercialRoute>}>
               <Route index element={<ComercialDashboard />} />
               <Route path="nueva-solicitud" element={<SubmitContentPage />} />
+              <Route path="mis-publicaciones" element={<ManagePublicationsPage />} />
             </Route>
           </Routes>
           <ChatWidget />

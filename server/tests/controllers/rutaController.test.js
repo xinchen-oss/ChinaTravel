@@ -12,13 +12,23 @@ jest.unstable_mockModule('../../src/models/Ruta.js', () => ({
 jest.unstable_mockModule('../../src/models/Activity.js', () => ({
   default: { find: jest.fn() },
 }));
+jest.unstable_mockModule('../../src/models/Order.js', () => ({
+  default: { find: jest.fn() },
+}));
+jest.unstable_mockModule('../../src/models/Review.js', () => ({
+  default: { find: jest.fn() },
+}));
 
 const { default: Ruta } = await import('../../src/models/Ruta.js');
 const { default: Activity } = await import('../../src/models/Activity.js');
+const { default: Order } = await import('../../src/models/Order.js');
+const { default: Review } = await import('../../src/models/Review.js');
 const { default: ApiError } = await import('../../src/utils/ApiError.js');
 const {
   getRutas,
   getRuta,
+  getMyRutas,
+  getMyRouteStats,
   getAlternativeActivities,
   createRuta,
   updateRuta,
@@ -33,14 +43,14 @@ describe('rutaController.getRutas', () => {
     Ruta.find.mockReturnValue(chainable(data));
     const res = mockRes();
     await getRutas({ query: { ciudad: '123' } }, res);
-    expect(Ruta.find).toHaveBeenCalledWith({ ciudad: '123' });
+    expect(Ruta.find).toHaveBeenCalledWith({ isActive: true, ciudad: '123' });
     expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
   it('sin filtro', async () => {
     Ruta.find.mockReturnValue(chainable([]));
     await getRutas({ query: {} }, mockRes());
-    expect(Ruta.find).toHaveBeenCalledWith({});
+    expect(Ruta.find).toHaveBeenCalledWith({ isActive: true });
   });
 });
 
@@ -53,9 +63,41 @@ describe('rutaController.getRuta', () => {
     expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
 
+  it('devuelve las rutas del comercial autenticado', async () => {
+    const data = [{ titulo: 'R' }];
+    Ruta.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getMyRutas({ user: { _id: 'u1', role: 'COMERCIAL' } }, res);
+    expect(Ruta.find).toHaveBeenCalledWith({ creadoPor: 'u1' });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+
   it('lanza 404 si no existe', async () => {
     Ruta.findById.mockReturnValue(chainable(null));
     await expect(getRuta({ params: { id: '1' } }, mockRes())).rejects.toThrow(ApiError);
+  });
+});
+
+describe('rutaController.getMyRouteStats', () => {
+  it('devuelve estadísticas agregadas para las rutas del comercial', async () => {
+    Ruta.find.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        populate: jest.fn().mockResolvedValue([{ _id: 'r1', titulo: 'Ruta 1', ciudad: { nombre: 'Pekín' } }]),
+      }),
+    });
+    Order.find.mockReturnValue({ select: jest.fn().mockResolvedValue([{ ruta: 'r1', precioTotal: 40 }, { ruta: 'r1', precioTotal: 20 }]) });
+    Review.find.mockReturnValue({ select: jest.fn().mockResolvedValue([{ referencia: 'r1', puntuacion: 5 }, { referencia: 'r1', puntuacion: 4 }]) });
+
+    const res = mockRes();
+    await getMyRouteStats({ user: { _id: 'u1' } }, res);
+
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      ok: true,
+      data: expect.objectContaining({
+        summary: expect.objectContaining({ totalOrders: 2, totalIncome: 60, averageRating: 4.5 }),
+        routes: expect.any(Array),
+      }),
+    }));
   });
 });
 

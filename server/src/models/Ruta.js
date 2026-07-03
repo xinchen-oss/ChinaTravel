@@ -30,6 +30,7 @@ const rutaSchema = new mongoose.Schema(
     precio: { type: Number, default: 0 },
     imagen: { type: String },
     creadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
