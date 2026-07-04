@@ -6,7 +6,7 @@ import { formatPrice } from '../../utils/formatters';
 import '../dashboard/Dashboard.css';
 
 const CATEGORIES = ['CULTURAL', 'AVENTURA', 'GASTRONOMIA', 'NATURALEZA', 'COMPRAS', 'NOCTURNO', 'HISTORICO'];
-const emptyForm = { nombre: '', descripcion: '', ciudad: '', categoria: '', duracionHoras: '', precio: '', imagen: '', consejos: '' };
+const emptyForm = { nombre: '', descripcion: '', ciudad: '', categoria: '', duracionHoras: '', precio: '', accesible: false, imagen: '', consejos: '' };
 
 export default function ManageActivitiesPage() {
   const [activities, setActivities] = useState([]);
@@ -33,6 +33,7 @@ export default function ManageActivitiesPage() {
       ...form,
       duracionHoras: Number(form.duracionHoras),
       precio: Number(form.precio),
+      accesible: Boolean(form.accesible),
       consejos: typeof form.consejos === 'string' ? form.consejos.split('\n').filter(Boolean) : form.consejos,
     };
     try {
@@ -58,19 +59,35 @@ export default function ManageActivitiesPage() {
       categoria: act.categoria,
       duracionHoras: act.duracionHoras,
       precio: act.precio,
+      accesible: act.accesible !== false,
       imagen: act.imagen || '',
       consejos: Array.isArray(act.consejos) ? act.consejos.join('\n') : '',
     });
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('¿Eliminar esta actividad?')) return;
+  const handleToggleActive = async (activity) => {
+    if (!window.confirm(activity.isActive ? '¿Desactivar esta actividad?' : '¿Activar esta actividad?')) return;
     try {
-      await api.delete(`/actividades/${id}`);
+      await api.put(`/actividades/${activity._id}`, { isActive: !activity.isActive });
       fetchActivities();
     } catch (err) {
       alert(err.response?.data?.error || 'Error');
     }
+  };
+
+  const handleDelete = async (activity) => {
+    if (!activity.isActive) {
+      if (!window.confirm('¿Eliminar esta actividad?')) return;
+      try {
+        await api.delete(`/actividades/${activity._id}`);
+        fetchActivities();
+      } catch (err) {
+        alert(err.response?.data?.error || 'Error');
+      }
+      return;
+    }
+
+    alert('Desactiva primero esta actividad antes de eliminarla.');
   };
 
   if (loading) return <LoadingSpinner />;
@@ -115,6 +132,23 @@ export default function ManageActivitiesPage() {
             <label>Precio</label>
             <input type="number" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} required />
           </div>
+          <div className="form-group">
+            <div style={{ border: '1px solid var(--color-border)', borderRadius: '10px', padding: '12px 14px', background: 'var(--color-surface-alt, #f8f9fb)' }}>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: 6, fontWeight: 700, color: 'var(--color-text)' }}>
+                <input type="checkbox" checked={Boolean(form.accesible)} onChange={(e) => setForm({ ...form, accesible: e.target.checked })} />
+                <span>
+                  ¿Esta actividad es accesible para personas con movilidad reducida?
+                  <br />
+                  <small style={{ fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                    Marca la casilla si hay acceso sin barreras, rampas, ascensores o adaptación suficiente para visitarla cómodamente.
+                  </small>
+                </span>
+              </label>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                Por defecto se considera no accesible hasta que se active esta opción.
+              </p>
+            </div>
+          </div>
           <ImageUploadField
             value={form.imagen}
             onChange={(url) => setForm({ ...form, imagen: url })}
@@ -153,7 +187,10 @@ export default function ManageActivitiesPage() {
                 <td>
                   <div className="table-actions">
                     <button className="btn btn--outline btn--sm" onClick={() => handleEdit(act)}>Editar</button>
-                    <button className="btn btn--danger btn--sm" onClick={() => handleDelete(act._id)}>Eliminar</button>
+                    <button className={`btn btn--sm ${act.isActive ? 'btn--outline' : 'btn--primary'}`} onClick={() => handleToggleActive(act)}>
+                      {act.isActive ? 'Desactivar' : 'Activar'}
+                    </button>
+                    <button className="btn btn--danger btn--sm" onClick={() => handleDelete(act)}>Eliminar</button>
                   </div>
                 </td>
               </tr>

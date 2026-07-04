@@ -53,14 +53,29 @@ export default function ManageRutasPage() {
     });
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('¿Eliminar esta ruta?')) return;
+  const handleToggleActive = async (ruta) => {
+    if (!window.confirm(ruta.isActive ? '¿Desactivar esta ruta?' : '¿Activar esta ruta?')) return;
     try {
-      await api.delete(`/rutas/${id}`);
+      await api.put(`/rutas/${ruta._id}`, { isActive: !ruta.isActive });
       fetchRutas();
     } catch (err) {
       alert(err.response?.data?.error || 'Error');
     }
+  };
+
+  const handleDelete = async (ruta) => {
+    if (!ruta.isActive) {
+      if (!window.confirm('¿Eliminar esta ruta?')) return;
+      try {
+        await api.delete(`/rutas/${ruta._id}`);
+        fetchRutas();
+      } catch (err) {
+        alert(err.response?.data?.error || 'Error');
+      }
+      return;
+    }
+
+    alert('Desactiva primero esta ruta antes de eliminarla.');
   };
 
   if (loading) return <LoadingSpinner />;
@@ -128,7 +143,10 @@ export default function ManageRutasPage() {
               <td>
                 <div className="table-actions">
                   <button className="btn btn--outline btn--sm" onClick={() => handleEdit(ruta)}>Editar</button>
-                  <button className="btn btn--danger btn--sm" onClick={() => handleDelete(ruta._id)}>Eliminar</button>
+                  <button className={`btn btn--sm ${ruta.isActive ? 'btn--outline' : 'btn--primary'}`} onClick={() => handleToggleActive(ruta)}>
+                    {ruta.isActive ? 'Desactivar' : 'Activar'}
+                  </button>
+                  <button className="btn btn--danger btn--sm" onClick={() => handleDelete(ruta)}>Eliminar</button>
                 </div>
               </td>
             </tr>

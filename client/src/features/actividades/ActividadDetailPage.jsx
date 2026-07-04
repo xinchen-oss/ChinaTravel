@@ -77,6 +77,14 @@ export default function ActividadDetailPage() {
               <span className="act-detail__cat">{act.categoria}</span>
               <h1 style={{ margin: '4px 0' }}>{act.nombre}</h1>
               <p style={{ color: 'var(--color-text-muted)' }}>{act.ciudad?.nombre} · {act.duracionHoras}h</p>
+              <div style={{ margin: '10px 0 12px', padding: '10px 12px', borderRadius: '10px', background: act.accesible === false ? 'rgba(220, 53, 69, 0.08)' : 'rgba(40, 167, 69, 0.08)', border: `1px solid ${act.accesible === false ? 'rgba(220, 53, 69, 0.25)' : 'rgba(40, 167, 69, 0.25)'}` }}>
+                <strong>{act.accesible === false ? 'No accesible' : 'Accesible'}</strong>
+                <p style={{ margin: '4px 0 0', color: 'var(--color-text-muted)' }}>
+                  {act.accesible === false
+                    ? 'Esta actividad no está marcada como accesible para personas con movilidad reducida.'
+                    : 'Esta actividad está adaptada para personas con movilidad reducida.'}
+                </p>
+              </div>
               <p>{act.descripcion}</p>
               {act.consejos?.length > 0 && (
                 <>

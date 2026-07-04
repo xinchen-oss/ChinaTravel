@@ -11,6 +11,7 @@ import './Actividades.css';
 export default function ActividadesListPage() {
   const [cityId, setCityId] = useState(null);
   const [categoria, setCategoria] = useState('');
+  const [accesible, setAccesible] = useState('');
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,11 +20,12 @@ export default function ActividadesListPage() {
     const params = { dePago: true }; // ocultar entradas gratuitas en la lista pública
     if (cityId) params.ciudad = cityId;
     if (categoria) params.categoria = categoria;
+    if (accesible !== '') params.accesible = accesible;
     api.get('/actividades', { params })
       .then((res) => setActivities(res.data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [cityId, categoria]);
+  }, [cityId, categoria, accesible]);
 
   return (
     <>
@@ -51,6 +53,14 @@ export default function ActividadesListPage() {
                   ))}
                 </select>
               </div>
+              <div>
+                <label htmlFor="acc-filter">Accesible</label>
+                <select id="acc-filter" value={accesible} onChange={(e) => setAccesible(e.target.value)}>
+                  <option value="">Todas</option>
+                  <option value="true">Solo accesibles</option>
+                  <option value="false">No accesibles</option>
+                </select>
+              </div>
             </div>
             <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>
               {loading ? '' : `${activities.length} actividad${activities.length !== 1 ? 'es' : ''}`}
@@ -75,6 +85,9 @@ export default function ActividadesListPage() {
                   <div className="act-card__body">
                     <span className="act-card__city">{act.ciudad?.nombre || 'China'} · {act.duracionHoras}h</span>
                     <h3 className="act-card__title">{act.nombre}</h3>
+                    <p style={{ margin: '4px 0 0', color: act.accesible === false ? 'var(--color-error)' : 'var(--color-success)' }}>
+                      {act.accesible === false ? 'No accesible' : 'Accesible'}
+                    </p>
                     <p className="act-card__desc">{act.descripcion?.substring(0, 110)}...</p>
                     <div className="act-card__foot">
                       <span className="act-card__price">{formatPrice(act.precio)}</span>

@@ -112,6 +112,14 @@ export default function RutaDetailPage() {
               <div className="guide-detail__section">
                 <h2>Descripción</h2>
                 <p className="guide-detail__desc">{ruta.descripcion}</p>
+                <div style={{ marginTop: '12px', padding: '10px 12px', borderRadius: '10px', background: ruta.accesible === false ? 'rgba(220, 53, 69, 0.08)' : 'rgba(40, 167, 69, 0.08)', border: `1px solid ${ruta.accesible === false ? 'rgba(220, 53, 69, 0.25)' : 'rgba(40, 167, 69, 0.25)'}` }}>
+                  <strong>{ruta.accesible === false ? 'Ruta no accesible' : 'Ruta accesible'}</strong>
+                  <p style={{ margin: '4px 0 0', color: 'var(--color-text-muted)' }}>
+                    {ruta.accesible === false
+                      ? 'Esta ruta no está accesible en su conjunto porque alguna actividad no lo es.'
+                      : 'Esta ruta es accesible en su conjunto para personas con movilidad reducida.'}
+                  </p>
+                </div>
               </div>
 
               {/* Incluido */}

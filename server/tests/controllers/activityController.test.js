@@ -9,8 +9,21 @@ jest.unstable_mockModule('../../src/models/Activity.js', () => ({
     create: jest.fn(),
   },
 }));
+jest.unstable_mockModule('../../src/models/Order.js', () => ({
+  default: {
+    find: jest.fn(),
+    updateMany: jest.fn(),
+  },
+}));
+jest.unstable_mockModule('../../src/models/Notification.js', () => ({
+  default: {
+    create: jest.fn(),
+  },
+}));
 
 const { default: Activity } = await import('../../src/models/Activity.js');
+const { default: Order } = await import('../../src/models/Order.js');
+const { default: Notification } = await import('../../src/models/Notification.js');
 const { default: ApiError } = await import('../../src/utils/ApiError.js');
 const {
   getActivities,
@@ -34,6 +47,19 @@ describe('activityController.getActivities', () => {
       isActive: true,
       ciudad: 'Madrid',
       categoria: 'Ocio',
+    });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+
+  it('filtra actividades accesibles cuando se solicita', async () => {
+    const data = [{ nombre: 'Act1' }];
+    Activity.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getActivities({ query: { accesible: 'true' } }, res);
+    expect(Activity.find).toHaveBeenCalledWith({
+      isApproved: true,
+      isActive: true,
+      accesible: true,
     });
     expect(res.json).toHaveBeenCalledWith({ ok: true, data });
   });
@@ -83,6 +109,36 @@ describe('activityController.updateActivity', () => {
     const res = mockRes();
     await updateActivity({ params: { id: '1' }, body: data, user: { role: 'ADMIN' } }, res);
     expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+  });
+
+  it('cancela pedidos automáticamente cuando la actividad se desactiva', async () => {
+    Activity.findById.mockResolvedValueOnce({ _id: '1', creadoPor: 'u1', isActive: true, isApproved: true });
+    Activity.findByIdAndUpdate.mockReturnValue(chainable({ _id: '1', isActive: false, isApproved: true }));
+    Order.find.mockReturnValue({
+      select: jest.fn().mockResolvedValue([{ _id: 'o1', tipo: 'ACTIVIDAD', actividad: '1', estado: 'CONFIRMADO' }]),
+    });
+    Order.updateMany.mockResolvedValue({ modifiedCount: 1 });
+    const res = mockRes();
+
+    await updateActivity({ params: { id: '1' }, body: { isActive: false }, user: { role: 'ADMIN' } }, res);
+
+    expect(Order.updateMany).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data: { _id: '1', isActive: false, isApproved: true } });
+  });
+
+  it('envía una notificación al creador cuando se desactiva la actividad', async () => {
+    Activity.findById.mockResolvedValueOnce({ _id: '1', creadoPor: 'u1', isActive: true, isApproved: true });
+    Activity.findByIdAndUpdate.mockReturnValue(chainable({ _id: '1', creadoPor: 'u1', isActive: false, isApproved: true }));
+    Order.find.mockReturnValue({ select: jest.fn().mockResolvedValue([]) });
+    const res = mockRes();
+
+    await updateActivity({ params: { id: '1' }, body: { isActive: false }, user: { role: 'ADMIN' } }, res);
+
+    expect(Notification.create).toHaveBeenCalledWith(expect.objectContaining({
+      usuario: 'u1',
+      tipo: 'SISTEMA',
+      titulo: 'Actividad desactivada',
+    }));
   });
 
   it('lanza 404 si no existe', async () => {

@@ -44,7 +44,15 @@ describe('rutaController.getRutas', () => {
     const res = mockRes();
     await getRutas({ query: { ciudad: '123' } }, res);
     expect(Ruta.find).toHaveBeenCalledWith({ isActive: true, ciudad: '123' });
-    expect(res.json).toHaveBeenCalledWith({ ok: true, data });
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data: [{ titulo: 'R', accesible: true }] });
+  });
+
+  it('filtra rutas accesibles cuando se solicita', async () => {
+    const data = [{ titulo: 'R', dias: [{ actividades: [{ actividad: { accesible: true } }] }] }];
+    Ruta.find.mockReturnValue(chainable(data));
+    const res = mockRes();
+    await getRutas({ query: { accesible: 'true' } }, res);
+    expect(res.json).toHaveBeenCalledWith({ ok: true, data: [{ titulo: 'R', dias: [{ actividades: [{ actividad: { accesible: true } }] }], accesible: true }] });
   });
 
   it('sin filtro', async () => {

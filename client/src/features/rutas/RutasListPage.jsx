@@ -11,7 +11,8 @@ import './Rutas.css';
 
 export default function RutasListPage() {
   const [cityId, setCityId] = useState(null);
-  const { rutas, loading } = useRutas(cityId);
+  const [accesible, setAccesible] = useState('');
+  const { rutas, loading } = useRutas(cityId, accesible);
   const { user } = useAuth();
   const [recoIds, setRecoIds] = useState([]);
 
@@ -56,6 +57,14 @@ export default function RutasListPage() {
               <label>Filtrar por ciudad:</label>
               <CitySelector value={cityId} onChange={setCityId} />
             </div>
+            <div className="guides-toolbar__filter">
+              <label>Accesible:</label>
+              <select value={accesible} onChange={(e) => setAccesible(e.target.value)}>
+                <option value="">Todas</option>
+                <option value="true">Solo accesibles</option>
+                <option value="false">No accesibles</option>
+              </select>
+            </div>
             <p className="guides-toolbar__count">
               {loading ? '' : `${sortedRutas.length} ruta${sortedRutas.length !== 1 ? 's' : ''} disponible${sortedRutas.length !== 1 ? 's' : ''}`}
             </p>
@@ -85,6 +94,9 @@ export default function RutasListPage() {
                     <div className="guide-list-card__body">
                       <span className="guide-list-card__destination">{ruta.ciudad?.nombre || 'China'}</span>
                       <h3 className="guide-list-card__title">{ruta.titulo}</h3>
+                      <p style={{ margin: '4px 0 0', color: ruta.accesible === false ? 'var(--color-error)' : 'var(--color-success)' }}>
+                        {ruta.accesible === false ? 'No accesible' : 'Accesible'}
+                      </p>
                       <p className="guide-list-card__desc">{ruta.descripcion?.substring(0, 200)}...</p>
                       <div className="guide-list-card__includes">
                         <span>🎫 Entradas incluidas</span>

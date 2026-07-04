@@ -15,14 +15,34 @@ const repriceRuta = async (rutaId) => {
   return ruta;
 };
 
+const isRutaAccesible = (ruta) => {
+  const dias = Array.isArray(ruta?.dias) ? ruta.dias : [];
+  return dias.every((dia) => (dia.actividades || []).every((slot) => {
+    const actividad = slot?.actividad;
+    return !actividad || actividad.accesible !== false;
+  }));
+};
+
 export const getRutas = asyncHandler(async (req, res) => {
   const filter = { isActive: true };
   if (req.query.ciudad) filter.ciudad = req.query.ciudad;
 
   const rutas = await Ruta.find(filter)
     .populate('ciudad', 'nombre slug imagenPortada')
-    .select('-dias');
-  res.json({ ok: true, data: rutas });
+    .populate('dias.actividades.actividad', 'accesible');
+
+  const data = rutas
+    .map((ruta) => {
+      const plain = ruta.toObject ? ruta.toObject() : ruta;
+      return { ...plain, accesible: isRutaAccesible(plain) };
+    })
+    .filter((ruta) => {
+      if (req.query.accesible === 'true') return ruta.accesible;
+      if (req.query.accesible === 'false') return !ruta.accesible;
+      return true;
+    });
+
+  res.json({ ok: true, data });
 });
 
 export const getRuta = asyncHandler(async (req, res) => {
@@ -31,13 +51,16 @@ export const getRuta = asyncHandler(async (req, res) => {
     .populate('dias.actividades.actividad');
   if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
 
+  const plain = ruta.toObject ? ruta.toObject() : ruta;
+  plain.accesible = isRutaAccesible(plain);
+
   const isOwner = req.user && (req.user.role === 'ADMIN' || String(ruta.creadoPor) === String(req.user._id));
   const isInactive = ruta.isActive === false;
   if (isInactive && !isOwner) {
     throw new ApiError(404, 'Ruta no encontrada');
   }
 
-  res.json({ ok: true, data: ruta });
+  res.json({ ok: true, data: plain });
 });
 
 export const getMyRutas = asyncHandler(async (req, res) => {

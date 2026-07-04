@@ -1,4 +1,5 @@
 import Activity from '../models/Activity.js';
+import Order from '../models/Order.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -6,6 +7,8 @@ export const getActivities = asyncHandler(async (req, res) => {
   const filter = { isApproved: true, isActive: true };
   if (req.query.ciudad) filter.ciudad = req.query.ciudad;
   if (req.query.categoria) filter.categoria = req.query.categoria;
+  if (req.query.accesible === 'true') filter.accesible = true;
+  if (req.query.accesible === 'false') filter.accesible = false;
   // Solo entradas de pago: las gratuitas no se venden, así que la lista
   // pública las oculta (admin y comercial siguen viéndolas para montar rutas).
   if (req.query.dePago === 'true') filter.precio = { $gt: 0 };
@@ -47,7 +50,30 @@ export const updateActivity = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'No tienes permiso para editar esta actividad');
   }
 
+  const shouldDisable = req.body.isActive === false || req.body.isApproved === false;
   const updated = await Activity.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('ciudad', 'nombre slug');
+
+  if (shouldDisable && updated) {
+    const affectedOrders = await Order.find({
+      tipo: 'ACTIVIDAD',
+      actividad: updated._id,
+      estado: { $in: ['CONFIRMADO', 'PENDIENTE_CANCELACION'] },
+    }).select('_id estado');
+
+    if (affectedOrders.length > 0) {
+      await Order.updateMany(
+        {
+          _id: { $in: affectedOrders.map((order) => order._id) },
+        },
+        {
+          estado: 'CANCELADO',
+          motivoCancelacion: 'La actividad fue desactivada o bloqueada por el administrador',
+          fechaCancelacion: new Date(),
+        }
+      );
+    }
+  }
+
   res.json({ ok: true, data: updated });
 });
 
