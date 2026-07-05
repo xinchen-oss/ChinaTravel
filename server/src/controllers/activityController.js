@@ -80,43 +80,47 @@ export const updateActivity = asyncHandler(async (req, res) => {
   }
 
   if (shouldDisable && updated) {
-  const candidateOrders = await Order.find({
-    tipo: 'ACTIVIDAD',
-    actividad: updated._id,
-    estado: { $in: ['CONFIRMADO', 'PENDIENTE_CANCELACION'] },
-  }).select('_id usuario');
+    const candidateOrders = await Order.find({
+      tipo: 'ACTIVIDAD',
+      actividad: updated._id,
+      estado: { $in: ['CONFIRMADO', 'PENDIENTE_CANCELACION'] },
+    }).select('_id usuario');
 
-  const actuallyCancelled = [];
+    const actuallyCancelled = [];
 
-  for (const order of candidateOrders) {
-    // Atómico: solo se actualiza si SIGUE en uno de esos estados en el momento exacto de la escritura.
-    // Si otra petición concurrente ya lo canceló, este findOneAndUpdate no encontrará nada que tocar.
-    const result = await Order.findOneAndUpdate(
-      {
-        _id: order._id,
-        estado: { $in: ['CONFIRMADO', 'PENDIENTE_CANCELACION'] },
-      },
-      {
-        estado: 'CANCELADO',
-        motivoCancelacion: 'La actividad fue desactivada o bloqueada por el administrador',
-        fechaCancelacion: new Date(),
-      },
-      { new: true }
-    );
+    for (const order of candidateOrders) {
+      // Atómico: solo se actualiza si SIGUE en uno de esos estados en el momento exacto de la escritura.
+      // Si otra petición concurrente ya lo canceló, este findOneAndUpdate no encontrará nada que tocar.
+      const result = await Order.findOneAndUpdate(
+        {
+          _id: order._id,
+          estado: { $in: ['CONFIRMADO', 'PENDIENTE_CANCELACION'] },
+        },
+        {
+          estado: 'CANCELADO',
+          motivoCancelacion: 'La actividad fue desactivada o bloqueada por el administrador',
+          fechaCancelacion: new Date(),
+        },
+        { new: true }
+      );
 
-    if (result) actuallyCancelled.push(result);
+      if (result) actuallyCancelled.push(result);
+    }
+
+    if (actuallyCancelled.length > 0) {
+      await Notification.insertMany(actuallyCancelled.map((order) => ({
+        usuario: order.usuario,
+        tipo: 'PEDIDO',
+        titulo: 'Pedido cancelado',
+        mensaje: `Tu pedido de "${updated.nombre}" ha sido cancelado porque la actividad ya no esta disponible.`,
+        enlace: '/dashboard',
+      })));
+    }
   }
 
-  if (actuallyCancelled.length > 0) {
-    await Notification.insertMany(actuallyCancelled.map((order) => ({
-      usuario: order.usuario,
-      tipo: 'PEDIDO',
-      titulo: 'Pedido cancelado',
-      mensaje: `Tu pedido de "${updated.nombre}" ha sido cancelado porque la actividad ya no esta disponible.`,
-      enlace: '/dashboard',
-    })));
-  }
-}
+  res.json({ ok: true, data: updated });
+});
+
 export const deleteActivity = asyncHandler(async (req, res) => {
   const activity = await Activity.findById(req.params.id);
   if (!activity) throw new ApiError(404, 'Actividad no encontrada');
