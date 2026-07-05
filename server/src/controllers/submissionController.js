@@ -2,6 +2,7 @@ import Submission from '../models/Submission.js';
 import Activity from '../models/Activity.js';
 import Ruta from '../models/Ruta.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { SUBMISSION_STATUS } from '../utils/constants.js';
@@ -169,6 +170,14 @@ export const approveSubmission = asyncHandler(async (req, res) => {
   const label = typeLabels[tipo] || tipo;
   const color = typeColors[tipo] || '#f59e0b';
   const contentRows = buildContentTable(submission.contenido, tipo);
+
+  await Notification.create({
+    usuario: submission.comercial._id,
+    tipo: 'SISTEMA',
+    titulo: 'Solicitud aprobada',
+    mensaje: `Tu solicitud de ${label} ha sido aprobada y publicada.`,
+    enlace: '/comercial/mis-publicaciones',
+  });
 
   await sendEmail({
     to: submission.comercial.email,

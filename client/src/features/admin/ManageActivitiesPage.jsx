@@ -6,7 +6,7 @@ import { formatPrice } from '../../utils/formatters';
 import '../dashboard/Dashboard.css';
 
 const CATEGORIES = ['CULTURAL', 'AVENTURA', 'GASTRONOMIA', 'NATURALEZA', 'COMPRAS', 'NOCTURNO', 'HISTORICO'];
-const emptyForm = { nombre: '', descripcion: '', ciudad: '', categoria: '', duracionHoras: '', precio: '', accesible: false, imagen: '', consejos: '' };
+const emptyForm = { nombre: '', descripcion: '', ciudad: '', categoria: '', duracionHoras: '', precio: '', stock: '', accesible: false, imagen: '', consejos: '' };
 
 export default function ManageActivitiesPage() {
   const [activities, setActivities] = useState([]);
@@ -33,6 +33,7 @@ export default function ManageActivitiesPage() {
       ...form,
       duracionHoras: Number(form.duracionHoras),
       precio: Number(form.precio),
+      stock: Number(form.stock),
       accesible: Boolean(form.accesible),
       consejos: typeof form.consejos === 'string' ? form.consejos.split('\n').filter(Boolean) : form.consejos,
     };
@@ -59,6 +60,7 @@ export default function ManageActivitiesPage() {
       categoria: act.categoria,
       duracionHoras: act.duracionHoras,
       precio: act.precio,
+      stock: act.stock ?? 0,
       accesible: act.accesible !== false,
       imagen: act.imagen || '',
       consejos: Array.isArray(act.consejos) ? act.consejos.join('\n') : '',
@@ -133,6 +135,10 @@ export default function ManageActivitiesPage() {
             <input type="number" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} required />
           </div>
           <div className="form-group">
+            <label>Stock</label>
+            <input type="number" min="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
+          </div>
+          <div className="form-group">
             <div style={{ border: '1px solid var(--color-border)', borderRadius: '10px', padding: '12px 14px', background: 'var(--color-surface-alt, #f8f9fb)' }}>
               <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: 6, fontWeight: 700, color: 'var(--color-text)' }}>
                 <input type="checkbox" checked={Boolean(form.accesible)} onChange={(e) => setForm({ ...form, accesible: e.target.checked })} />
@@ -174,6 +180,7 @@ export default function ManageActivitiesPage() {
               <th>Ciudad</th>
               <th>Categoría</th>
               <th>Precio</th>
+              <th>Stock</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -184,6 +191,7 @@ export default function ManageActivitiesPage() {
                 <td>{act.ciudad?.nombre}</td>
                 <td>{act.categoria}</td>
                 <td>{formatPrice(act.precio)}</td>
+                <td>{act.stock ?? 0}</td>
                 <td>
                   <div className="table-actions">
                     <button className="btn btn--outline btn--sm" onClick={() => handleEdit(act)}>Editar</button>

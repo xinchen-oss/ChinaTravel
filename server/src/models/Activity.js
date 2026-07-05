@@ -9,6 +9,7 @@ const activitySchema = new mongoose.Schema(
     categoria: { type: String, enum: ACTIVITY_CATEGORIES, required: true },
     duracionHoras: { type: Number, required: true },
     precio: { type: Number, required: true, default: 0 },
+    stock: { type: Number, required: true, default: 0, min: 0 },
     accesible: { type: Boolean, default: true },
     imagen: { type: String },
     consejos: [String],

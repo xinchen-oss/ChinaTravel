@@ -1,12 +1,59 @@
 import Order from '../models/Order.js';
 import Ruta from '../models/Ruta.js';
 import Activity from '../models/Activity.js';
+import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import ApiError from '../utils/ApiError.js';
 import { sendEmail, readFileAsBase64 } from './emailService.js';
 import { generateTipsPdf, generateFacturaPdf } from './pdfService.js';
 import { computeRutaPrice } from '../utils/helpers.js';
 import config from '../config/env.js';
 import path from 'path';
+
+const hasStock = (activity) => Number(activity?.stock ?? 0) > 0;
+
+const consumeStock = async (activityId, activityName = 'Actividad') => {
+  const updated = await Activity.findOneAndUpdate(
+    { _id: activityId, isActive: true, isApproved: true, stock: { $gt: 0 } },
+    { $inc: { stock: -1 } },
+    { new: true }
+  );
+
+  if (!updated) {
+    throw new ApiError(400, `${activityName} esta agotada y no se puede comprar`);
+  }
+
+  return updated;
+};
+
+const notifyCommercialFreeSlot = async (ruta, activity) => {
+  if (!ruta.creadoPor) return;
+
+  await Notification.create({
+    usuario: ruta.creadoPor,
+    tipo: 'SISTEMA',
+    titulo: 'Actividad agotada en una ruta',
+    mensaje: `La actividad "${activity.nombre}" esta agotada. En la ruta "${ruta.titulo}" se dejara ese horario como tiempo libre.`,
+    enlace: '/comercial/mis-publicaciones',
+  });
+};
+
+const isAdminRuta = async (ruta) => {
+  if (!ruta.creadoPor) return true;
+  const creator = await User.findById(ruta.creadoPor).select('role');
+  return creator?.role === 'ADMIN';
+};
+
+// Cualquier actividad con stock en la misma ciudad, sin filtrar por categoría.
+const findReplacementActivity = async (activity, excludedIds = []) => {
+  return Activity.findOne({
+    _id: { $nin: [activity._id, ...excludedIds].filter(Boolean) },
+    ciudad: activity.ciudad,
+    isActive: true,
+    isApproved: true,
+    stock: { $gt: 0 },
+  }).sort('-stock precio');
+};
 
 const POR_LIBRE = { esPorLibre: true, nombre: 'Actividad por libre', descripcion: 'Tiempo libre — organiza tu propia actividad.', precio: 0 };
 
@@ -31,8 +78,11 @@ const createActivityOrder = async (user, orderData) => {
   const { actividadId, fechaVisita, horaVisita } = orderData;
   const activity = await Activity.findById(actividadId).populate('ciudad', 'nombre');
   if (!activity) throw new ApiError(404, 'Actividad no encontrada');
+  if (!activity.isActive || !activity.isApproved) throw new ApiError(400, 'Actividad no disponible');
+  if (!hasStock(activity)) throw new ApiError(400, 'Actividad agotada');
 
   const precioTotal = orderData.precioTotal ?? activity.precio ?? 0;
+  await consumeStock(activity._id, activity.nombre);
 
   const order = await Order.create({
     usuario: user._id,
@@ -109,10 +159,12 @@ const createRutaOrder = async (user, orderData) => {
     .populate('ciudad', 'nombre')
     .populate('dias.actividades.actividad');
   if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
+  const routeWasCreatedByAdmin = await isAdminRuta(ruta);
 
   // Build customized ruta snapshot (swaps + "actividad por libre").
   let rutaPersonalizada = null;
   let allActivities = [];
+  const usedReplacementIds = [];
 
   if (actividadesPersonalizadas && Object.keys(actividadesPersonalizadas).length > 0) {
     rutaPersonalizada = JSON.parse(JSON.stringify(ruta.dias));
@@ -130,16 +182,67 @@ const createRutaOrder = async (user, orderData) => {
       }
     }
   } else {
-    for (const dia of ruta.dias) {
+    rutaPersonalizada = JSON.parse(JSON.stringify(ruta.dias));
+    for (const dia of rutaPersonalizada) {
       for (const slot of dia.actividades) {
         allActivities.push(slot.actividad);
       }
     }
   }
 
+  allActivities = [];
+  for (const dia of rutaPersonalizada || []) {
+    for (const slot of dia.actividades || []) {
+      const current = slot.actividad;
+      if (!current || current.esPorLibre) {
+        allActivities.push(current);
+        continue;
+      }
+
+      const activity = await Activity.findById(current._id || current).populate('ciudad', 'nombre');
+      if (activity && !hasStock(activity)) {
+        if (routeWasCreatedByAdmin) {
+          const replacement = await findReplacementActivity(activity, usedReplacementIds);
+          if (replacement) {
+            usedReplacementIds.push(replacement._id);
+            slot.actividad = replacement;
+          } else {
+            slot.actividad = { ...POR_LIBRE };
+          }
+        } else {
+          await notifyCommercialFreeSlot(ruta, activity);
+          slot.actividad = { ...POR_LIBRE };
+        }
+      } else if (activity) {
+        slot.actividad = activity;
+      }
+
+      allActivities.push(slot.actividad);
+    }
+  }
+
   // Price is always the sum of the (possibly customized) ticket prices.
   const dias = rutaPersonalizada || ruta.dias;
   const precioTotal = computeRutaPrice(dias);
+
+  const stockActivities = allActivities.filter((activity) => activity && !activity.esPorLibre);
+
+  // Descontamos stock de forma secuencial, pero si algo falla a mitad de camino
+  // (p.ej. otra compra concurrente agota una actividad justo en este instante),
+  // devolvemos el stock ya descontado en este mismo intento para no dejar el
+  // inventario inconsistente ni "vender" entradas sin pedido asociado.
+  const consumedActivities = [];
+  try {
+    for (const activity of stockActivities) {
+      const consumed = await consumeStock(activity._id || activity, activity.nombre);
+      consumedActivities.push(consumed);
+    }
+  } catch (err) {
+    await Promise.all(
+      consumedActivities.map((act) => Activity.findByIdAndUpdate(act._id, { $inc: { stock: 1 } }))
+    );
+    throw err;
+  }
 
   const order = await Order.create({
     usuario: user._id,

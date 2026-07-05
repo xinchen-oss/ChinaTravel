@@ -41,7 +41,7 @@ export default function ActividadesListPage() {
           <div className="act-toolbar">
             <div className="act-toolbar__filters">
               <div>
-                <label>Ciudad</label>
+            
                 <CitySelector value={cityId} onChange={setCityId} />
               </div>
               <div>
@@ -88,10 +88,15 @@ export default function ActividadesListPage() {
                     <p style={{ margin: '4px 0 0', color: act.accesible === false ? 'var(--color-error)' : 'var(--color-success)' }}>
                       {act.accesible === false ? 'No accesible' : 'Accesible'}
                     </p>
+                    <p style={{ margin: '4px 0 0', color: (act.stock ?? 0) <= 0 ? 'var(--color-error)' : 'var(--color-text-muted)', fontWeight: 600 }}>
+                      {(act.stock ?? 0) <= 0 ? 'Agotado' : `${act.stock} entradas disponibles`}
+                    </p>
                     <p className="act-card__desc">{act.descripcion?.substring(0, 110)}...</p>
                     <div className="act-card__foot">
                       <span className="act-card__price">{formatPrice(act.precio)}</span>
-                      <Link to={`/actividades/${act._id}`} className="btn btn--primary btn--sm">Ver entrada</Link>
+                      <Link to={`/actividades/${act._id}`} className={`btn btn--sm ${(act.stock ?? 0) <= 0 ? 'btn--outline' : 'btn--primary'}`}>
+                        {(act.stock ?? 0) <= 0 ? 'Ver agotado' : 'Ver entrada'}
+                      </Link>
                     </div>
                   </div>
                 </div>

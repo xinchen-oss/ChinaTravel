@@ -40,7 +40,8 @@ export default function ActividadDetailPage() {
 
   const inCart = isInCart('ACTIVIDAD', id);
   const canBuy = user && user.role !== 'ADMIN' && user.role !== 'COMERCIAL';
-  const valid = fecha && hora;
+  const soldOut = (act.stock ?? 0) <= 0;
+  const valid = fecha && hora && !soldOut;
 
   const buildItem = () => ({
     tipo: 'ACTIVIDAD',
@@ -55,12 +56,14 @@ export default function ActividadDetailPage() {
 
   const handleAdd = () => {
     setTouched(true);
+    if (soldOut) return;
     if (!valid) return;
     addItem(buildItem());
   };
 
   const handleBuy = () => {
     setTouched(true);
+    if (soldOut) return;
     if (!valid) return;
     addItem(buildItem());
     navigate('/checkout-all');
@@ -100,9 +103,17 @@ export default function ActividadDetailPage() {
           <aside>
             <div className="act-buy">
               <div className="act-buy__price">{act.precio > 0 ? formatPrice(act.precio) : 'Entrada gratuita'}</div>
+              <p style={{ margin: '0 0 12px', color: soldOut ? 'var(--color-error)' : 'var(--color-text-muted)', fontWeight: 700, textAlign: 'center' }}>
+                {soldOut ? 'Agotado' : `${act.stock} entradas disponibles`}
+              </p>
 
               {canBuy ? (
                 <>
+                  {soldOut && (
+                    <p style={{ color: 'var(--color-error)', fontSize: '0.85rem', textAlign: 'center' }}>
+                      Esta actividad no tiene stock disponible y no se puede comprar.
+                    </p>
+                  )}
                   <div className="act-buy__field">
                     <label htmlFor="fecha">Fecha de visita</label>
                     <input
@@ -139,10 +150,10 @@ export default function ActividadDetailPage() {
                     <p style={{ color: 'var(--color-success)', textAlign: 'center', fontWeight: 600 }}>✓ Ya está en tu carrito</p>
                   ) : (
                     <>
-                      <button className="btn btn--secondary" style={{ width: '100%', marginBottom: 8 }} onClick={handleBuy}>
+                      <button className="btn btn--secondary" style={{ width: '100%', marginBottom: 8 }} onClick={handleBuy} disabled={soldOut}>
                         Comprar ahora
                       </button>
-                      <button className="btn btn--outline" style={{ width: '100%' }} onClick={handleAdd}>
+                      <button className="btn btn--outline" style={{ width: '100%' }} onClick={handleAdd} disabled={soldOut}>
                         Añadir al carrito
                       </button>
                     </>

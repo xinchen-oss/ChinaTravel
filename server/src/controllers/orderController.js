@@ -19,6 +19,30 @@ const resolveConcepto = async (order) => {
   return { nombre: act?.nombre || 'Entrada', ciudad: act?.ciudad?.nombre || '—' };
 };
 
+const notifyAdmins = async ({ titulo, mensaje, enlace = '/admin' }) => {
+  const admins = await User.find({ role: 'ADMIN', isActive: true }).select('_id');
+  if (!admins.length) return;
+
+  await Notification.insertMany(admins.map((admin) => ({
+    usuario: admin._id,
+    tipo: 'SISTEMA',
+    titulo,
+    mensaje,
+    enlace,
+  })));
+};
+
+const notifyOrderConfirmed = async (order) => {
+  const { nombre } = await resolveConcepto(order);
+  await Notification.create({
+    usuario: order.usuario,
+    tipo: 'PEDIDO',
+    titulo: 'Pedido confirmado',
+    mensaje: `Tu pedido de ${nombre} se ha confirmado correctamente.`,
+    enlace: '/dashboard',
+  });
+};
+
 const emailWrapper = (content) => `
   <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
     <div style="background:#c41e3a;color:white;padding:24px;text-align:center;">
@@ -37,6 +61,7 @@ const emailWrapper = (content) => `
 
 export const placeOrder = asyncHandler(async (req, res) => {
   const order = await createOrder(req.user, req.body);
+  await notifyOrderConfirmed(order);
   res.status(201).json({ ok: true, data: order });
 });
 
@@ -121,6 +146,12 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   const usuario = await User.findById(order.usuario);
   const { nombre: guideName, ciudad: ciudadNombre } = await resolveConcepto(order);
   const precio = order.precioTotal ? `${order.precioTotal}\u20AC` : '';
+
+  await notifyAdmins({
+    titulo: 'Nueva solicitud de cancelacion',
+    mensaje: `${usuario?.nombre || 'Un usuario'} ha solicitado cancelar el pedido de ${guideName}.`,
+    enlace: '/admin/pedidos',
+  });
 
   const fecha = new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
   const horasDesdeCompra = Math.round((Date.now() - new Date(order.createdAt).getTime()) / (1000 * 60 * 60));
@@ -438,6 +469,8 @@ export const placeBatchOrder = asyncHandler(async (req, res) => {
       await couponData.save();
     }
   }
+
+  await Promise.all(orders.map((order) => notifyOrderConfirmed(order)));
 
   res.status(201).json({ ok: true, data: orders });
 });

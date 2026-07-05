@@ -2,6 +2,7 @@ import Ruta from '../models/Ruta.js';
 import Activity from '../models/Activity.js';
 import Order from '../models/Order.js';
 import Review from '../models/Review.js';
+import Notification from '../models/Notification.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { computeRutaPrice } from '../utils/helpers.js';
@@ -21,6 +22,24 @@ const isRutaAccesible = (ruta) => {
     const actividad = slot?.actividad;
     return !actividad || actividad.accesible !== false;
   }));
+};
+
+const getStatusChange = (before, body) => {
+  if (body.isActive === undefined) return null;
+  if (before.isActive === body.isActive) return null;
+  return body.isActive ? 'activada' : 'desactivada';
+};
+
+const notifyOwnerStatusChange = async (ruta, status) => {
+  if (!ruta.creadoPor) return;
+
+  await Notification.create({
+    usuario: ruta.creadoPor,
+    tipo: 'SISTEMA',
+    titulo: `Ruta ${status}`,
+    mensaje: `Tu ruta "${ruta.titulo}" ha sido ${status}.`,
+    enlace: '/comercial/mis-publicaciones',
+  });
 };
 
 export const getRutas = asyncHandler(async (req, res) => {
@@ -135,7 +154,7 @@ export const getAlternativeActivities = asyncHandler(async (req, res) => {
   if (!ruta) throw new ApiError(404, 'Ruta no encontrada');
 
   const { categoria, exclude } = req.query;
-  const filter = { ciudad: ruta.ciudad._id, isApproved: true };
+  const filter = { ciudad: ruta.ciudad._id, isApproved: true, isActive: true, stock: { $gt: 0 } };
   if (categoria) filter.categoria = categoria;
   if (exclude) filter._id = { $nin: exclude.split(',') };
 
@@ -157,9 +176,13 @@ export const updateRuta = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'No tienes permiso para editar esta ruta');
   }
 
+  const statusChange = getStatusChange(ruta, req.body);
   const updated = await Ruta.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
   if (!updated) throw new ApiError(404, 'Ruta no encontrada');
   const priced = await repriceRuta(updated._id);
+  if (statusChange) {
+    await notifyOwnerStatusChange(priced || updated, statusChange);
+  }
   res.json({ ok: true, data: priced || updated });
 });
 

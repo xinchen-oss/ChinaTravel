@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import config from '../config/env.js';
@@ -8,6 +9,19 @@ import { sendEmail } from '../services/emailService.js';
 import { validatePassword } from '../utils/validatePassword.js';
 
 const generateToken = (id) => jwt.sign({ id }, config.jwtSecret, { expiresIn: config.jwtExpire });
+
+const notifyAdmins = async ({ titulo, mensaje, enlace = '/admin/usuarios' }) => {
+  const admins = await User.find({ role: 'ADMIN', isActive: true }).select('_id');
+  if (!admins.length) return;
+
+  await Notification.insertMany(admins.map((admin) => ({
+    usuario: admin._id,
+    tipo: 'SISTEMA',
+    titulo,
+    mensaje,
+    enlace,
+  })));
+};
 
 const userResponse = (user) => ({
   id: user._id,
@@ -61,6 +75,12 @@ export const register = asyncHandler(async (req, res) => {
   });
 
   if (isComercial) {
+    await notifyAdmins({
+      titulo: 'Nueva solicitud comercial',
+      mensaje: `${nombre} ${apellidos || ''} ha solicitado una cuenta Comercial.`,
+      enlace: '/admin/usuarios',
+    });
+
     await sendEmail({
       to: email,
       subject: 'Solicitud de cuenta Comercial recibida - ChinaTravel',
@@ -78,6 +98,12 @@ export const register = asyncHandler(async (req, res) => {
     res.status(201).json({ ok: true, pendingApproval: true, message: 'Solicitud de cuenta Comercial enviada. Recibirás una notificación cuando sea aprobada por el administrador.' });
   } else {
     const token = generateToken(user._id);
+    await notifyAdmins({
+      titulo: 'Nuevo usuario registrado',
+      mensaje: `${nombre} ${apellidos || ''} se ha registrado en ChinaTravel.`,
+      enlace: '/admin/usuarios',
+    });
+
     await sendEmail({
       to: email,
       subject: '¡Bienvenido a ChinaTravel! Confirmación de registro',
