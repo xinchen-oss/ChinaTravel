@@ -104,7 +104,7 @@ export default function ActividadDetailPage() {
             <div className="act-buy">
               <div className="act-buy__price">{act.precio > 0 ? formatPrice(act.precio) : 'Entrada gratuita'}</div>
               <p style={{ margin: '0 0 12px', color: soldOut ? 'var(--color-error)' : 'var(--color-text-muted)', fontWeight: 700, textAlign: 'center' }}>
-                {soldOut ? 'Agotado' : `${act.stock} entradas disponibles`}
+                {soldOut ? 'Agotado' : `Disponible`}
               </p>
 
               {canBuy ? (
