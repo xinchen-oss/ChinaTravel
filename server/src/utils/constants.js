@@ -1,5 +1,5 @@
 export const ROLES = {
-  USER: 'USER',
+  CLIENTE: 'CLIENTE',
   ADMIN: 'ADMIN',
   COMERCIAL: 'COMERCIAL',
 };
@@ -35,6 +35,7 @@ export const ACTIVITY_CATEGORIES = [
   'COMPRAS',
   'NOCTURNO',
   'HISTORICO',
+  'RECREATIVAS',
 ];
 
 export const SUBMISSION_TYPES = ['ACTIVIDAD', 'RUTA'];

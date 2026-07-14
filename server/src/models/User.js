@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       codigoPostal: { type: String, trim: true, default: '' },
       pais: { type: String, trim: true, default: '' },
     },
-    role: { type: String, enum: Object.values(ROLES), default: ROLES.USER },
+    role: { type: String, enum: Object.values(ROLES), default: ROLES.CLIENTE },
     isActive: { type: Boolean, default: true },
     isApproved: { type: Boolean, default: true },
     empresaNombre: { type: String, trim: true, default: '' },

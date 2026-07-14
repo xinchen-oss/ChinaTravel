@@ -15,4 +15,7 @@ router.post("/", protect, authorize(ROLES.ADMIN, ROLES.USER), createPost);
 router.post("/:postId/reply", protect, authorize(ROLES.ADMIN, ROLES.USER), createReply);
 router.delete("/:id", protect, authorize(ROLES.ADMIN, ROLES.USER), deletePost);
 
+// routes/forum.js
+router.patch('/moderation/:id', protect, authorize(ROLES.ADMIN), moderatePost);
+
 export default router;

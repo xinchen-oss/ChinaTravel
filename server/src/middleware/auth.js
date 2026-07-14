@@ -37,3 +37,12 @@ export const authorize = (...roles) => (req, res, next) => {
   }
   next();
 };
+
+export const requireRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      throw new ApiError(403, 'No tienes permisos para realizar esta acción');
+    }
+    next();
+  };
+};

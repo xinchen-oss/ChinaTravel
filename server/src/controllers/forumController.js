@@ -105,10 +105,6 @@ export const getModerationPosts = asyncHandler(async (req, res) => {
 });
 
 export const moderatePost = asyncHandler(async (req, res) => {
-  if (req.user.role !== ROLES.ADMIN) {
-    throw new ApiError(403, 'No tienes permisos para moderar el foro');
-  }
-
   const post = await ForumPost.findById(req.params.id);
   if (!post) throw new ApiError(404, 'Post no encontrado');
 
