@@ -112,7 +112,7 @@ describe('forumController.deletePost', () => {
     ForumPost.findById.mockResolvedValue({ _id: '1', autor: 'u1', deleteOne });
     ForumPost.deleteMany.mockResolvedValue();
     const res = mockRes();
-    await deletePost({ params: { id: '1' }, user: { _id: 'u1', role: 'USER' } }, res);
+    await deletePost({ params: { id: '1' }, user: { _id: 'u1', role: 'CLIENTE' } }, res);
     expect(ForumPost.deleteMany).toHaveBeenCalledWith({ parentPost: '1' });
     expect(deleteOne).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({ ok: true, message: 'Post eliminado' });
@@ -120,7 +120,7 @@ describe('forumController.deletePost', () => {
 
   it('lanza 404 si el post no existe', async () => {
     ForumPost.findById.mockResolvedValue(null);
-    await expect(deletePost({ params: { id: '1' }, user: { _id: 'u1', role: 'USER' } }, mockRes())).rejects.toThrow(ApiError);
+    await expect(deletePost({ params: { id: '1' }, user: { _id: 'u1', role: 'CLIENTE' } }, mockRes())).rejects.toThrow(ApiError);
   });
 });
 

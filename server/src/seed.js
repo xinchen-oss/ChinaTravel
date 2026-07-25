@@ -20,7 +20,7 @@ const seed = async () => {
   await User.create([
     { nombre: 'Admin', email: 'admin@chinatravel.com', password: 'Admin123!', role: 'ADMIN' },
     { nombre: 'Comercial', email: 'comercial@chinatravel.com', password: 'Comercial1!', role: 'COMERCIAL' },
-    { nombre: 'Usuario', email: 'user@chinatravel.com', password: 'User1234!', role: 'USER' },
+    { nombre: 'Usuario', email: 'user@chinatravel.com', password: 'User1234!', role: 'CLIENTE' },
   ]);
   console.log('Usuarios creados');
 

@@ -30,7 +30,7 @@ describe('POST /api/auth/registro', () => {
     expect(res.body.ok).toBe(true);
     expect(res.body.token).toBeDefined();
     expect(res.body.user.email).toBe('ana@test.com');
-    expect(res.body.user.role).toBe('USER');
+    expect(res.body.user.role).toBe('CLIENTE');
     expect(res.body.user.password).toBeUndefined();
   });
 

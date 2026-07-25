@@ -67,7 +67,7 @@ export const register = asyncHandler(async (req, res) => {
   const user = await User.create({
     nombre, apellidos, email, password,
     telefono, fechaNacimiento, genero, nacionalidad, pasaporte, direccion,
-    role: isComercial ? 'COMERCIAL' : 'USER',
+    role: isComercial ? 'COMERCIAL' : 'CLIENTE',
     isApproved: !isComercial,
     empresaNombre: isComercial ? empresaNombre : '',
     empresaCIF: isComercial ? empresaCIF : '',

@@ -33,7 +33,7 @@ export default function UserDashboard() {
   const { user, updateProfile } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(user?.role === ROLES.USER ? 'orders' : 'profile');
+  const [activeTab, setActiveTab] = useState(user?.role === ROLES.CLIENTE ? 'orders' : 'profile');
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [cancellingId, setCancellingId] = useState(null);
   const [cancelModal, setCancelModal] = useState({ open: false, orderId: null, motivo: '', selectedReason: '' });
@@ -55,7 +55,7 @@ export default function UserDashboard() {
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
-    if (user?.role !== ROLES.USER) {
+    if (user?.role !== ROLES.CLIENTE) {
       setLoading(false);
       return;
     }
@@ -201,7 +201,7 @@ export default function UserDashboard() {
         <p className="page-subtitle">Hola, {user?.nombre} {user?.apellidos}</p>
 
         <div className="dashboard-tabs" role="tablist" aria-label="Secciones de mi cuenta">
-          {user?.role === ROLES.USER && (
+          {user?.role === ROLES.CLIENTE && (
             <button
               className={`dashboard-tab ${activeTab === 'orders' ? 'dashboard-tab--active' : ''}`}
               onClick={() => setActiveTab('orders')}

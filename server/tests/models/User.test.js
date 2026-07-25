@@ -29,9 +29,9 @@ describe('Modelo User', () => {
     ).rejects.toThrow();
   });
 
-  it('asigna USER como rol por defecto', async () => {
+  it('asigna CLIENTE como rol por defecto', async () => {
     const user = await User.create({ nombre: 'C', email: 'c@test.com', password: 'Abcdefg1!' });
-    expect(user.role).toBe('USER');
+    expect(user.role).toBe('CLIENTE');
     expect(user.isActive).toBe(true);
     expect(user.isApproved).toBe(true);
   });

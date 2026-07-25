@@ -23,7 +23,7 @@ const seed = async () => {
       genero: 'MASCULINO',
       nacionalidad: 'Espanola',
       direccion: { calle: 'Calle Gran Via 42', ciudad: 'Madrid', codigoPostal: '28013', pais: 'Espana' },
-      role: 'USER',
+      role: 'CLIENTE',
     },
     {
       nombre: 'Maria',
@@ -35,7 +35,7 @@ const seed = async () => {
       genero: 'FEMENINO',
       nacionalidad: 'Espanola',
       direccion: { calle: 'Avinguda Diagonal 150', ciudad: 'Barcelona', codigoPostal: '08018', pais: 'Espana' },
-      role: 'USER',
+      role: 'CLIENTE',
     },
     {
       nombre: 'Pablo',
@@ -47,7 +47,7 @@ const seed = async () => {
       genero: 'MASCULINO',
       nacionalidad: 'Espanola',
       direccion: { calle: 'Calle Sierpes 28', ciudad: 'Sevilla', codigoPostal: '41004', pais: 'Espana' },
-      role: 'USER',
+      role: 'CLIENTE',
     },
     {
       nombre: 'Ana',
@@ -59,7 +59,7 @@ const seed = async () => {
       genero: 'FEMENINO',
       nacionalidad: 'Espanola',
       direccion: { calle: 'Calle Larios 10', ciudad: 'Malaga', codigoPostal: '29015', pais: 'Espana' },
-      role: 'USER',
+      role: 'CLIENTE',
     },
     {
       nombre: 'Diego',
@@ -71,7 +71,7 @@ const seed = async () => {
       genero: 'MASCULINO',
       nacionalidad: 'Espanola',
       direccion: { calle: 'Plaza del Ayuntamiento 5', ciudad: 'Valencia', codigoPostal: '46002', pais: 'Espana' },
-      role: 'USER',
+      role: 'CLIENTE',
     },
   ]);
 

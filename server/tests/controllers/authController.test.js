@@ -31,11 +31,11 @@ const validBody = {
   nombre: 'Ana',
   email: 'ana@test.com',
   password: 'Abcdefg1!',
-  role: 'USER',
+  role: 'CLIENTE',
 };
 
 describe('authController.register', () => {
-  it('registra un usuario USER y devuelve token', async () => {
+  it('registra un usuario CLIENTE y devuelve token', async () => {
     User.findOne.mockResolvedValue(null);
     User.create.mockResolvedValue({ _id: '1', ...validBody });
     jwt.sign.mockReturnValue('TKN');

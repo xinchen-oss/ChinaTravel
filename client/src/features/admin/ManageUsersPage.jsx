@@ -5,7 +5,7 @@ import { ROLES } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import '../dashboard/Dashboard.css';
 
-const emptyUserForm = { nombre: '', email: '', password: '', role: 'USER' };
+const emptyUserForm = { nombre: '', email: '', password: '', role: 'CLIENTE' };
 
 export default function ManageUsersPage() {
   const [users, setUsers] = useState([]);

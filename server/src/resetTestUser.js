@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import config from './config/env.js';
 import User from './models/User.js';
 
-const TARGET = { email: 'user@chinatravel.com', password: 'user123', nombre: 'Usuario', role: 'USER' };
+const TARGET = { email: 'user@chinatravel.com', password: 'user123', nombre: 'Usuario', role: 'CLIENTE' };
 
 await mongoose.connect(config.mongoUri);
 console.log('Conectado a MongoDB');

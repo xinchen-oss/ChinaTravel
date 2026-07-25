@@ -72,7 +72,7 @@ describe('orderController.getOrder', () => {
     const order = { usuario: { _id: 'u1' } };
     Order.findById.mockReturnValue(chainable(order));
     const res = mockRes();
-    await getOrder({ params: { id: '1' }, user: { _id: 'u1', role: 'USER' } }, res);
+    await getOrder({ params: { id: '1' }, user: { _id: 'u1', role: 'CLIENTE' } }, res);
     expect(res.json).toHaveBeenCalledWith({ ok: true, data: order });
   });
 
@@ -80,14 +80,14 @@ describe('orderController.getOrder', () => {
     const order = { usuario: { _id: 'u1' } };
     Order.findById.mockReturnValue(chainable(order));
     await expect(
-      getOrder({ params: { id: '1' }, user: { _id: 'u2', role: 'USER' } }, mockRes())
+      getOrder({ params: { id: '1' }, user: { _id: 'u2', role: 'CLIENTE' } }, mockRes())
     ).rejects.toThrow(ApiError);
   });
 
   it('lanza 404 si no existe', async () => {
     Order.findById.mockReturnValue(chainable(null));
     await expect(
-      getOrder({ params: { id: '1' }, user: { _id: 'u1', role: 'USER' } }, mockRes())
+      getOrder({ params: { id: '1' }, user: { _id: 'u1', role: 'CLIENTE' } }, mockRes())
     ).rejects.toThrow(ApiError);
   });
 });

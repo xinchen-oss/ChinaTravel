@@ -28,7 +28,7 @@ export default function ForumPage() {
   const user = JSON.parse(localStorage.getItem('user'));
 
   const isAdmin = user?.role === 'ADMIN';
-  const canCreatePost = token && (user?.role === 'USER' || isAdmin);
+  const canCreatePost = token && (user?.role === 'CLIENTE' || isAdmin);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -79,7 +79,7 @@ describe('userController.approveComercial', () => {
   });
 
   it('lanza 400 si el usuario no es COMERCIAL', async () => {
-    User.findById.mockResolvedValue({ _id: '1', role: 'USER' });
+    User.findById.mockResolvedValue({ _id: '1', role: 'CLIENTE' });
     await expect(
       approveComercial({ params: { id: '1' }, body: { approved: true } }, mockRes())
     ).rejects.toThrow(ApiError);

@@ -22,7 +22,7 @@ const validateBirthDate = (dateStr) => {
 };
 
 export default function RegisterPage() {
-  const [accountType, setAccountType] = useState('USER'); // USER or COMERCIAL
+  const [accountType, setAccountType] = useState('CLIENTE'); // CLIENTE or COMERCIAL
   const [form, setForm] = useState({
     nombre: '',
     apellidos: '',
@@ -157,10 +157,10 @@ export default function RegisterPage() {
         <div className="account-type-selector" role="radiogroup" aria-label="Tipo de cuenta">
           <button
             type="button"
-            className={`account-type-btn ${accountType === 'USER' ? 'account-type-btn--active' : ''}`}
-            onClick={() => setAccountType('USER')}
+            className={`account-type-btn ${accountType === 'CLIENTE' ? 'account-type-btn--active' : ''}`}
+            onClick={() => setAccountType('CLIENTE')}
             role="radio"
-            aria-checked={accountType === 'USER'}
+            aria-checked={accountType === 'CLIENTE'}
           >
             <span className="account-type-btn__icon" aria-hidden="true">👤</span>
             <span className="account-type-btn__label">Usuario</span>

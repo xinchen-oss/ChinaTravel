@@ -13,7 +13,7 @@ export const createUser = asyncHandler(async (req, res) => {
   if (pwError) throw new ApiError(400, pwError);
   const exists = await User.findOne({ email });
   if (exists) throw new ApiError(400, 'Ya existe un usuario con ese email');
-  const user = await User.create({ nombre, email, password, role: role || 'USER', isApproved: true });
+  const user = await User.create({ nombre, email, password, role: role || 'CLIENTE', isApproved: true });
   res.status(201).json({ ok: true, data: user });
 });
 
