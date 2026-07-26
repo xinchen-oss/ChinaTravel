@@ -19,11 +19,32 @@
 .act-toolbar__filters { display: flex; flex-wrap: wrap; gap: 16px; }
 .act-toolbar label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
 .act-toolbar select {
-  padding: 8px 12px;
+  height: 38px;
+  padding: 0 12px;
   border: 1px solid var(--color-border, #d1d5db);
   border-radius: 8px;
   min-width: 180px;
   background: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.act-toolbar__filters .city-selector { gap: 0; }
+.act-toolbar__filters .city-selector__label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--color-text, inherit);
+}
+.act-toolbar__filters .city-selector__select {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 8px;
+  min-width: 180px;
+  background: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .act-grid {

@@ -29,19 +29,19 @@ const seed = async () => {
     {
       nombre: 'Pekín', nombreChino: '北京', slug: 'pekin',
       descripcion: 'Capital de China y centro político, cultural e histórico. Hogar de la Ciudad Prohibida, la Gran Muralla y templos milenarios. Pekín es una metrópolis donde conviven la historia imperial y la modernidad más vanguardista.',
-      imagenPortada: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
       destacada: true,
     },
     {
       nombre: 'Shanghái', nombreChino: '上海', slug: 'shanghai',
       descripcion: 'La ciudad más cosmopolita de China, famosa por su skyline futurista en Pudong, el histórico Bund y una vibrante escena gastronómica. Centro financiero y cultural del país.',
-      imagenPortada: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1748078096034-46086f5b87da?w=800&q=80',
       destacada: true,
     },
     {
       nombre: 'Chengdú', nombreChino: '成都', slug: 'chengdu',
       descripcion: 'Capital de Sichuan, famosa por sus pandas gigantes, su gastronomía picante y su estilo de vida relajado. Una ciudad que combina tradición con una escena cultural moderna y vibrante.',
-      imagenPortada: 'https://images.unsplash.com/photo-1564577160324-112d603f750f?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1704158679186-9e3082167277?w=800&q=80',
       destacada: true,
     },
     {
@@ -59,7 +59,7 @@ const seed = async () => {
     {
       nombre: "Xi'an", nombreChino: '西安', slug: 'xian',
       descripcion: 'Antigua capital de 13 dinastías y punto de partida de la Ruta de la Seda. Hogar del legendario Ejército de Guerreros de Terracota, murallas medievales intactas y el vibrante barrio musulmán con la mejor comida callejera de China.',
-      imagenPortada: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1523946963389-207478f6cb2e?w=800&q=80',
       destacada: true,
     },
     {
@@ -71,19 +71,19 @@ const seed = async () => {
     {
       nombre: 'Hangzhou', nombreChino: '杭州', slug: 'hangzhou',
       descripcion: 'La ciudad más romántica de China, declarada "paraíso en la tierra" por Marco Polo. Famosa por el poético Lago del Oeste, las plantaciones de té Longjing, sus templos budistas y una escena tecnológica puntera (sede de Alibaba).',
-      imagenPortada: 'https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1751012325074-94e4fab31697?w=800&q=80',
       destacada: true,
     },
     {
       nombre: 'Guilin', nombreChino: '桂林', slug: 'guilin',
       descripcion: 'Paisajes de montañas kársticas que parecen sacados de una pintura china. Famosa por el crucero por el río Li hasta Yangshuo, los arrozales en terrazas de Longji y cuevas espectaculares.',
-      imagenPortada: 'https://images.unsplash.com/photo-1537531383496-f4749b02e080?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1773318901379-aac92fdf5611?w=800&q=80',
       destacada: true,
     },
     {
       nombre: 'Lhasa', nombreChino: '拉萨', slug: 'lhasa',
       descripcion: 'Capital del Tíbet, a 3.650 metros de altitud: "el techo del mundo". Ciudad sagrada del budismo tibetano, hogar del majestuoso Palacio Potala, monasterios centenarios y una espiritualidad que transforma a quien la visita.',
-      imagenPortada: 'https://images.unsplash.com/photo-1461823385004-d7660947a7c0?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1741257091145-69d62cdf819a?w=800&q=80',
       destacada: false,
     },
     {
@@ -113,7 +113,7 @@ const seed = async () => {
     {
       nombre: 'Zhangjiajie', nombreChino: '张家界', slug: 'zhangjiajie',
       descripcion: 'Pilares de arenisca que inspiraron las montañas flotantes de Avatar. Puente de cristal a 300m de altura, bosques de niebla y paisajes que desafían la imaginación.',
-      imagenPortada: 'https://images.unsplash.com/photo-1513415756790-2ac1db1297d0?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1561031454-4f1331bd2a34?w=800&q=80',
       destacada: true,
     },
     {
@@ -131,7 +131,7 @@ const seed = async () => {
     {
       nombre: 'Dunhuang', nombreChino: '敦煌', slug: 'dunhuang',
       descripcion: 'Oasis en el desierto del Gobi y joya de la Ruta de la Seda. Las Cuevas de Mogao con 1.000 años de arte budista (UNESCO), dunas de arena dorada y lagos en media luna.',
-      imagenPortada: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&q=80',
+      imagenPortada: 'https://images.unsplash.com/photo-1755417288480-cc42437bb705?w=800&q=80',
       destacada: true,
     },
     {

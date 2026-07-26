@@ -39,16 +39,40 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.guides-toolbar__filter {
+.guides-toolbar__filters {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.guides-toolbar__filter label {
-  font-weight: 500;
-  font-size: var(--font-size-sm);
-  white-space: nowrap;
+.guides-toolbar__filters label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.guides-toolbar__filters select,
+.guides-toolbar__filters .city-selector__select {
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.9rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.guides-toolbar__filters .city-selector__label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--color-text);
+}
+
+.guides-toolbar__filters .city-selector {
+  gap: 0;
 }
 
 .guides-toolbar__count {

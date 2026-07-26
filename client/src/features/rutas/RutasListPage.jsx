@@ -53,17 +53,18 @@ export default function RutasListPage() {
       <div className="page">
         <div className="container">
           <div className="guides-toolbar">
-            <div className="guides-toolbar__filter">
-              <label>Filtrar por ciudad:</label>
-              <CitySelector value={cityId} onChange={setCityId} />
-            </div>
-            <div className="guides-toolbar__filter">
-              <label>Accesible:</label>
-              <select value={accesible} onChange={(e) => setAccesible(e.target.value)}>
-                <option value="">Todas</option>
-                <option value="true">Solo accesibles</option>
-                <option value="false">No accesibles</option>
-              </select>
+            <div className="guides-toolbar__filters">
+              <div>
+                <CitySelector value={cityId} onChange={setCityId} />
+              </div>
+              <div>
+                <label htmlFor="acc-filter-rutas">Accesible</label>
+                <select id="acc-filter-rutas" value={accesible} onChange={(e) => setAccesible(e.target.value)}>
+                  <option value="">Todas</option>
+                  <option value="true">Solo accesibles</option>
+                  <option value="false">No accesibles</option>
+                </select>
+              </div>
             </div>
             <p className="guides-toolbar__count">
               {loading ? '' : `${sortedRutas.length} ruta${sortedRutas.length !== 1 ? 's' : ''} disponible${sortedRutas.length !== 1 ? 's' : ''}`}
