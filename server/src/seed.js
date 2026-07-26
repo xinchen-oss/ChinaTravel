@@ -156,88 +156,88 @@ const seed = async () => {
   // --- PEKÍN ---
   const pekinActs = await Activity.create([
     { nombre: 'Ciudad Prohibida', descripcion: 'Visita guiada al palacio imperial más grande del mundo, con 980 edificios y una historia de 600 años.', ciudad: pekin._id, categoria: 'HISTORICO', duracionHoras: 4, precio: 35, consejos: ['Llega temprano para evitar multitudes', 'Lleva calzado cómodo', 'Compra las entradas online con antelación'] },
-    { nombre: 'Gran Muralla (Mutianyu)', descripcion: 'Sección restaurada de la Gran Muralla, menos masificada que Badaling, con vistas espectaculares y teleférico.', ciudad: pekin._id, categoria: 'AVENTURA', duracionHoras: 6, precio: 50, consejos: ['Usa el teleférico para subir y baja andando', 'Lleva agua y snacks', 'Madruga para evitar multitudes'] },
-    { nombre: 'Templo del Cielo', descripcion: 'Complejo de templos donde los emperadores rezaban por buenas cosechas. Patrimonio de la Humanidad UNESCO.', ciudad: pekin._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 15, consejos: ['Visita por la mañana para ver tai chi local', 'El eco en la Bóveda Imperial es impresionante'] },
-    { nombre: 'Hutongs en rickshaw', descripcion: 'Recorrido en rickshaw por los tradicionales callejones de Pekín, visitando casas locales y patios interiores.', ciudad: pekin._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 25, consejos: ['Negocia el precio antes de subir', 'Pide parar en una casa de té local'] },
-    { nombre: 'Pato pekinés en Quanjude', descripcion: 'Cena con el famoso pato laqueado de Pekín en uno de los restaurantes más emblemáticos, con más de 150 años de historia.', ciudad: pekin._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 40, consejos: ['Reserva mesa con antelación', 'Pide el pato entero para 2-3 personas'] },
-    { nombre: 'Mercado nocturno de Wangfujing', descripcion: 'Famoso mercado nocturno con comida callejera exótica, desde escorpiones fritos hasta brochetas de cordero.', ciudad: pekin._id, categoria: 'NOCTURNO', duracionHoras: 2, precio: 10, consejos: ['Prueba las brochetas de cordero', 'Los precios son negociables'] },
-    { nombre: 'Palacio de Verano', descripcion: 'Jardín imperial a orillas del lago Kunming. Pabellones, puentes y el famoso Pasillo Largo con 14.000 pinturas.', ciudad: pekin._id, categoria: 'HISTORICO', duracionHoras: 3.5, precio: 20, consejos: ['Alquila un bote en el lago', 'La Colina de la Longevidad tiene las mejores vistas'] },
-    { nombre: 'Plaza de Tiananmén', descripcion: 'La plaza pública más grande del mundo, corazón político de China. Incluye el Mausoleo de Mao y el Monumento a los Héroes del Pueblo.', ciudad: pekin._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 0, consejos: ['La ceremonia de izado de bandera es al amanecer', 'Lleva pasaporte para los controles de seguridad'] },
-    { nombre: 'Barrio artístico 798', descripcion: 'Antiguo complejo industrial reconvertido en el distrito de arte contemporáneo más importante de China. Galerías, cafés y arte callejero.', ciudad: pekin._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 0, consejos: ['Muchas galerías son gratis', 'Ideal para una tarde relajada'] },
-    { nombre: 'Espectáculo de Kung Fu', descripcion: 'Show de artes marciales con acrobacias increíbles en el Teatro Rojo de Pekín. Apto para toda la familia.', ciudad: pekin._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 35, consejos: ['Reserva asientos delanteros', 'El show es sin diálogos, ideal si no hablas chino'] },
+    { nombre: 'Gran Muralla (Mutianyu)', descripcion: 'Sección restaurada de la Gran Muralla, menos masificada que Badaling, con vistas espectaculares y teleférico.', imagen: 'https://images.unsplash.com/photo-1509624780899-f812439647e4?w=800&q=80', ciudad: pekin._id, categoria: 'AVENTURA', duracionHoras: 6, precio: 50, consejos: ['Usa el teleférico para subir y baja andando', 'Lleva agua y snacks', 'Madruga para evitar multitudes'] },
+    { nombre: 'Templo del Cielo', descripcion: 'Complejo de templos donde los emperadores rezaban por buenas cosechas. Patrimonio de la Humanidad UNESCO.', imagen: 'https://images.unsplash.com/photo-1780323837699-d4d1cf8f4e14?w=800&q=80', ciudad: pekin._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 15, consejos: ['Visita por la mañana para ver tai chi local', 'El eco en la Bóveda Imperial es impresionante'] },
+    { nombre: 'Hutongs en rickshaw', descripcion: 'Recorrido en rickshaw por los tradicionales callejones de Pekín, visitando casas locales y patios interiores.', imagen: 'https://images.unsplash.com/photo-1756770403891-f08986c536a9?w=800&q=80', ciudad: pekin._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 25, consejos: ['Negocia el precio antes de subir', 'Pide parar en una casa de té local'] },
+    { nombre: 'Pato pekinés en Quanjude', descripcion: 'Cena con el famoso pato laqueado de Pekín en uno de los restaurantes más emblemáticos, con más de 150 años de historia.', imagen: 'https://images.unsplash.com/photo-1767818375229-be50b2b070ef?w=800&q=80', ciudad: pekin._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 40, consejos: ['Reserva mesa con antelación', 'Pide el pato entero para 2-3 personas'] },
+    { nombre: 'Mercado nocturno de Wangfujing', descripcion: 'Famoso mercado nocturno con comida callejera exótica, desde escorpiones fritos hasta brochetas de cordero.', imagen: 'https://images.unsplash.com/photo-1760535560909-15b15c3be8b5?w=800&q=80', ciudad: pekin._id, categoria: 'NOCTURNO', duracionHoras: 2, precio: 10, consejos: ['Prueba las brochetas de cordero', 'Los precios son negociables'] },
+    { nombre: 'Palacio de Verano', descripcion: 'Jardín imperial a orillas del lago Kunming. Pabellones, puentes y el famoso Pasillo Largo con 14.000 pinturas.', imagen: 'https://images.unsplash.com/photo-1586788630595-bbd71f6f8646?w=800&q=80', ciudad: pekin._id, categoria: 'HISTORICO', duracionHoras: 3.5, precio: 20, consejos: ['Alquila un bote en el lago', 'La Colina de la Longevidad tiene las mejores vistas'] },
+    { nombre: 'Plaza de Tiananmén', descripcion: 'La plaza pública más grande del mundo, corazón político de China. Incluye el Mausoleo de Mao y el Monumento a los Héroes del Pueblo.', imagen: 'https://images.unsplash.com/photo-1753166890334-55a89f788a6c?w=800&q=80', ciudad: pekin._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 0, consejos: ['La ceremonia de izado de bandera es al amanecer', 'Lleva pasaporte para los controles de seguridad'] },
+    { nombre: 'Barrio artístico 798', descripcion: 'Antiguo complejo industrial reconvertido en el distrito de arte contemporáneo más importante de China. Galerías, cafés y arte callejero.', imagen: 'https://images.unsplash.com/photo-1760281809674-b9634e2abc4a?w=800&q=80', ciudad: pekin._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 0, consejos: ['Muchas galerías son gratis', 'Ideal para una tarde relajada'] },
+    { nombre: 'Espectáculo de Kung Fu', descripcion: 'Show de artes marciales con acrobacias increíbles en el Teatro Rojo de Pekín. Apto para toda la familia.', imagen: 'https://images.unsplash.com/photo-1762417422848-20e759043e99?w=800&q=80', ciudad: pekin._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 35, consejos: ['Reserva asientos delanteros', 'El show es sin diálogos, ideal si no hablas chino'] },
   ]);
 
   // --- SHANGHÁI ---
   const shanghaiActs = await Activity.create([
-    { nombre: 'El Bund', descripcion: 'Paseo por el malecón más famoso de Asia con vistas al skyline de Pudong. Arquitectura colonial europea frente a rascacielos futuristas.', ciudad: shanghai._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Visita al atardecer para las mejores fotos', 'Vuelve de noche cuando todo se ilumina'] },
-    { nombre: 'Torre de Shanghái', descripcion: 'Sube al mirador del segundo edificio más alto del mundo (632m). Vistas de 360° de toda la ciudad.', ciudad: shanghai._id, categoria: 'AVENTURA', duracionHoras: 2, precio: 30, consejos: ['Elige un día despejado', 'La entrada incluye exposición interactiva'] },
-    { nombre: 'Jardín Yuyuan', descripcion: 'Jardín clásico chino del siglo XVI en el corazón de la ciudad antigua. Pabellones, estanques y bazar adyacente.', ciudad: shanghai._id, categoria: 'HISTORICO', duracionHoras: 2.5, precio: 15, consejos: ['Prueba los xiaolongbao en el bazar', 'Llega temprano'] },
-    { nombre: 'Xiaolongbao en Din Tai Fung', descripcion: 'Degustación de los famosos dumplings al vapor de Shanghái en el restaurante más premiado de la especialidad.', ciudad: shanghai._id, categoria: 'GASTRONOMIA', duracionHoras: 1.5, precio: 25, consejos: ['Haz un agujero pequeño y sorbe el caldo primero'] },
-    { nombre: 'Barrio francés en bicicleta', descripcion: 'Recorre en bici las calles arboladas de la antigua Concesión Francesa, con cafés, boutiques y arquitectura art déco.', ciudad: shanghai._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 20, consejos: ['Alquila bici compartida con app', 'Para en Fuxing Park para descansar'] },
+    { nombre: 'El Bund', descripcion: 'Paseo por el malecón más famoso de Asia con vistas al skyline de Pudong. Arquitectura colonial europea frente a rascacielos futuristas.', imagen: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&q=80', ciudad: shanghai._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Visita al atardecer para las mejores fotos', 'Vuelve de noche cuando todo se ilumina'] },
+    { nombre: 'Torre de Shanghái', descripcion: 'Sube al mirador del segundo edificio más alto del mundo (632m). Vistas de 360° de toda la ciudad.', imagen: 'https://images.unsplash.com/photo-1748078096034-46086f5b87da?w=800&q=80', ciudad: shanghai._id, categoria: 'AVENTURA', duracionHoras: 2, precio: 30, consejos: ['Elige un día despejado', 'La entrada incluye exposición interactiva'] },
+    { nombre: 'Jardín Yuyuan', descripcion: 'Jardín clásico chino del siglo XVI en el corazón de la ciudad antigua. Pabellones, estanques y bazar adyacente.', imagen: 'https://images.unsplash.com/photo-1576204557749-ca7052a2865a?w=800&q=80', ciudad: shanghai._id, categoria: 'HISTORICO', duracionHoras: 2.5, precio: 15, consejos: ['Prueba los xiaolongbao en el bazar', 'Llega temprano'] },
+    { nombre: 'Xiaolongbao en Din Tai Fung', descripcion: 'Degustación de los famosos dumplings al vapor de Shanghái en el restaurante más premiado de la especialidad.', imagen: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&q=80', ciudad: shanghai._id, categoria: 'GASTRONOMIA', duracionHoras: 1.5, precio: 25, consejos: ['Haz un agujero pequeño y sorbe el caldo primero'] },
+    { nombre: 'Barrio francés en bicicleta', descripcion: 'Recorre en bici las calles arboladas de la antigua Concesión Francesa, con cafés, boutiques y arquitectura art déco.', imagen: 'https://images.unsplash.com/photo-1543569128-1221ed287623?w=800&q=80', ciudad: shanghai._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 20, consejos: ['Alquila bici compartida con app', 'Para en Fuxing Park para descansar'] },
     { nombre: 'Crucero nocturno por el Huangpu', descripcion: 'Navegación de una hora por el río Huangpu viendo el Bund y Pudong iluminados. Una de las experiencias más románticas de China.', ciudad: shanghai._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 20, consejos: ['Reserva el barco VIP para mejor experiencia', 'Lleva chaqueta, en el río hace frío'] },
-    { nombre: 'Museo de Shanghái', descripcion: 'Uno de los mejores museos de China con colecciones de bronces, cerámicas, caligrafía y jade de miles de años.', ciudad: shanghai._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 0, consejos: ['Entrada gratuita', 'La colección de bronces es excepcional'] },
-    { nombre: 'Zhujiajiao - Pueblo de agua', descripcion: 'Excursión al pueblo acuático más cercano a Shanghái. Canales, puentes de piedra y arquitectura Ming-Qing a solo 1 hora de la ciudad.', ciudad: shanghai._id, categoria: 'HISTORICO', duracionHoras: 5, precio: 25, consejos: ['Paseo en góndola por los canales', 'Prueba el cerdo estofado local'] },
-    { nombre: 'Tianzifang', descripcion: 'Laberinto de callejones con tiendas de artesanía, galerías de arte y cafés en antiguas casas shikumen renovadas.', ciudad: shanghai._id, categoria: 'COMPRAS', duracionHoras: 2.5, precio: 0, consejos: ['Es fácil perderse, eso es parte de la diversión', 'Los precios son negociables'] },
-    { nombre: 'Nanjing Road', descripcion: 'La calle comercial más famosa de China. 5 km de tiendas, luces de neón y ambiente vibrante, desde marcas de lujo hasta tiendas locales.', ciudad: shanghai._id, categoria: 'COMPRAS', duracionHoras: 2, precio: 0, consejos: ['Pasea por la noche cuando las luces están encendidas', 'El tramo peatonal es el más animado'] },
+    { nombre: 'Museo de Shanghái', descripcion: 'Uno de los mejores museos de China con colecciones de bronces, cerámicas, caligrafía y jade de miles de años.', imagen: 'https://images.unsplash.com/photo-1549167008-f02ad8abf052?w=800&q=80', ciudad: shanghai._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 0, consejos: ['Entrada gratuita', 'La colección de bronces es excepcional'] },
+    { nombre: 'Zhujiajiao - Pueblo de agua', descripcion: 'Excursión al pueblo acuático más cercano a Shanghái. Canales, puentes de piedra y arquitectura Ming-Qing a solo 1 hora de la ciudad.', imagen: 'https://images.unsplash.com/photo-1689827524021-7d99d37c55c7?w=800&q=80', ciudad: shanghai._id, categoria: 'HISTORICO', duracionHoras: 5, precio: 25, consejos: ['Paseo en góndola por los canales', 'Prueba el cerdo estofado local'] },
+    { nombre: 'Tianzifang', descripcion: 'Laberinto de callejones con tiendas de artesanía, galerías de arte y cafés en antiguas casas shikumen renovadas.', imagen: 'https://images.unsplash.com/photo-1754638335214-e61ae430b876?w=800&q=80', ciudad: shanghai._id, categoria: 'COMPRAS', duracionHoras: 2.5, precio: 0, consejos: ['Es fácil perderse, eso es parte de la diversión', 'Los precios son negociables'] },
+    { nombre: 'Nanjing Road', descripcion: 'La calle comercial más famosa de China. 5 km de tiendas, luces de neón y ambiente vibrante, desde marcas de lujo hasta tiendas locales.', imagen: 'https://images.unsplash.com/photo-1526139334526-f591a54b477c?w=800&q=80', ciudad: shanghai._id, categoria: 'COMPRAS', duracionHoras: 2, precio: 0, consejos: ['Pasea por la noche cuando las luces están encendidas', 'El tramo peatonal es el más animado'] },
   ]);
 
   // --- CHENGDÚ ---
   const chengduActs = await Activity.create([
-    { nombre: 'Centro de Pandas Gigantes', descripcion: 'Observa pandas gigantes y rojos en un entorno semi-natural. Posibilidad de ver crías en la nursería.', ciudad: chengdu._id, categoria: 'NATURALEZA', duracionHoras: 4, precio: 30, consejos: ['Llega a las 8:30 cuando los pandas están más activos', 'Los pandas bebés están en la nursería'] },
+    { nombre: 'Centro de Pandas Gigantes', descripcion: 'Observa pandas gigantes y rojos en un entorno semi-natural. Posibilidad de ver crías en la nursería.', imagen: 'https://images.unsplash.com/photo-1704158679186-9e3082167277?w=800&q=80', ciudad: chengdu._id, categoria: 'NATURALEZA', duracionHoras: 4, precio: 30, consejos: ['Llega a las 8:30 cuando los pandas están más activos', 'Los pandas bebés están en la nursería'] },
     { nombre: 'Espectáculo cambio de caras', descripcion: 'Show de la ópera de Sichuan con la tradición del bian lian: cambio instantáneo de máscaras de colores.', ciudad: chengdu._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 35, consejos: ['Reserva asientos en las primeras filas', 'Incluye degustación de té'] },
-    { nombre: 'Hot pot sichuanés', descripcion: 'Experiencia gastronómica del famoso hot pot picante de Sichuan. Caldo hirviente con pimienta de Sichuan.', ciudad: chengdu._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 20, consejos: ['Pide mitad picante mitad no picante (yuanyang)', 'La pimienta de Sichuan adormece la lengua, es normal'] },
-    { nombre: 'Calle Jinli', descripcion: 'Calle antigua reconstruida con arquitectura tradicional, puestos de comida, artesanía y ambiente festivo. La esencia de la vieja Chengdú.', ciudad: chengdu._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 0, consejos: ['Visita de noche cuando está iluminada', 'Prueba los dulces de azúcar soplado'] },
-    { nombre: 'Templo Wuhou', descripcion: 'Templo dedicado a Zhuge Liang y Liu Bei del período de los Tres Reinos. Jardines tranquilos y museo histórico.', ciudad: chengdu._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 15, consejos: ['Lee algo sobre los Tres Reinos antes de visitar', 'El jardín bonsái es precioso'] },
-    { nombre: 'Buda Gigante de Leshan', descripcion: 'Excursión al Buda de piedra más grande del mundo (71m de altura), esculpido en un acantilado junto a tres ríos. Patrimonio UNESCO.', ciudad: chengdu._id, categoria: 'HISTORICO', duracionHoras: 7, precio: 45, consejos: ['Baja por las escaleras junto al Buda para apreciar su tamaño', 'También se puede ver desde un barco'] },
-    { nombre: 'Callejón ancho y estrecho', descripcion: 'Kuanzhai Xiangzi: tres callejones históricos con casas de la dinastía Qing convertidas en restaurantes, teatros de té y tiendas.', ciudad: chengdu._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 0, consejos: ['El callejón ancho tiene más restaurantes', 'Prueba el café de oreja de conejo (te limpian las orejas mientras tomas té)'] },
-    { nombre: 'Monte Qingcheng', descripcion: 'Una de las cunas del taoísmo en China. Senderos entre bosques de bambú, templos taoístas y aire puro de montaña.', ciudad: chengdu._id, categoria: 'NATURALEZA', duracionHoras: 6, precio: 30, consejos: ['Lleva calzado de montaña', 'La parte trasera es más tranquila y natural'] },
-    { nombre: 'Clase de cocina sichuanesa', descripcion: 'Aprende a preparar mapo tofu, kung pao chicken y dumplings en una clase práctica con chef local.', ciudad: chengdu._id, categoria: 'GASTRONOMIA', duracionHoras: 3, precio: 40, consejos: ['Incluye visita al mercado', 'Te llevas las recetas a casa'] },
+    { nombre: 'Hot pot sichuanés', descripcion: 'Experiencia gastronómica del famoso hot pot picante de Sichuan. Caldo hirviente con pimienta de Sichuan.', imagen: 'https://images.unsplash.com/photo-1526401363794-c96708fb8089?w=800&q=80', ciudad: chengdu._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 20, consejos: ['Pide mitad picante mitad no picante (yuanyang)', 'La pimienta de Sichuan adormece la lengua, es normal'] },
+    { nombre: 'Calle Jinli', descripcion: 'Calle antigua reconstruida con arquitectura tradicional, puestos de comida, artesanía y ambiente festivo. La esencia de la vieja Chengdú.', imagen: 'https://images.unsplash.com/photo-1748180749362-e498105ecc7f?w=800&q=80', ciudad: chengdu._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 0, consejos: ['Visita de noche cuando está iluminada', 'Prueba los dulces de azúcar soplado'] },
+    { nombre: 'Templo Wuhou', descripcion: 'Templo dedicado a Zhuge Liang y Liu Bei del período de los Tres Reinos. Jardines tranquilos y museo histórico.', imagen: 'https://images.unsplash.com/photo-1748786919806-464841e61654?w=800&q=80', ciudad: chengdu._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 15, consejos: ['Lee algo sobre los Tres Reinos antes de visitar', 'El jardín bonsái es precioso'] },
+    { nombre: 'Buda Gigante de Leshan', descripcion: 'Excursión al Buda de piedra más grande del mundo (71m de altura), esculpido en un acantilado junto a tres ríos. Patrimonio UNESCO.', imagen: 'https://images.unsplash.com/photo-1759108368762-dcadd0e31edd?w=800&q=80', ciudad: chengdu._id, categoria: 'HISTORICO', duracionHoras: 7, precio: 45, consejos: ['Baja por las escaleras junto al Buda para apreciar su tamaño', 'También se puede ver desde un barco'] },
+    { nombre: 'Callejón ancho y estrecho', descripcion: 'Kuanzhai Xiangzi: tres callejones históricos con casas de la dinastía Qing convertidas en restaurantes, teatros de té y tiendas.', imagen: 'https://images.unsplash.com/photo-1740982880907-8283141e8db6?w=800&q=80', ciudad: chengdu._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 0, consejos: ['El callejón ancho tiene más restaurantes', 'Prueba el café de oreja de conejo (te limpian las orejas mientras tomas té)'] },
+    { nombre: 'Monte Qingcheng', descripcion: 'Una de las cunas del taoísmo en China. Senderos entre bosques de bambú, templos taoístas y aire puro de montaña.', imagen: 'https://images.unsplash.com/photo-1771967141873-8b714205f4bd?w=800&q=80', ciudad: chengdu._id, categoria: 'NATURALEZA', duracionHoras: 6, precio: 30, consejos: ['Lleva calzado de montaña', 'La parte trasera es más tranquila y natural'] },
+    { nombre: 'Clase de cocina sichuanesa', descripcion: 'Aprende a preparar mapo tofu, kung pao chicken y dumplings en una clase práctica con chef local.', imagen: 'https://images.unsplash.com/photo-1613902260357-f5e11151d2bb?w=800&q=80', ciudad: chengdu._id, categoria: 'GASTRONOMIA', duracionHoras: 3, precio: 40, consejos: ['Incluye visita al mercado', 'Te llevas las recetas a casa'] },
   ]);
 
   // --- CHONGQING ---
   const chongqingActs = await Activity.create([
-    { nombre: 'Hongya Cave', descripcion: 'Complejo de edificios colgantes sobre el acantilado junto al río Jialing, iluminados espectacularmente de noche. Recuerda a la película de Miyazaki "El viaje de Chihiro".', ciudad: chongqing._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 0, consejos: ['Visita de noche para las mejores fotos', 'Los pisos superiores tienen restaurantes con vistas'] },
-    { nombre: 'Hot pot de Chongqing', descripcion: 'El auténtico hot pot original, más picante que el de Chengdú. Caldo rojo intenso con aceite de chile y pimienta. Experiencia extrema.', ciudad: chongqing._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 18, consejos: ['El nivel de picante aquí es otro nivel', 'Pide la versión yuanyang si eres principiante', 'Acompaña con leche de soja para calmar el picante'] },
-    { nombre: 'Monorraíl de Liziba', descripcion: 'Viaje en el famoso monorraíl que atraviesa un edificio residencial. Una de las imágenes más icónicas y surrealistas de China.', ciudad: chongqing._id, categoria: 'AVENTURA', duracionHoras: 1, precio: 3, consejos: ['La estación de Liziba es donde el tren cruza el edificio', 'Graba video desde dentro y desde fuera'] },
-    { nombre: 'Ciqikou - Pueblo antiguo', descripcion: 'Pueblo con más de 1.000 años de historia en la ribera del río Jialing. Calles empedradas, templos, y puestos de comida tradicional.', ciudad: chongqing._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 0, consejos: ['Prueba las flores de chen mahua (dulce frito trenzado)', 'Los callejones laterales son más auténticos'] },
-    { nombre: 'Crucero por el río Yangtsé', descripcion: 'Navegación por el río más largo de China con vistas a las montañas y el skyline nocturno de Chongqing.', ciudad: chongqing._id, categoria: 'NATURALEZA', duracionHoras: 3, precio: 35, consejos: ['El crucero nocturno tiene las mejores vistas de la ciudad iluminada', 'Reserva cubierta superior'] },
-    { nombre: 'Dazu Rock Carvings', descripcion: 'Excursión a los relieves rupestres de Dazu (Patrimonio UNESCO). Miles de esculturas budistas, taoístas y confucianas talladas entre los siglos IX y XIII.', ciudad: chongqing._id, categoria: 'HISTORICO', duracionHoras: 7, precio: 40, consejos: ['El grupo de Baoding es el más impresionante', 'Contrata guía para entender las historias'] },
-    { nombre: 'Teleférico sobre el Yangtsé', descripcion: 'Cruce del río Yangtsé en teleférico con vistas panorámicas de la ciudad construida sobre montañas. Experiencia única.', ciudad: chongqing._id, categoria: 'AVENTURA', duracionHoras: 0.5, precio: 5, consejos: ['Hay cola larga los fines de semana', 'Mejor al atardecer'] },
+    { nombre: 'Hongya Cave', descripcion: 'Complejo de edificios colgantes sobre el acantilado junto al río Jialing, iluminados espectacularmente de noche. Recuerda a la película de Miyazaki "El viaje de Chihiro".', imagen: 'https://images.unsplash.com/photo-1586784444981-ac96e335555c?w=800&q=80', ciudad: chongqing._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 0, consejos: ['Visita de noche para las mejores fotos', 'Los pisos superiores tienen restaurantes con vistas'] },
+    { nombre: 'Hot pot de Chongqing', descripcion: 'El auténtico hot pot original, más picante que el de Chengdú. Caldo rojo intenso con aceite de chile y pimienta. Experiencia extrema.', imagen: 'https://images.unsplash.com/photo-1550388341-d3d5ac2a724e?w=800&q=80', ciudad: chongqing._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 18, consejos: ['El nivel de picante aquí es otro nivel', 'Pide la versión yuanyang si eres principiante', 'Acompaña con leche de soja para calmar el picante'] },
+    { nombre: 'Monorraíl de Liziba', descripcion: 'Viaje en el famoso monorraíl que atraviesa un edificio residencial. Una de las imágenes más icónicas y surrealistas de China.', imagen: 'https://images.unsplash.com/photo-1733114103524-be9ba326a745?w=800&q=80', ciudad: chongqing._id, categoria: 'AVENTURA', duracionHoras: 1, precio: 3, consejos: ['La estación de Liziba es donde el tren cruza el edificio', 'Graba video desde dentro y desde fuera'] },
+    { nombre: 'Ciqikou - Pueblo antiguo', descripcion: 'Pueblo con más de 1.000 años de historia en la ribera del río Jialing. Calles empedradas, templos, y puestos de comida tradicional.', imagen: 'https://images.unsplash.com/photo-1761667625209-e3f9145e93eb?w=800&q=80', ciudad: chongqing._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 0, consejos: ['Prueba las flores de chen mahua (dulce frito trenzado)', 'Los callejones laterales son más auténticos'] },
+    { nombre: 'Crucero por el río Yangtsé', descripcion: 'Navegación por el río más largo de China con vistas a las montañas y el skyline nocturno de Chongqing.', imagen: 'https://images.unsplash.com/photo-1773318901073-3d9304c6f48b?w=800&q=80', ciudad: chongqing._id, categoria: 'NATURALEZA', duracionHoras: 3, precio: 35, consejos: ['El crucero nocturno tiene las mejores vistas de la ciudad iluminada', 'Reserva cubierta superior'] },
+    { nombre: 'Dazu Rock Carvings', descripcion: 'Excursión a los relieves rupestres de Dazu (Patrimonio UNESCO). Miles de esculturas budistas, taoístas y confucianas talladas entre los siglos IX y XIII.', imagen: 'https://images.unsplash.com/photo-1760020423741-500a95bc5237?w=800&q=80', ciudad: chongqing._id, categoria: 'HISTORICO', duracionHoras: 7, precio: 40, consejos: ['El grupo de Baoding es el más impresionante', 'Contrata guía para entender las historias'] },
+    { nombre: 'Teleférico sobre el Yangtsé', descripcion: 'Cruce del río Yangtsé en teleférico con vistas panorámicas de la ciudad construida sobre montañas. Experiencia única.', imagen: 'https://images.unsplash.com/photo-1561031454-4f1331bd2a34?w=800&q=80', ciudad: chongqing._id, categoria: 'AVENTURA', duracionHoras: 0.5, precio: 5, consejos: ['Hay cola larga los fines de semana', 'Mejor al atardecer'] },
     { nombre: 'Jiefangbei - Centro comercial', descripcion: 'La plaza central de Chongqing rodeada de rascacielos y centros comerciales. Punto de encuentro y zona de compras más importante.', ciudad: chongqing._id, categoria: 'COMPRAS', duracionHoras: 2, precio: 0, consejos: ['La torre de la liberación es el monumento central', 'Hay comida callejera increíble alrededor'] },
-    { nombre: 'Fideos de Chongqing (xiaomian)', descripcion: 'Degustación de los famosos fideos picantes xiaomian en un puesto callejero auténtico. El desayuno favorito de los locales.', ciudad: chongqing._id, categoria: 'GASTRONOMIA', duracionHoras: 1, precio: 5, consejos: ['Pídelo en un puesto pequeño, no en restaurante turístico', 'Añade vinagre negro para más sabor'] },
+    { nombre: 'Fideos de Chongqing (xiaomian)', descripcion: 'Degustación de los famosos fideos picantes xiaomian en un puesto callejero auténtico. El desayuno favorito de los locales.', imagen: 'https://images.unsplash.com/photo-1767324672653-84c017d85d8e?w=800&q=80', ciudad: chongqing._id, categoria: 'GASTRONOMIA', duracionHoras: 1, precio: 5, consejos: ['Pídelo en un puesto pequeño, no en restaurante turístico', 'Añade vinagre negro para más sabor'] },
   ]);
 
   // --- HARBIN ---
   const harbinActs = await Activity.create([
-    { nombre: 'Festival de Hielo y Nieve', descripcion: 'El festival de esculturas de hielo más grande del mundo. Edificios, castillos y monumentos de hielo iluminados con luces LED de colores. Abierto de diciembre a febrero.', ciudad: harbin._id, categoria: 'CULTURAL', duracionHoras: 4, precio: 45, consejos: ['Visita de noche cuando las luces están encendidas', 'Abriga MUCHO, la temperatura llega a -30°C', 'Lleva baterías extra, el frío las agota rápido'] },
-    { nombre: 'Sun Island Snow Sculptures', descripcion: 'Exposición de esculturas gigantes de nieve en la Isla del Sol. Obras de arte monumentales talladas por artistas de todo el mundo.', ciudad: harbin._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 30, consejos: ['Mejor por la mañana con luz natural', 'Lleva gafas de sol, la nieve refleja mucho'] },
+    { nombre: 'Festival de Hielo y Nieve', descripcion: 'El festival de esculturas de hielo más grande del mundo. Edificios, castillos y monumentos de hielo iluminados con luces LED de colores. Abierto de diciembre a febrero.', imagen: 'https://images.unsplash.com/photo-1768423935512-858cd32aecf7?w=800&q=80', ciudad: harbin._id, categoria: 'CULTURAL', duracionHoras: 4, precio: 45, consejos: ['Visita de noche cuando las luces están encendidas', 'Abriga MUCHO, la temperatura llega a -30°C', 'Lleva baterías extra, el frío las agota rápido'] },
+    { nombre: 'Sun Island Snow Sculptures', descripcion: 'Exposición de esculturas gigantes de nieve en la Isla del Sol. Obras de arte monumentales talladas por artistas de todo el mundo.', imagen: 'https://images.unsplash.com/photo-1760645611765-a3df6c92bda3?w=800&q=80', ciudad: harbin._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 30, consejos: ['Mejor por la mañana con luz natural', 'Lleva gafas de sol, la nieve refleja mucho'] },
     { nombre: 'Calle Zhongyang (Central Street)', descripcion: 'Calle peatonal de 1,4 km con arquitectura rusa y europea. Tiendas, restaurantes y heladerías que sirven helado ¡a -20°C!', ciudad: harbin._id, categoria: 'COMPRAS', duracionHoras: 2.5, precio: 0, consejos: ['Sí, los locales comen helado en invierno a -20°C, ¡pruébalo!', 'La arquitectura art nouveau es preciosa'] },
-    { nombre: 'Catedral de Santa Sofía', descripcion: 'Impresionante catedral ortodoxa rusa de estilo bizantino, herencia de la época del ferrocarril transiberiano. Hoy museo de arquitectura.', ciudad: harbin._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 10, consejos: ['La plaza frente a la catedral es perfecta para fotos', 'De noche está iluminada'] },
-    { nombre: 'Tigres siberianos de Harbin', descripcion: 'Visita al Centro de Cría del Tigre Siberiano, el mayor del mundo. Observa estos majestuosos felinos en un entorno nevado.', ciudad: harbin._id, categoria: 'NATURALEZA', duracionHoras: 2.5, precio: 25, consejos: ['El safari en autobús es la mejor experiencia', 'Los tigres están más activos en invierno'] },
+    { nombre: 'Catedral de Santa Sofía', descripcion: 'Impresionante catedral ortodoxa rusa de estilo bizantino, herencia de la época del ferrocarril transiberiano. Hoy museo de arquitectura.', imagen: 'https://images.unsplash.com/photo-1748010195904-ccccbffc7978?w=800&q=80', ciudad: harbin._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 10, consejos: ['La plaza frente a la catedral es perfecta para fotos', 'De noche está iluminada'] },
+    { nombre: 'Tigres siberianos de Harbin', descripcion: 'Visita al Centro de Cría del Tigre Siberiano, el mayor del mundo. Observa estos majestuosos felinos en un entorno nevado.', imagen: 'https://images.unsplash.com/photo-1641063157251-ae9d815e5daa?w=800&q=80', ciudad: harbin._id, categoria: 'NATURALEZA', duracionHoras: 2.5, precio: 25, consejos: ['El safari en autobús es la mejor experiencia', 'Los tigres están más activos en invierno'] },
     { nombre: 'Baño termal en Yabuli', descripcion: 'Relájate en aguas termales naturales al aire libre rodeado de nieve. Experiencia de contraste térmico inolvidable.', ciudad: harbin._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 35, consejos: ['Lleva chanclas para caminar sobre la nieve', 'El pelo se congela al salir, ¡foto obligatoria!'] },
     { nombre: 'Esquí en Yabuli', descripcion: 'La estación de esquí más grande de China, sede de los Juegos Asiáticos de Invierno. Pistas para todos los niveles.', ciudad: harbin._id, categoria: 'AVENTURA', duracionHoras: 5, precio: 50, consejos: ['Alquiler de equipo incluido', 'Hay pistas para principiantes'] },
-    { nombre: 'Comida rusa en Harbin', descripcion: 'Degustación de la gastronomía ruso-china única de Harbin: borscht, pan negro, embutidos y el famoso helado Madier.', ciudad: harbin._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 20, consejos: ['El restaurante Huamei es el más emblemático', 'Prueba el kvass (bebida fermentada rusa)'] },
+    { nombre: 'Comida rusa en Harbin', descripcion: 'Degustación de la gastronomía ruso-china única de Harbin: borscht, pan negro, embutidos y el famoso helado Madier.', imagen: 'https://images.unsplash.com/photo-1647068804459-5f0796b19935?w=800&q=80', ciudad: harbin._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 20, consejos: ['El restaurante Huamei es el más emblemático', 'Prueba el kvass (bebida fermentada rusa)'] },
     { nombre: 'Aldea de la Nieve (Xuexiang)', descripcion: 'Excursión a la pintoresca aldea cubierta de nieve virgen. Casas con techos nevados como en un cuento de hadas. Escenario de varias películas chinas.', ciudad: harbin._id, categoria: 'NATURALEZA', duracionHoras: 8, precio: 55, consejos: ['Es un viaje largo (5h en coche), merece la pena', 'Quédate a dormir en la aldea para la experiencia completa'] },
   ]);
 
   // --- XI'AN ---
   const xianActs = await Activity.create([
-    { nombre: 'Guerreros de Terracota', descripcion: 'Visita al mausoleo del emperador Qin Shi Huang con más de 8.000 soldados de arcilla a tamaño real, cada uno con un rostro diferente. Patrimonio UNESCO.', ciudad: xian._id, categoria: 'HISTORICO', duracionHoras: 4, precio: 40, consejos: ['Contrata guía para entender la historia', 'La fosa 1 es la más impresionante', 'Hay 3 fosas abiertas al público'] },
+    { nombre: 'Guerreros de Terracota', descripcion: 'Visita al mausoleo del emperador Qin Shi Huang con más de 8.000 soldados de arcilla a tamaño real, cada uno con un rostro diferente. Patrimonio UNESCO.', imagen: 'https://images.unsplash.com/photo-1523946963389-207478f6cb2e?w=800&q=80', ciudad: xian._id, categoria: 'HISTORICO', duracionHoras: 4, precio: 40, consejos: ['Contrata guía para entender la historia', 'La fosa 1 es la más impresionante', 'Hay 3 fosas abiertas al público'] },
     { nombre: 'Muralla de Xi\'an en bicicleta', descripcion: 'Recorre los 14 km de la muralla medieval mejor conservada de China montado en bicicleta. Vistas panorámicas de la ciudad antigua y moderna.', ciudad: xian._id, categoria: 'AVENTURA', duracionHoras: 2.5, precio: 15, consejos: ['Alquila la bici en la puerta sur', 'Al atardecer es espectacular', 'Hay tándems disponibles'] },
     { nombre: 'Barrio musulmán de Xi\'an', descripcion: 'Laberinto de callejones con la mejor comida callejera de China: roujiamo (hamburguesa china), fideos biang biang y cordero a la brasa. La Gran Mezquita combina arquitectura china e islámica.', ciudad: xian._id, categoria: 'GASTRONOMIA', duracionHoras: 3, precio: 10, consejos: ['Prueba el roujiamo (hamburguesa china)', 'Los fideos biang biang son enormes', 'La Gran Mezquita es preciosa'] },
-    { nombre: 'Pagoda del Gran Ganso Salvaje', descripcion: 'Pagoda budista del siglo VII donde el monje Xuanzang tradujo los sutras traídos de India. Fuentes musicales espectaculares por la noche.', ciudad: xian._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 12, consejos: ['El espectáculo de fuentes es a las 20:30', 'Sube a la pagoda para vistas de la ciudad'] },
+    { nombre: 'Pagoda del Gran Ganso Salvaje', descripcion: 'Pagoda budista del siglo VII donde el monje Xuanzang tradujo los sutras traídos de India. Fuentes musicales espectaculares por la noche.', imagen: 'https://images.unsplash.com/photo-1648726444582-6d108b5d13dc?w=800&q=80', ciudad: xian._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 12, consejos: ['El espectáculo de fuentes es a las 20:30', 'Sube a la pagoda para vistas de la ciudad'] },
     { nombre: 'Espectáculo Tang Dynasty', descripcion: 'Show de música y danza de la dinastía Tang con cena imperial. Trajes espectaculares y coreografías históricas en un teatro lujoso.', ciudad: xian._id, categoria: 'NOCTURNO', duracionHoras: 2.5, precio: 45, consejos: ['Reserva con cena incluida', 'Los trajes son impresionantes'] },
     { nombre: 'Templo Famen', descripcion: 'Excursión al templo que alberga una reliquia del dedo de Buda. Arquitectura moderna espectacular y tesoros de la dinastía Tang.', ciudad: xian._id, categoria: 'CULTURAL', duracionHoras: 5, precio: 30, consejos: ['Está a 2 horas de Xi\'an', 'El museo subterráneo es fascinante'] },
     { nombre: 'Monte Huashan', descripcion: 'Una de las cinco montañas sagradas de China. Senderos tallados en acantilados verticales con cadenas. El "sendero más peligroso del mundo" para los valientes.', ciudad: xian._id, categoria: 'AVENTURA', duracionHoras: 8, precio: 35, consejos: ['El teleférico ahorra 3 horas de subida', 'El sendero de tablones no es para todos', 'Madruga para ver el amanecer'] },
-    { nombre: 'Clase de fabricación de dumplings', descripcion: 'Aprende a hacer los famosos jiaozi de Xi\'an con un maestro local. Más de 20 formas y rellenos diferentes.', ciudad: xian._id, categoria: 'GASTRONOMIA', duracionHoras: 2.5, precio: 25, consejos: ['Te llevas recetas a casa', 'Los dumplings de Xi\'an son diferentes a los del norte'] },
-    { nombre: 'Torre de la Campana y el Tambor', descripcion: 'Dos torres icónicas del centro de Xi\'an, iluminadas espectacularmente de noche. Espectáculos de campanas y tambores durante el día.', ciudad: xian._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 8, consejos: ['Compra entrada combinada', 'De noche la iluminación es increíble'] },
+    { nombre: 'Clase de fabricación de dumplings', descripcion: 'Aprende a hacer los famosos jiaozi de Xi\'an con un maestro local. Más de 20 formas y rellenos diferentes.', imagen: 'https://images.unsplash.com/photo-1762418967889-10abec43c325?w=800&q=80', ciudad: xian._id, categoria: 'GASTRONOMIA', duracionHoras: 2.5, precio: 25, consejos: ['Te llevas recetas a casa', 'Los dumplings de Xi\'an son diferentes a los del norte'] },
+    { nombre: 'Torre de la Campana y el Tambor', descripcion: 'Dos torres icónicas del centro de Xi\'an, iluminadas espectacularmente de noche. Espectáculos de campanas y tambores durante el día.', imagen: 'https://images.unsplash.com/photo-1659466248885-8b7a03205661?w=800&q=80', ciudad: xian._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 8, consejos: ['Compra entrada combinada', 'De noche la iluminación es increíble'] },
   ]);
 
   // --- CANTÓN (GUANGZHOU) ---
   const guangzhouActs = await Activity.create([
     { nombre: 'Dim Sum en Cantón', descripcion: 'Desayuno tradicional cantonés con dim sum en un restaurante histórico. Carros con vaporeras de har gow, siu mai, char siu bao y decenas de variedades.', ciudad: guangzhou._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 20, consejos: ['Ve temprano, los mejores restaurantes llenan', 'Señala los carros que pasan para elegir', 'Prueba los pies de fénix (garras de pollo)'] },
-    { nombre: 'Torre Canton (Canton Tower)', descripcion: 'Sube a la torre de telecomunicaciones más alta de China (600m). Mirador giratorio, paseo al aire libre en la corona y caída libre desde la cima.', ciudad: guangzhou._id, categoria: 'AVENTURA', duracionHoras: 2.5, precio: 25, consejos: ['El paseo exterior es para valientes', 'De noche las vistas del río Perla son mágicas'] },
-    { nombre: 'Isla Shamian', descripcion: 'Antigua concesión colonial con arquitectura europea, jardines y ambiente tranquilo. Un oasis de calma en la bulliciosa Cantón con cafés y galerías.', ciudad: guangzhou._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Perfecta para pasear sin prisa', 'Los edificios coloniales están bien conservados'] },
+    { nombre: 'Torre Canton (Canton Tower)', descripcion: 'Sube a la torre de telecomunicaciones más alta de China (600m). Mirador giratorio, paseo al aire libre en la corona y caída libre desde la cima.', imagen: 'https://images.unsplash.com/photo-1753172115293-32b2a08f0798?w=800&q=80', ciudad: guangzhou._id, categoria: 'AVENTURA', duracionHoras: 2.5, precio: 25, consejos: ['El paseo exterior es para valientes', 'De noche las vistas del río Perla son mágicas'] },
+    { nombre: 'Isla Shamian', descripcion: 'Antigua concesión colonial con arquitectura europea, jardines y ambiente tranquilo. Un oasis de calma en la bulliciosa Cantón con cafés y galerías.', imagen: 'https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=800&q=80', ciudad: guangzhou._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Perfecta para pasear sin prisa', 'Los edificios coloniales están bien conservados'] },
     { nombre: 'Templo ancestral de la familia Chen', descripcion: 'Obra maestra de la arquitectura cantonesa del siglo XIX. Techos decorados con figuras de cerámica, tallas en madera y piedra increíblemente detalladas.', ciudad: guangzhou._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 10, consejos: ['Las figuras del techo son miniaturas increíbles', 'Es el mejor ejemplo de arquitectura cantonesa'] },
     { nombre: 'Crucero nocturno por el río Perla', descripcion: 'Navegación por el río Perla con vistas al skyline iluminado de Cantón, la Torre Canton de colores y los puentes brillantes.', ciudad: guangzhou._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 18, consejos: ['Reserva cubierta superior', 'Las luces empiezan a las 19:00'] },
     { nombre: 'Mercado de medicina Qingping', descripcion: 'Visita al fascinante mercado de medicina tradicional china. Hierbas, raíces, hongos secos y remedios ancestrales de miles de años.', ciudad: guangzhou._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 0, consejos: ['No compres sin saber qué es', 'Es una experiencia sensorial única'] },
@@ -248,76 +248,76 @@ const seed = async () => {
 
   // --- HANGZHOU ---
   const hangzhouActs = await Activity.create([
-    { nombre: 'Lago del Oeste en barco', descripcion: 'Navegación por el legendario Lago del Oeste (Patrimonio UNESCO), rodeado de templos, pagodas y jardines. El lago que inspiró a poetas durante 1.000 años.', ciudad: hangzhou._id, categoria: 'NATURALEZA', duracionHoras: 2.5, precio: 15, consejos: ['El atardecer en el lago es mágico', 'La niebla matinal crea un paisaje de pintura'] },
-    { nombre: 'Plantaciones de té Longjing', descripcion: 'Visita a las plantaciones del té verde más famoso de China. Recogida de hojas, tostado artesanal y ceremonia del té con vistas a colinas verdes.', ciudad: hangzhou._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 25, consejos: ['La mejor época es en primavera (marzo-abril)', 'Compra té directamente a los agricultores'] },
+    { nombre: 'Lago del Oeste en barco', descripcion: 'Navegación por el legendario Lago del Oeste (Patrimonio UNESCO), rodeado de templos, pagodas y jardines. El lago que inspiró a poetas durante 1.000 años.', imagen: 'https://images.unsplash.com/photo-1751012325074-94e4fab31697?w=800&q=80', ciudad: hangzhou._id, categoria: 'NATURALEZA', duracionHoras: 2.5, precio: 15, consejos: ['El atardecer en el lago es mágico', 'La niebla matinal crea un paisaje de pintura'] },
+    { nombre: 'Plantaciones de té Longjing', descripcion: 'Visita a las plantaciones del té verde más famoso de China. Recogida de hojas, tostado artesanal y ceremonia del té con vistas a colinas verdes.', imagen: 'https://images.unsplash.com/photo-1743401434828-5a026d661211?w=800&q=80', ciudad: hangzhou._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 25, consejos: ['La mejor época es en primavera (marzo-abril)', 'Compra té directamente a los agricultores'] },
     { nombre: 'Templo Lingyin', descripcion: 'Uno de los templos budistas más antiguos y grandes de China (328 d.C.). Estatua de Buda de 20m en madera de alcanfor y cuevas con grabados rupestres.', ciudad: hangzhou._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 20, consejos: ['Los grabados de la Roca del Pico Volador son impresionantes', 'Llega temprano para evitar multitudes'] },
     { nombre: 'Calle Hefang', descripcion: 'Calle peatonal histórica con farmacias centenarias, tiendas de artesanía, puestos de comida y espectáculos callejeros. La esencia de la vieja Hangzhou.', ciudad: hangzhou._id, categoria: 'COMPRAS', duracionHoras: 2, precio: 0, consejos: ['La farmacia Huqingyu tiene 140 años', 'Prueba los dulces de azúcar soplado'] },
-    { nombre: 'Espectáculo Impression West Lake', descripcion: 'Show nocturno sobre el agua del Lago del Oeste dirigido por Zhang Yimou. Cientos de actores, luces y música sobre el lago. Espectacular.', ciudad: hangzhou._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 40, consejos: ['Solo de marzo a noviembre', 'Las entradas se agotan, reserva con anticipación'] },
+    { nombre: 'Espectáculo Impression West Lake', descripcion: 'Show nocturno sobre el agua del Lago del Oeste dirigido por Zhang Yimou. Cientos de actores, luces y música sobre el lago. Espectacular.', imagen: 'https://images.unsplash.com/photo-1701913997567-746dd137eff6?w=800&q=80', ciudad: hangzhou._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 40, consejos: ['Solo de marzo a noviembre', 'Las entradas se agotan, reserva con anticipación'] },
     { nombre: 'Pagoda de las Seis Armonías', descripcion: 'Pagoda octogonal del siglo X junto al río Qiantang. 60 metros de altura con vistas al río donde se produce la famosa marea del equinoccio.', ciudad: hangzhou._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 10, consejos: ['Si vas en septiembre puedes ver la gran marea', 'Sube todos los pisos para las mejores vistas'] },
     { nombre: 'Cocina de Hangzhou: Dongpo Rou', descripcion: 'Degustación del emblemático cerdo Dongpo (estofado durante 2 horas con salsa de soja y vino) y otras especialidades locales como pollo del mendigo.', ciudad: hangzhou._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 30, consejos: ['El restaurante Louwailou junto al lago es el más famoso', 'Prueba también el pescado del Lago del Oeste con vinagre'] },
     { nombre: 'Paseo en bicicleta por el Lago del Oeste', descripcion: 'Circuito de 15 km alrededor del Lago del Oeste pasando por puentes, pagodas, jardines de lotos y calzadas históricas.', ciudad: hangzhou._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 8, consejos: ['Las bicicletas públicas son gratuitas la primera hora', 'La Calzada Su es la más bonita'] },
-    { nombre: 'Museo Nacional del Té', descripcion: 'El único museo del mundo dedicado exclusivamente al té. Historia, variedades, utensilios y ceremonia del té incluida.', ciudad: hangzhou._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Entrada gratuita', 'La degustación de tés raros es de pago pero merece la pena'] },
+    { nombre: 'Museo Nacional del Té', descripcion: 'El único museo del mundo dedicado exclusivamente al té. Historia, variedades, utensilios y ceremonia del té incluida.', imagen: 'https://images.unsplash.com/photo-1759356864606-cf371a5ba5f5?w=800&q=80', ciudad: hangzhou._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Entrada gratuita', 'La degustación de tés raros es de pago pero merece la pena'] },
   ]);
 
   // --- GUILIN ---
   const guilinActs = await Activity.create([
-    { nombre: 'Crucero por el río Li', descripcion: 'Navegación de 4 horas entre Guilin y Yangshuo entre montañas kársticas cubiertas de vegetación. El paisaje que aparece en el billete de 20 yuanes.', ciudad: guilin._id, categoria: 'NATURALEZA', duracionHoras: 5, precio: 45, consejos: ['Lleva cámara con buena batería', 'El tramo Xingping es el más fotogénico', 'Hay barcos VIP con terraza'] },
+    { nombre: 'Crucero por el río Li', descripcion: 'Navegación de 4 horas entre Guilin y Yangshuo entre montañas kársticas cubiertas de vegetación. El paisaje que aparece en el billete de 20 yuanes.', imagen: 'https://images.unsplash.com/photo-1773318901379-aac92fdf5611?w=800&q=80', ciudad: guilin._id, categoria: 'NATURALEZA', duracionHoras: 5, precio: 45, consejos: ['Lleva cámara con buena batería', 'El tramo Xingping es el más fotogénico', 'Hay barcos VIP con terraza'] },
     { nombre: 'Yangshuo en bicicleta', descripcion: 'Pedalea entre arrozales, ríos y montañas kársticas en los alrededores de Yangshuo. Pueblos rurales, puentes de bambú y búfalos de agua.', ciudad: guilin._id, categoria: 'AVENTURA', duracionHoras: 4, precio: 12, consejos: ['El recorrido del río Yulong es el más bonito', 'Para en Moon Hill para una subida rápida'] },
-    { nombre: 'Arrozales en terrazas de Longji', descripcion: 'Excursión a las espectaculares terrazas de arroz de la "Espina Dorsal del Dragón", esculpidas en montañas durante 700 años por las minorías Zhuang y Yao.', ciudad: guilin._id, categoria: 'NATURALEZA', duracionHoras: 8, precio: 40, consejos: ['Junio (verde) y octubre (dorado) son las mejores épocas', 'Duerme en el pueblo para ver el amanecer'] },
-    { nombre: 'Cueva de la Flauta de Caña', descripcion: 'Cueva kárstica iluminada con luces multicolor. Estalactitas, estalagmitas y formaciones de 180 millones de años que parecen esculturas fantásticas.', ciudad: guilin._id, categoria: 'NATURALEZA', duracionHoras: 1.5, precio: 15, consejos: ['Las luces crean un efecto surrealista', 'Hay inscripciones de hace 1.300 años en las paredes'] },
+    { nombre: 'Arrozales en terrazas de Longji', descripcion: 'Excursión a las espectaculares terrazas de arroz de la "Espina Dorsal del Dragón", esculpidas en montañas durante 700 años por las minorías Zhuang y Yao.', imagen: 'https://images.unsplash.com/photo-1559342825-3b44d9468086?w=800&q=80', ciudad: guilin._id, categoria: 'NATURALEZA', duracionHoras: 8, precio: 40, consejos: ['Junio (verde) y octubre (dorado) son las mejores épocas', 'Duerme en el pueblo para ver el amanecer'] },
+    { nombre: 'Cueva de la Flauta de Caña', descripcion: 'Cueva kárstica iluminada con luces multicolor. Estalactitas, estalagmitas y formaciones de 180 millones de años que parecen esculturas fantásticas.', imagen: 'https://images.unsplash.com/photo-1619275044672-8b95b2d80ce7?w=800&q=80', ciudad: guilin._id, categoria: 'NATURALEZA', duracionHoras: 1.5, precio: 15, consejos: ['Las luces crean un efecto surrealista', 'Hay inscripciones de hace 1.300 años en las paredes'] },
     { nombre: 'Espectáculo Impression Liu Sanjie', descripcion: 'Show nocturno al aire libre sobre el río Li dirigido por Zhang Yimou. 600 actores locales con las montañas kársticas reales como escenario natural.', ciudad: guilin._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 35, consejos: ['Reserva asientos VIP del centro', 'Se hace en Yangshuo, no en Guilin ciudad'] },
-    { nombre: 'Rafting en el río Yulong', descripcion: 'Descenso tranquilo en balsa de bambú por el río Yulong, entre montañas kársticas, puentes antiguos y vegetación exuberante. Extremadamente relajante.', ciudad: guilin._id, categoria: 'AVENTURA', duracionHoras: 2.5, precio: 20, consejos: ['Más tranquilo que el río Li', 'Lleva protección solar', 'Los barqueros cantan canciones folk'] },
-    { nombre: 'Colina de la Trompa de Elefante', descripcion: 'El símbolo de Guilin: una colina con forma de elefante bebiendo agua del río. Pagoda en la cima y cueva con inscripciones budistas.', ciudad: guilin._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 10, consejos: ['Las mejores fotos son desde el otro lado del río', 'Al atardecer la luz es perfecta'] },
+    { nombre: 'Rafting en el río Yulong', descripcion: 'Descenso tranquilo en balsa de bambú por el río Yulong, entre montañas kársticas, puentes antiguos y vegetación exuberante. Extremadamente relajante.', imagen: 'https://images.unsplash.com/photo-1514920735211-8c697444a248?w=800&q=80', ciudad: guilin._id, categoria: 'AVENTURA', duracionHoras: 2.5, precio: 20, consejos: ['Más tranquilo que el río Li', 'Lleva protección solar', 'Los barqueros cantan canciones folk'] },
+    { nombre: 'Colina de la Trompa de Elefante', descripcion: 'El símbolo de Guilin: una colina con forma de elefante bebiendo agua del río. Pagoda en la cima y cueva con inscripciones budistas.', imagen: 'https://images.unsplash.com/photo-1701668910380-b44dcc028525?w=800&q=80', ciudad: guilin._id, categoria: 'HISTORICO', duracionHoras: 1.5, precio: 10, consejos: ['Las mejores fotos son desde el otro lado del río', 'Al atardecer la luz es perfecta'] },
     { nombre: 'Mercado nocturno de Yangshuo', descripcion: 'Animado mercado con comida callejera local, artesanías y bares en la calle West Street. Fish beer, caracoles de río y brochetas de todo tipo.', ciudad: guilin._id, categoria: 'NOCTURNO', duracionHoras: 2.5, precio: 8, consejos: ['Prueba el fish beer (cerveza con pez)', 'West Street es muy turística pero divertida'] },
-    { nombre: 'Clase de pintura china en Yangshuo', descripcion: 'Aprende acuarela china tradicional con un artista local usando el paisaje kárstico como inspiración. Te llevas tu obra a casa.', ciudad: guilin._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 20, consejos: ['No necesitas experiencia previa', 'El profesor habla algo de inglés'] },
+    { nombre: 'Clase de pintura china en Yangshuo', descripcion: 'Aprende acuarela china tradicional con un artista local usando el paisaje kárstico como inspiración. Te llevas tu obra a casa.', imagen: 'https://images.unsplash.com/photo-1762115839715-fbd4e2c65260?w=800&q=80', ciudad: guilin._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 20, consejos: ['No necesitas experiencia previa', 'El profesor habla algo de inglés'] },
   ]);
 
   // --- LHASA ---
   const lhasaActs = await Activity.create([
-    { nombre: 'Palacio Potala', descripcion: 'Residencia de invierno del Dalai Lama durante 300 años. 1.000 habitaciones, 13 pisos sobre una colina roja a 3.700m de altitud. Patrimonio UNESCO.', ciudad: lhasa._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 35, consejos: ['Solo se permiten 1 hora dentro, no te detengas', 'Sube despacio por la altitud', 'Entradas limitadas, reserva con días de anticipación'] },
-    { nombre: 'Templo de Jokhang y Barkhor', descripcion: 'El templo más sagrado del budismo tibetano rodeado del circuito de peregrinación Barkhor. Peregrinos postrándose, ruedas de oración y mercado tibetano.', ciudad: lhasa._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 15, consejos: ['Camina en sentido horario como los peregrinos', 'El mercado Barkhor tiene artesanía tibetana auténtica'] },
-    { nombre: 'Monasterio de Sera - Debate de monjes', descripcion: 'Asiste al famoso debate filosófico de los monjes budistas en el patio del monasterio de Sera. Palmas, gritos y argumentos sobre la doctrina budista.', ciudad: lhasa._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 10, consejos: ['Los debates son a las 15:00', 'Es un espectáculo fascinante aunque no entiendas tibetano'] },
-    { nombre: 'Lago Namtso', descripcion: 'Excursión al lago sagrado más alto del mundo (4.718m). Aguas turquesas rodeadas de montañas nevadas y banderas de oración. Paisaje de otro planeta.', ciudad: lhasa._id, categoria: 'NATURALEZA', duracionHoras: 10, precio: 50, consejos: ['Aclimatarse 2 días antes en Lhasa', 'Lleva ropa muy abrigada', 'La altitud puede causar mareos'] },
-    { nombre: 'Té de mantequilla de yak', descripcion: 'Degustación del tradicional té tibetano con mantequilla de yak y tsampa (harina de cebada tostada). Una experiencia gustativa única en una casa de té local.', ciudad: lhasa._id, categoria: 'GASTRONOMIA', duracionHoras: 1.5, precio: 8, consejos: ['El sabor es salado, no dulce', 'Se bebe para combatir el frío y la altitud'] },
+    { nombre: 'Palacio Potala', descripcion: 'Residencia de invierno del Dalai Lama durante 300 años. 1.000 habitaciones, 13 pisos sobre una colina roja a 3.700m de altitud. Patrimonio UNESCO.', imagen: 'https://images.unsplash.com/photo-1741257091145-69d62cdf819a?w=800&q=80', ciudad: lhasa._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 35, consejos: ['Solo se permiten 1 hora dentro, no te detengas', 'Sube despacio por la altitud', 'Entradas limitadas, reserva con días de anticipación'] },
+    { nombre: 'Templo de Jokhang y Barkhor', descripcion: 'El templo más sagrado del budismo tibetano rodeado del circuito de peregrinación Barkhor. Peregrinos postrándose, ruedas de oración y mercado tibetano.', imagen: 'https://images.unsplash.com/photo-1782317341310-335b55dc6537?w=800&q=80', ciudad: lhasa._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 15, consejos: ['Camina en sentido horario como los peregrinos', 'El mercado Barkhor tiene artesanía tibetana auténtica'] },
+    { nombre: 'Monasterio de Sera - Debate de monjes', descripcion: 'Asiste al famoso debate filosófico de los monjes budistas en el patio del monasterio de Sera. Palmas, gritos y argumentos sobre la doctrina budista.', imagen: 'https://images.unsplash.com/photo-1747643607854-9f0d93c8c790?w=800&q=80', ciudad: lhasa._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 10, consejos: ['Los debates son a las 15:00', 'Es un espectáculo fascinante aunque no entiendas tibetano'] },
+    { nombre: 'Lago Namtso', descripcion: 'Excursión al lago sagrado más alto del mundo (4.718m). Aguas turquesas rodeadas de montañas nevadas y banderas de oración. Paisaje de otro planeta.', imagen: 'https://images.unsplash.com/photo-1760326604065-a007f0b19646?w=800&q=80', ciudad: lhasa._id, categoria: 'NATURALEZA', duracionHoras: 10, precio: 50, consejos: ['Aclimatarse 2 días antes en Lhasa', 'Lleva ropa muy abrigada', 'La altitud puede causar mareos'] },
+    { nombre: 'Té de mantequilla de yak', descripcion: 'Degustación del tradicional té tibetano con mantequilla de yak y tsampa (harina de cebada tostada). Una experiencia gustativa única en una casa de té local.', imagen: 'https://images.unsplash.com/photo-1735651705963-1e8bd1f01e47?w=800&q=80', ciudad: lhasa._id, categoria: 'GASTRONOMIA', duracionHoras: 1.5, precio: 8, consejos: ['El sabor es salado, no dulce', 'Se bebe para combatir el frío y la altitud'] },
     { nombre: 'Monasterio de Drepung', descripcion: 'El mayor monasterio tibetano, que albergó hasta 10.000 monjes. Enorme complejo en la ladera de la montaña con vistas espectaculares de Lhasa.', ciudad: lhasa._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 12, consejos: ['La cocina del monasterio es fascinante', 'Sube hasta la cima para las mejores vistas'] },
     { nombre: 'Kora alrededor del Potala', descripcion: 'Caminata de peregrinación alrededor del Palacio Potala girando ruedas de oración junto a peregrinos tibetanos. Experiencia espiritual profunda.', ciudad: lhasa._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 0, consejos: ['Siempre en sentido horario', 'Al amanecer es más espiritual'] },
-    { nombre: 'Comida tibetana: momos y thukpa', descripcion: 'Cena de cocina tibetana auténtica: momos (dumplings tibetanos de yak), thukpa (sopa de fideos) y chang (cerveza de cebada tibetana).', ciudad: lhasa._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 15, consejos: ['Los momos de yak son los más auténticos', 'El chang es suave y ligeramente ácido'] },
+    { nombre: 'Comida tibetana: momos y thukpa', descripcion: 'Cena de cocina tibetana auténtica: momos (dumplings tibetanos de yak), thukpa (sopa de fideos) y chang (cerveza de cebada tibetana).', imagen: 'https://images.unsplash.com/photo-1560343787-b90cb337028e?w=800&q=80', ciudad: lhasa._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 15, consejos: ['Los momos de yak son los más auténticos', 'El chang es suave y ligeramente ácido'] },
   ]);
 
   // --- DALI ---
   const daliActs = await Activity.create([
     { nombre: 'Ciudad antigua de Dali', descripcion: 'Paseo por la ciudad amurallada con puertas monumentales, calles empedradas, casas Bai blancas, tiendas de artesanía y cafés con vistas a las montañas Cangshan.', ciudad: dali._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 0, consejos: ['La calle Renmin Lu es la principal', 'Sube a la puerta sur para vistas panorámicas'] },
     { nombre: 'Lago Erhai en bicicleta', descripcion: 'Circuito en bicicleta por las orillas del lago Erhai, pasando por pueblos pesqueros Bai, templos y campos de flores con las montañas Cangshan de fondo.', ciudad: dali._id, categoria: 'AVENTURA', duracionHoras: 5, precio: 15, consejos: ['El tramo Caicun-Xizhou es el más bonito', 'Las bicicletas eléctricas están disponibles'] },
-    { nombre: 'Tres Pagodas de Chongsheng', descripcion: 'Complejo budista con tres pagodas del siglo IX reflejadas en un estanque. El monumento más icónico de Dali con las montañas Cangshan detrás.', ciudad: dali._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 20, consejos: ['Las mejores fotos son desde el estanque reflectante', 'El templo detrás tiene un museo interesante'] },
-    { nombre: 'Mercado de Xizhou', descripcion: 'Mercado matinal del pueblo Bai de Xizhou con productos frescos, hierbas, queso de cabra local y el famoso "abanico de leche" (rushan), un queso frito único de Yunnan.', ciudad: dali._id, categoria: 'GASTRONOMIA', duracionHoras: 2.5, precio: 5, consejos: ['El rushan (abanico de leche) es imprescindible', 'Ve temprano para verlo en plena actividad'] },
+    { nombre: 'Tres Pagodas de Chongsheng', descripcion: 'Complejo budista con tres pagodas del siglo IX reflejadas en un estanque. El monumento más icónico de Dali con las montañas Cangshan detrás.', imagen: 'https://images.unsplash.com/photo-1576631368362-bec8b131571b?w=800&q=80', ciudad: dali._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 20, consejos: ['Las mejores fotos son desde el estanque reflectante', 'El templo detrás tiene un museo interesante'] },
+    { nombre: 'Mercado de Xizhou', descripcion: 'Mercado matinal del pueblo Bai de Xizhou con productos frescos, hierbas, queso de cabra local y el famoso "abanico de leche" (rushan), un queso frito único de Yunnan.', imagen: 'https://images.unsplash.com/photo-1758021358414-59e46a1f1147?w=800&q=80', ciudad: dali._id, categoria: 'GASTRONOMIA', duracionHoras: 2.5, precio: 5, consejos: ['El rushan (abanico de leche) es imprescindible', 'Ve temprano para verlo en plena actividad'] },
     { nombre: 'Senderismo en Cangshan', descripcion: 'Caminata por los senderos de la cordillera Cangshan (4.122m) entre bosques de rododendros, cascadas y vistas del lago Erhai. Teleférico disponible.', ciudad: dali._id, categoria: 'NATURALEZA', duracionHoras: 6, precio: 25, consejos: ['El teleférico te sube a 3.900m', 'Lleva ropa abrigada, arriba hace frío'] },
     { nombre: 'Ceremonia del té Bai "Tres Sabores"', descripcion: 'Ritual tradicional del pueblo Bai: tres tazas de té que representan amargo, dulce y el sabor del recuerdo. Acompañado de danza y música Bai.', ciudad: dali._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 12, consejos: ['Es una experiencia filosófica, no solo gastronómica', 'Se hace en casas familiares Bai'] },
     { nombre: 'Pueblo pesquero de Shuanglang', descripcion: 'Encantador pueblo en la orilla este del lago Erhai con hostales boutique, cafés frente al agua y atardeceres legendarios sobre las montañas.', ciudad: dali._id, categoria: 'NATURALEZA', duracionHoras: 3, precio: 0, consejos: ['Los atardeceres son los mejores de Yunnan', 'Quédate a cenar pescado fresco del lago'] },
     { nombre: 'Tie-dye Bai (batik)', descripcion: 'Taller de teñido por reserva (tie-dye) con artesanas del pueblo Bai en Zhoucheng. Aprende la técnica milenaria y crea tu propia pieza.', ciudad: dali._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 18, consejos: ['Te llevas tu creación a casa', 'Zhoucheng es "la capital del tie-dye"'] },
-    { nombre: 'Cervecería artesanal Bad Monkey', descripcion: 'Degustación de cervezas artesanales con ingredientes de Yunnan (té pu-erh, pimienta de Sichuan, miel de montaña) en un ambiente bohemio.', ciudad: dali._id, categoria: 'NOCTURNO', duracionHoras: 2, precio: 15, consejos: ['La cerveza de té pu-erh es única', 'Terraza con vistas a las montañas'] },
+    { nombre: 'Cervecería artesanal Bad Monkey', descripcion: 'Degustación de cervezas artesanales con ingredientes de Yunnan (té pu-erh, pimienta de Sichuan, miel de montaña) en un ambiente bohemio.', imagen: 'https://images.unsplash.com/photo-1674038316942-cd7c80cf0057?w=800&q=80', ciudad: dali._id, categoria: 'NOCTURNO', duracionHoras: 2, precio: 15, consejos: ['La cerveza de té pu-erh es única', 'Terraza con vistas a las montañas'] },
   ]);
 
   // --- XIAMEN ---
   const xiamenActs = await Activity.create([
     { nombre: 'Isla de Gulangyu', descripcion: 'Isla peatonal Patrimonio UNESCO con arquitectura colonial, jardines tropicales, playas y el sonido de pianos desde las ventanas. Sin coches ni motos.', ciudad: xiamen._id, categoria: 'CULTURAL', duracionHoras: 5, precio: 15, consejos: ['Reserva el ferry con anticipación', 'Piérdete por los callejones, cada uno tiene sorpresas'] },
     { nombre: 'Templo budista Nanputuo', descripcion: 'Templo budista del siglo VII al pie del Monte Wulao. Uno de los centros más importantes del budismo en el sur de China, con vegetarian restaurant legendario.', ciudad: xiamen._id, categoria: 'HISTORICO', duracionHoras: 2.5, precio: 0, consejos: ['Entrada gratuita', 'El restaurante vegetariano del templo es increíble'] },
-    { nombre: 'Ruta costera de Xiamen (Huandao Lu)', descripcion: 'Paseo o ciclismo por la ruta costera de 40 km con playas, esculturas al aire libre, parques y vistas al estrecho de Taiwán.', ciudad: xiamen._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 8, consejos: ['Alquila bicicleta eléctrica', 'La sección de Zengcuo\'an es la más bonita'] },
+    { nombre: 'Ruta costera de Xiamen (Huandao Lu)', descripcion: 'Paseo o ciclismo por la ruta costera de 40 km con playas, esculturas al aire libre, parques y vistas al estrecho de Taiwán.', imagen: 'https://images.unsplash.com/photo-1784057098851-b31bb06b66e5?w=800&q=80', ciudad: xiamen._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 8, consejos: ['Alquila bicicleta eléctrica', 'La sección de Zengcuo\'an es la más bonita'] },
     { nombre: 'Cultura del té Fujian (Oolong)', descripcion: 'Visita a una casa de té tradicional de Fujian para aprender sobre el té oolong Tieguanyin: cultivo, procesado y ceremonia gongfu cha.', ciudad: xiamen._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 20, consejos: ['El Tieguanyin es el té más famoso de Fujian', 'Compra té directamente, es más barato que en tiendas'] },
     { nombre: 'Marisco en Zengcuo\'an', descripcion: 'Cena de mariscos frescos en el pintoresco pueblo de artistas Zengcuo\'an: ostras a la brasa, gambas borrachas, sopa de almejas y pulpo.', ciudad: xiamen._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 25, consejos: ['Los restaurantes frente al mar son los mejores', 'Las ostras se asan con ajo y vermicelli'] },
-    { nombre: 'Jardín botánico Wanshi', descripcion: 'Jardín tropical con más de 6.000 especies, bosques de bambú, cascadas y el famoso "Rain Fog Forest" con niebla artificial entre helechos gigantes.', ciudad: xiamen._id, categoria: 'NATURALEZA', duracionHoras: 3, precio: 8, consejos: ['El Rain Fog Forest es perfecto para fotos', 'Los cactus gigantes son impresionantes'] },
+    { nombre: 'Jardín botánico Wanshi', descripcion: 'Jardín tropical con más de 6.000 especies, bosques de bambú, cascadas y el famoso "Rain Fog Forest" con niebla artificial entre helechos gigantes.', imagen: 'https://images.unsplash.com/photo-1769931446194-ede80f4a1719?w=800&q=80', ciudad: xiamen._id, categoria: 'NATURALEZA', duracionHoras: 3, precio: 8, consejos: ['El Rain Fog Forest es perfecto para fotos', 'Los cactus gigantes son impresionantes'] },
     { nombre: 'Tulou de Fujian (excursión)', descripcion: 'Excursión a las casas comunitarias circulares Tulou de los Hakka (Patrimonio UNESCO). Fortalezas de tierra con hasta 800 personas viviendo dentro. Arquitectura única en el mundo.', ciudad: xiamen._id, categoria: 'HISTORICO', duracionHoras: 9, precio: 50, consejos: ['Están a 3 horas de Xiamen', 'Los Tulou circulares son los más impresionantes', 'Algunos aún están habitados'] },
     { nombre: 'Calle Zhongshan (peatonal)', descripcion: 'Calle histórica con arquitectura qilou (edificios con soportales) estilo del sureste asiático, tiendas locales y puestos de comida callejera.', ciudad: xiamen._id, categoria: 'COMPRAS', duracionHoras: 2, precio: 0, consejos: ['La arquitectura qilou es única del sur de China', 'Prueba el satay noodle (mee satay)'] },
-    { nombre: 'Piano Museum en Gulangyu', descripcion: 'Colección de más de 100 pianos antiguos de todo el mundo. Gulangyu es conocida como "la isla de la música" con el mayor número de pianos per cápita de China.', ciudad: xiamen._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 10, consejos: ['Hay pianos del siglo XVIII', 'A veces hay conciertos en vivo'] },
+    { nombre: 'Piano Museum en Gulangyu', descripcion: 'Colección de más de 100 pianos antiguos de todo el mundo. Gulangyu es conocida como "la isla de la música" con el mayor número de pianos per cápita de China.', imagen: 'https://images.unsplash.com/photo-1759350414710-77dc7714fdae?w=800&q=80', ciudad: xiamen._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 10, consejos: ['Hay pianos del siglo XVIII', 'A veces hay conciertos en vivo'] },
   ]);
 
   // --- SUZHOU ---
   const suzhouActs = await Activity.create([
-    { nombre: 'Jardín del Administrador Humilde', descripcion: 'El mayor y más famoso jardín clásico de Suzhou (UNESCO). Estanques, pabellones, puentes y una armonía perfecta entre agua, piedra y vegetación.', ciudad: suzhou._id, categoria: 'HISTORICO', duracionHoras: 2.5, precio: 20, consejos: ['Es el jardín más grande de Suzhou', 'Llega temprano para evitar multitudes'] },
-    { nombre: 'Canales de Suzhou en góndola', descripcion: 'Navegación por los canales históricos de Suzhou en barca tradicional. Casas blancas con tejados negros, puentes de piedra y vida local a orillas del agua.', ciudad: suzhou._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 15, consejos: ['El tramo de Pingjiang Lu es el más bonito', 'Al atardecer la luz es mágica'] },
+    { nombre: 'Jardín del Administrador Humilde', descripcion: 'El mayor y más famoso jardín clásico de Suzhou (UNESCO). Estanques, pabellones, puentes y una armonía perfecta entre agua, piedra y vegetación.', imagen: 'https://images.unsplash.com/photo-1765004775728-e99163f1767d?w=800&q=80', ciudad: suzhou._id, categoria: 'HISTORICO', duracionHoras: 2.5, precio: 20, consejos: ['Es el jardín más grande de Suzhou', 'Llega temprano para evitar multitudes'] },
+    { nombre: 'Canales de Suzhou en góndola', descripcion: 'Navegación por los canales históricos de Suzhou en barca tradicional. Casas blancas con tejados negros, puentes de piedra y vida local a orillas del agua.', imagen: 'https://images.unsplash.com/photo-1726894369361-75f1ff62f366?w=800&q=80', ciudad: suzhou._id, categoria: 'CULTURAL', duracionHoras: 1.5, precio: 15, consejos: ['El tramo de Pingjiang Lu es el más bonito', 'Al atardecer la luz es mágica'] },
     { nombre: 'Museo de la Seda de Suzhou', descripcion: 'Historia de 5.000 años de seda china: desde el gusano hasta el vestido imperial. Demostración en vivo de telares tradicionales.', ciudad: suzhou._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['Entrada gratuita', 'La tienda tiene seda de calidad a buen precio'] },
     { nombre: 'Calle Pingjiang Lu', descripcion: 'Calle peatonal junto al canal con casas de la dinastía Ming, tiendas artesanales, cafeterías y música callejera. La esencia romántica de Suzhou.', ciudad: suzhou._id, categoria: 'COMPRAS', duracionHoras: 2.5, precio: 0, consejos: ['Los helados con forma de jardín son famosos', 'Prueba el tofu apestoso (chou doufu)'] },
-    { nombre: 'Jardín del Maestro de las Redes', descripcion: 'El jardín más elegante de Suzhou, pequeño pero perfecto. Espectáculo nocturno de ópera kunqu en el jardín bajo la luz de las linternas.', ciudad: suzhou._id, categoria: 'NOCTURNO', duracionHoras: 2, precio: 15, consejos: ['El show nocturno de kunqu es imprescindible', 'Solo de abril a noviembre'] },
-    { nombre: 'Colina del Tigre', descripcion: 'La "torre inclinada de China": pagoda de 1.000 años con inclinación de 3°. Leyendas de espadas enterradas, jardines y la tumba del rey de Wu.', ciudad: suzhou._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 12, consejos: ['La pagoda se inclina más que la de Pisa', 'Los jardines de bonsái son preciosos'] },
+    { nombre: 'Jardín del Maestro de las Redes', descripcion: 'El jardín más elegante de Suzhou, pequeño pero perfecto. Espectáculo nocturno de ópera kunqu en el jardín bajo la luz de las linternas.', imagen: 'https://images.unsplash.com/photo-1757604564946-d70adb40dd2e?w=800&q=80', ciudad: suzhou._id, categoria: 'NOCTURNO', duracionHoras: 2, precio: 15, consejos: ['El show nocturno de kunqu es imprescindible', 'Solo de abril a noviembre'] },
+    { nombre: 'Colina del Tigre', descripcion: 'La "torre inclinada de China": pagoda de 1.000 años con inclinación de 3°. Leyendas de espadas enterradas, jardines y la tumba del rey de Wu.', imagen: 'https://images.unsplash.com/photo-1565054590237-9ec80969fbc7?w=800&q=80', ciudad: suzhou._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 12, consejos: ['La pagoda se inclina más que la de Pisa', 'Los jardines de bonsái son preciosos'] },
     { nombre: 'Tongli - Pueblo de agua', descripcion: 'Pueblo acuático a 20 min de Suzhou con 15 puentes de piedra sobre canales. Menos turístico que Zhouzhuang, con ambiente auténtico y casas centenarias.', ciudad: suzhou._id, categoria: 'HISTORICO', duracionHoras: 4, precio: 20, consejos: ['El Jardín de la Reflexión es Patrimonio UNESCO', 'Prueba los trotitas (cerdo estofado de Tongli)'] },
     { nombre: 'Gastronomía de Suzhou', descripcion: 'Degustación de la refinada cocina suzhouesa: fideos de cangrejo, costillas agridulces, pescado de mandarín y el famoso pastel de osmanthus.', ciudad: suzhou._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 25, consejos: ['La cocina de Suzhou es dulce y delicada', 'Los fideos de cangrejo son de temporada (otoño)'] },
   ]);
@@ -325,7 +325,7 @@ const seed = async () => {
   // --- LIJIANG ---
   const lijiangActs = await Activity.create([
     { nombre: 'Ciudad antigua de Lijiang', descripcion: 'Laberinto de calles empedradas, canales cristalinos y casas de madera Naxi con tejados curvos. Patrimonio UNESCO con 800 años de historia.', ciudad: lijiang._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 0, consejos: ['Piérdete por los callejones alejados del centro', 'De noche los bares con música Naxi son mágicos'] },
-    { nombre: 'Montaña del Dragón de Jade', descripcion: 'Excursión a 4.680m (teleférico) en la montaña sagrada Naxi con glaciar, praderas alpinas y vistas del pico nevado de 5.596m.', ciudad: lijiang._id, categoria: 'AVENTURA', duracionHoras: 6, precio: 45, consejos: ['Compra oxígeno embotellado antes de subir', 'La altitud se nota mucho, ve despacio'] },
+    { nombre: 'Montaña del Dragón de Jade', descripcion: 'Excursión a 4.680m (teleférico) en la montaña sagrada Naxi con glaciar, praderas alpinas y vistas del pico nevado de 5.596m.', imagen: 'https://images.unsplash.com/photo-1677922069750-944be2b9ad20?w=800&q=80', ciudad: lijiang._id, categoria: 'AVENTURA', duracionHoras: 6, precio: 45, consejos: ['Compra oxígeno embotellado antes de subir', 'La altitud se nota mucho, ve despacio'] },
     { nombre: 'Espectáculo Impression Lijiang', descripcion: 'Show al aire libre de Zhang Yimou a 3.100m de altitud con la Montaña del Dragón de Jade como telón de fondo. 500 actores de minorías étnicas locales.', ciudad: lijiang._id, categoria: 'NOCTURNO', duracionHoras: 1.5, precio: 35, consejos: ['El espectáculo es por la tarde, no de noche', 'Lleva chaqueta, a esa altitud refresca'] },
     { nombre: 'Garganta del Salto del Tigre', descripcion: 'Una de las gargantas más profundas del mundo (3.900m). Trekking de 2 días o excursión de 1 día por senderos con vistas vertiginosas al río Yangtsé.', ciudad: lijiang._id, categoria: 'AVENTURA', duracionHoras: 8, precio: 30, consejos: ['El sendero alto tiene las mejores vistas', 'Lleva calzado de montaña y agua'] },
     { nombre: 'Estanque del Dragón Negro', descripcion: 'Parque con estanque de aguas cristalinas reflejando la Montaña del Dragón de Jade. La foto más icónica de Lijiang con el puente y la pagoda.', ciudad: lijiang._id, categoria: 'NATURALEZA', duracionHoras: 2, precio: 0, consejos: ['La mejor foto es por la mañana temprano', 'El museo Dongba está dentro del parque'] },
@@ -364,7 +364,7 @@ const seed = async () => {
     { nombre: 'Templo de Confucio (Fuzimiao)', descripcion: 'Complejo de templos, mercados y restaurantes junto al río Qinhuai. Barcas iluminadas por la noche y la mejor comida callejera de Nanjing.', ciudad: nanjing._id, categoria: 'NOCTURNO', duracionHoras: 3, precio: 0, consejos: ['De noche las barcas iluminadas son preciosas', 'Prueba el pato salado de Nanjing'] },
     { nombre: 'Muralla de Nanjing', descripcion: 'La muralla de ciudad más larga del mundo (35 km). Secciones restauradas permiten caminar o pedalear sobre ella con vistas a la ciudad y el lago Xuanwu.', ciudad: nanjing._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 10, consejos: ['La sección de la Puerta Zhonghua es la más espectacular', 'Se puede recorrer en bicicleta'] },
     { nombre: 'Memorial de la Masacre de Nanjing', descripcion: 'Museo conmemorativo sobre los eventos de 1937. Un lugar para la reflexión y el recuerdo. Arquitectura sobrecogedora y exposición muy bien documentada.', ciudad: nanjing._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 0, consejos: ['Entrada gratuita, cerrado los lunes', 'Es una experiencia emocionalmente intensa'] },
-    { nombre: 'Lago Xuanwu', descripcion: 'Lago urbano rodeado de murallas, templos y jardines. Paseos en bote, isla central con jardín botánico y vistas al skyline de Nanjing.', ciudad: nanjing._id, categoria: 'NATURALEZA', duracionHoras: 2.5, precio: 0, consejos: ['Los lotos florecen en julio-agosto', 'La isla central tiene un zoo pequeño'] },
+    { nombre: 'Lago Xuanwu', descripcion: 'Lago urbano rodeado de murallas, templos y jardines. Paseos en bote, isla central con jardín botánico y vistas al skyline de Nanjing.', imagen: 'https://images.unsplash.com/photo-1749834182098-43048a2571ae?w=800&q=80', ciudad: nanjing._id, categoria: 'NATURALEZA', duracionHoras: 2.5, precio: 0, consejos: ['Los lotos florecen en julio-agosto', 'La isla central tiene un zoo pequeño'] },
     { nombre: 'Pato salado de Nanjing', descripcion: 'Degustación del plato estrella: pato marinado en sal durante días y cocido lentamente. Piel sedosa, carne tierna y sabor suave. El anti-pato pekinés.', ciudad: nanjing._id, categoria: 'GASTRONOMIA', duracionHoras: 1.5, precio: 18, consejos: ['El restaurante Jiming Temple es muy popular', 'Prueba también las bolas de pato salado'] },
     { nombre: 'Montaña Púrpura (Zijinshan)', descripcion: 'Parque forestal con el mausoleo Ming Xiaoling (UNESCO), el observatorio astronómico y senderos entre bosques de ginkgo dorados en otoño.', ciudad: nanjing._id, categoria: 'NATURALEZA', duracionHoras: 5, precio: 15, consejos: ['En otoño los ginkgos dorados son espectaculares', 'El camino sagrado con estatuas de piedra es impresionante'] },
     { nombre: 'Avenida de los plátanos (Yihe Lu)', descripcion: 'Paseo por la avenida arbolada más bonita de China con edificios de la época republicana, embajadas históricas y cafés escondidos entre mansiones.', ciudad: nanjing._id, categoria: 'CULTURAL', duracionHoras: 2, precio: 0, consejos: ['En otoño las hojas doradas cubren la calle', 'El palacio presidencial está aquí'] },
@@ -373,20 +373,20 @@ const seed = async () => {
   // --- DUNHUANG ---
   const dunhuangActs = await Activity.create([
     { nombre: 'Cuevas de Mogao', descripcion: 'El mayor tesoro de arte budista del mundo: 492 cuevas con frescos y esculturas de 1.000 años. Patrimonio UNESCO y una de las maravillas artísticas de la humanidad.', ciudad: dunhuang._id, categoria: 'HISTORICO', duracionHoras: 4, precio: 40, consejos: ['Reserva con semanas de anticipación', 'La película introductoria es esencial', 'No se permiten fotos dentro'] },
-    { nombre: 'Dunas de Mingsha y Lago de la Media Luna', descripcion: 'Dunas de arena dorada de 250m junto a un oasis con forma de media luna que no se seca desde hace 2.000 años. Paseo en camello al atardecer.', ciudad: dunhuang._id, categoria: 'AVENTURA', duracionHoras: 4, precio: 25, consejos: ['El paseo en camello al atardecer es obligatorio', 'Las dunas "cantan" cuando el viento las mueve'] },
+    { nombre: 'Dunas de Mingsha y Lago de la Media Luna', descripcion: 'Dunas de arena dorada de 250m junto a un oasis con forma de media luna que no se seca desde hace 2.000 años. Paseo en camello al atardecer.', imagen: 'https://images.unsplash.com/photo-1755417288410-38dec02df787?w=800&q=80', ciudad: dunhuang._id, categoria: 'AVENTURA', duracionHoras: 4, precio: 25, consejos: ['El paseo en camello al atardecer es obligatorio', 'Las dunas "cantan" cuando el viento las mueve'] },
     { nombre: 'Paso de Yumen (Paso de Jade)', descripcion: 'Ruinas del paso fronterizo de la Ruta de la Seda donde los viajeros se despedían de China. Restos de la Gran Muralla de barro en el desierto del Gobi.', ciudad: dunhuang._id, categoria: 'HISTORICO', duracionHoras: 3, precio: 15, consejos: ['Los restos de la muralla de barro son impresionantes', 'Está a 80 km de Dunhuang'] },
     { nombre: 'Mercado nocturno de Shazhou', descripcion: 'Mercado nocturno con comida de la Ruta de la Seda: cordero asado, fideos tirados a mano, frutas del oasis y cerveza del desierto bajo las estrellas.', ciudad: dunhuang._id, categoria: 'NOCTURNO', duracionHoras: 2.5, precio: 10, consejos: ['Los fideos tirados a mano son espectáculo y comida', 'Prueba el burro asado (especialidad local)'] },
     { nombre: 'Yardang National Geopark', descripcion: 'Formaciones rocosas erosionadas por el viento en el desierto del Gobi. "La ciudad fantasma del diablo" con formas surrealistas al atardecer.', ciudad: dunhuang._id, categoria: 'NATURALEZA', duracionHoras: 4, precio: 20, consejos: ['Al atardecer las rocas cambian de color', 'El viento hace sonidos extraños entre las rocas'] },
-    { nombre: 'Paseo en camello por el Gobi', descripcion: 'Travesía en camello por el desierto del Gobi como los antiguos mercaderes de la Ruta de la Seda. Silencio absoluto y cielos estrellados incomparables.', ciudad: dunhuang._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 30, consejos: ['El amanecer en el desierto es mágico', 'Lleva protección solar y pañuelo para la arena'] },
-    { nombre: 'Cuevas del Buda Occidental (Xiqianfo)', descripcion: 'Cuevas budistas menos conocidas que Mogao pero igualmente bellas. Frescos de la dinastía Tang con colores vibrantes y menos turistas.', ciudad: dunhuang._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 15, consejos: ['Más tranquilo que Mogao', 'Los frescos Tang están mejor conservados aquí'] },
-    { nombre: 'Observación de estrellas en el Gobi', descripcion: 'Noche de astronomía en el desierto del Gobi, uno de los cielos más limpios de China. Vía Láctea, constelaciones y silencio absoluto.', ciudad: dunhuang._id, categoria: 'NOCTURNO', duracionHoras: 3, precio: 20, consejos: ['Luna nueva = mejores estrellas', 'Lleva ropa de abrigo, el desierto se enfría mucho'] },
+    { nombre: 'Paseo en camello por el Gobi', descripcion: 'Travesía en camello por el desierto del Gobi como los antiguos mercaderes de la Ruta de la Seda. Silencio absoluto y cielos estrellados incomparables.', imagen: 'https://images.unsplash.com/photo-1613757963897-3cc6dd4b671f?w=800&q=80', ciudad: dunhuang._id, categoria: 'AVENTURA', duracionHoras: 3, precio: 30, consejos: ['El amanecer en el desierto es mágico', 'Lleva protección solar y pañuelo para la arena'] },
+    { nombre: 'Cuevas del Buda Occidental (Xiqianfo)', descripcion: 'Cuevas budistas menos conocidas que Mogao pero igualmente bellas. Frescos de la dinastía Tang con colores vibrantes y menos turistas.', imagen: 'https://images.unsplash.com/photo-1759108272457-e63341a65b20?w=800&q=80', ciudad: dunhuang._id, categoria: 'CULTURAL', duracionHoras: 2.5, precio: 15, consejos: ['Más tranquilo que Mogao', 'Los frescos Tang están mejor conservados aquí'] },
+    { nombre: 'Observación de estrellas en el Gobi', descripcion: 'Noche de astronomía en el desierto del Gobi, uno de los cielos más limpios de China. Vía Láctea, constelaciones y silencio absoluto.', imagen: 'https://images.unsplash.com/photo-1778385186919-9dab23e69d35?w=800&q=80', ciudad: dunhuang._id, categoria: 'NOCTURNO', duracionHoras: 3, precio: 20, consejos: ['Luna nueva = mejores estrellas', 'Lleva ropa de abrigo, el desierto se enfría mucho'] },
   ]);
 
   // --- SANYA ---
   const sanyaActs = await Activity.create([
     { nombre: 'Playa de Yalong Bay', descripcion: 'La playa más bella de China: 7 km de arena blanca, aguas turquesas y resorts de lujo. Snorkel, kayak y relax tropical.', ciudad: sanya._id, categoria: 'NATURALEZA', duracionHoras: 5, precio: 0, consejos: ['El agua es más cristalina que en las otras playas', 'Los deportes acuáticos se alquilan en la playa'] },
     { nombre: 'Guanyin del Mar del Sur', descripcion: 'La estatua de Guanyin más grande del mundo (108m), sobre una isla artificial. Templo budista Nanshan con jardines tropicales y vegetarianismo.', ciudad: sanya._id, categoria: 'CULTURAL', duracionHoras: 3, precio: 30, consejos: ['Es más alta que la Estatua de la Libertad', 'El buffet vegetariano del templo es famoso'] },
-    { nombre: 'Isla Wuzhizhou - Snorkel', descripcion: 'Isla paradisíaca con los mejores corales de China. Snorkel, buceo, motos de agua y playas vírgenes de arena blanca.', ciudad: sanya._id, categoria: 'AVENTURA', duracionHoras: 6, precio: 45, consejos: ['El buceo con visibilidad de 27m es increíble', 'Reserva el ferry con anticipación'] },
+    { nombre: 'Isla Wuzhizhou - Snorkel', descripcion: 'Isla paradisíaca con los mejores corales de China. Snorkel, buceo, motos de agua y playas vírgenes de arena blanca.', imagen: 'https://images.unsplash.com/photo-1756312091180-b591dd1559de?w=800&q=80', ciudad: sanya._id, categoria: 'AVENTURA', duracionHoras: 6, precio: 45, consejos: ['El buceo con visibilidad de 27m es increíble', 'Reserva el ferry con anticipación'] },
     { nombre: 'Bosque tropical Yanoda', descripcion: 'Selva tropical con pasarelas elevadas entre árboles gigantes, cascadas, puentes colgantes y tirolinas sobre el dosel forestal.', ciudad: sanya._id, categoria: 'NATURALEZA', duracionHoras: 4, precio: 25, consejos: ['La tirolina es emocionante', 'Lleva repelente de mosquitos'] },
     { nombre: 'Mariscos en Dadonghai', descripcion: 'Cena de mariscos tropicales frescos en la bahía de Dadonghai: langosta, cangrejo de las palmeras, vieiras a la brasa y pescado al vapor con jengibre.', ciudad: sanya._id, categoria: 'GASTRONOMIA', duracionHoras: 2, precio: 35, consejos: ['Compra el marisco tú mismo en el mercado', 'Los restaurantes lo cocinan por un precio fijo'] },
     { nombre: 'Fin del Cielo (Tianya Haijiao)', descripcion: 'Rocas gigantes en la playa grabadas con caracteres que significan "fin del cielo, esquina del mar". Lugar legendario de poesía y romance chino.', ciudad: sanya._id, categoria: 'HISTORICO', duracionHoras: 2, precio: 15, consejos: ['Es más simbólico que espectacular', 'Las puestas de sol son preciosas'] },
@@ -422,7 +422,7 @@ const seed = async () => {
     descripcion: 'Descubre lo mejor de la capital china en 3 días: desde la majestuosa Ciudad Prohibida hasta la Gran Muralla, pasando por la gastronomía local y los hutongs tradicionales. Un viaje completo por la historia imperial de China.',
     ciudad: pekin._id,
     duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1584266032559-fe81b45d3169?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Historia Imperial', actividades: [
         { actividad: pekinActs[7]._id, orden: 1, horaInicio: '08:30', horaFin: '10:00' },
@@ -448,7 +448,7 @@ const seed = async () => {
     descripcion: 'Un recorrido intenso de 2 días por los imprescindibles de Pekín. Perfecto para quienes tienen poco tiempo pero no quieren perderse lo esencial de la capital china.',
     ciudad: pekin._id,
     duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1529921879218-f99546d03a27?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1509624780899-f812439647e4?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pekín Histórico', actividades: [
         { actividad: pekinActs[7]._id, orden: 1, horaInicio: '08:30', horaFin: '10:00' },
@@ -467,7 +467,7 @@ const seed = async () => {
     descripcion: 'El circuito más completo por Pekín. 5 días para explorar cada rincón de la capital: palacios, murallas, templos, arte contemporáneo, gastronomía y vida nocturna. Sin prisas.',
     ciudad: pekin._id,
     duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1753166890334-55a89f788a6c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bienvenida a Pekín', actividades: [
         { actividad: pekinActs[7]._id, orden: 1, horaInicio: '09:00', horaFin: '10:30' },
@@ -499,7 +499,7 @@ const seed = async () => {
     descripcion: 'Descubre el contraste único de Shanghái en 3 días: rascacielos futuristas frente a jardines centenarios, dumplings al vapor junto a cocina de autor. La ciudad que nunca duerme.',
     ciudad: shanghai._id,
     duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1474181628009-58356aaafef4?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1748078096034-46086f5b87da?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Iconos de Shanghái', actividades: [
         { actividad: shanghaiActs[0]._id, orden: 1, horaInicio: '10:00', horaFin: '12:00' },
@@ -524,7 +524,7 @@ const seed = async () => {
     descripcion: 'Lo mejor de Shanghái en un fin de semana: el Bund, Pudong, xiaolongbao y un crucero nocturno por el río Huangpu.',
     ciudad: shanghai._id,
     duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Bund y Pudong', actividades: [
         { actividad: shanghaiActs[0]._id, orden: 1, horaInicio: '10:00', horaFin: '12:00' },
@@ -544,7 +544,7 @@ const seed = async () => {
     descripcion: 'Shanghái a fondo más una excursión al pueblo acuático de Zhujiajiao. Cultura, gastronomía, historia y naturaleza en 4 días completos.',
     ciudad: shanghai._id,
     duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1689827524021-7d99d37c55c7?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Bund', actividades: [
         { actividad: shanghaiActs[0]._id, orden: 1, horaInicio: '16:00', horaFin: '18:00' },
@@ -572,7 +572,7 @@ const seed = async () => {
     descripcion: 'Un viaje de 3 días al corazón de Sichuan: pandas gigantes, hot pot legendario, espectáculos de ópera y templos milenarios. Una experiencia que despierta todos los sentidos.',
     ciudad: chengdu._id,
     duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1600112356623-90c0ad8a5224?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1704158679186-9e3082167277?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pandas y Cultura', actividades: [
         { actividad: chengduActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '12:00' },
@@ -596,7 +596,7 @@ const seed = async () => {
     descripcion: 'Los imprescindibles de Chengdú en un fin de semana: pandas por la mañana, hot pot al mediodía y cambio de caras por la noche.',
     ciudad: chengdu._id,
     duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1526401363794-c96708fb8089?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pandas y Gastronomía', actividades: [
         { actividad: chengduActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '12:00' },
@@ -616,7 +616,7 @@ const seed = async () => {
     descripcion: 'Circuito completo por Chengdú y sus alrededores. Incluye excursión al Buda Gigante de Leshan (Patrimonio UNESCO), Monte Qingcheng, pandas y la mejor gastronomía sichuanesa.',
     ciudad: chengdu._id,
     duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1598887142487-3c854d51eabb?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1759108368762-dcadd0e31edd?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Centro', actividades: [
         { actividad: chengduActs[3]._id, orden: 1, horaInicio: '15:00', horaFin: '17:30' },
@@ -644,7 +644,7 @@ const seed = async () => {
     descripcion: '3 días en la ciudad más espectacular de China: edificios colgantes sobre acantilados, hot pot de fuego, monorraíl atravesando edificios y cruceros por el Yangtsé.',
     ciudad: chongqing._id,
     duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1607500535696-51e0ea71de0e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1586784444981-ac96e335555c?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bienvenida Ardiente', actividades: [
         { actividad: chongqingActs[0]._id, orden: 1, horaInicio: '15:00', horaFin: '17:30' },
@@ -669,7 +669,7 @@ const seed = async () => {
     descripcion: 'Chongqing brilla de noche. Un circuito de 2 días centrado en las experiencias nocturnas: Hongya Cave iluminada, crucero por el Yangtsé, hot pot y vida urbana.',
     ciudad: chongqing._id,
     duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1566438480900-0609be27a4be?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1748078096034-46086f5b87da?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Hot Pot', actividades: [
         { actividad: chongqingActs[2]._id, orden: 1, horaInicio: '14:00', horaFin: '15:00' },
@@ -689,7 +689,7 @@ const seed = async () => {
     descripcion: 'El circuito definitivo por Chongqing: ciudad, arte rupestre de Dazu (UNESCO), crucero por el Yangtsé, gastronomía picante y la experiencia del monorraíl más surrealista del mundo.',
     ciudad: chongqing._id,
     duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1528702748617-c64d49f918af?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1761667625209-e3f9145e93eb?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a la Ciudad Montaña', actividades: [
         { actividad: chongqingActs[7]._id, orden: 1, horaInicio: '15:00', horaFin: '17:00' },
@@ -721,7 +721,7 @@ const seed = async () => {
     descripcion: 'Vive el invierno más espectacular del mundo en 3 días: esculturas de hielo gigantes iluminadas, nieve infinita, tigres siberianos, aguas termales rodeadas de nieve y gastronomía ruso-china.',
     ciudad: harbin._id,
     duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1768423935512-858cd32aecf7?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada al Hielo', actividades: [
         { actividad: harbinActs[2]._id, orden: 1, horaInicio: '14:00', horaFin: '16:30' },
@@ -745,7 +745,7 @@ const seed = async () => {
     descripcion: 'Lo esencial de Harbin en un fin de semana invernal: el Festival de Hielo de noche, esculturas de nieve de día, arquitectura rusa y gastronomía única.',
     ciudad: harbin._id,
     duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1641063157251-ae9d815e5daa?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Hielo y Fuego', actividades: [
         { actividad: harbinActs[2]._id, orden: 1, horaInicio: '13:00', horaFin: '15:30' },
@@ -765,7 +765,7 @@ const seed = async () => {
     descripcion: 'La experiencia invernal definitiva: Festival de Hielo, esquí en Yabuli, aguas termales, tigres siberianos y excursión a la mágica Aldea de la Nieve (Xuexiang). Un viaje de cuento de hadas helado.',
     ciudad: harbin._id,
     duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1517299321609-52687d1bc55a?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1760645611765-a3df6c92bda3?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bienvenida a Harbin', actividades: [
         { actividad: harbinActs[2]._id, orden: 1, horaInicio: '14:00', horaFin: '16:30' },
@@ -863,7 +863,7 @@ const seed = async () => {
     titulo: 'Cantón Gastronómico - 3 Días',
     descripcion: 'La capital mundial del dim sum en 3 días: desayunos de vaporeras, pato asado cantonés, crucero nocturno por el río Perla y arquitectura colonial. Un festín para los sentidos.',
     ciudad: guangzhou._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1589254065878-42c2a0fd6ae0?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1767818375229-be50b2b070ef?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Dim Sum y Torre Canton', actividades: [
         { actividad: guangzhouActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '10:00' },
@@ -887,7 +887,7 @@ const seed = async () => {
     titulo: 'Cantón Express - 2 Días',
     descripcion: 'Lo esencial de Cantón en 48 horas: dim sum de ensueño, torre Canton, isla Shamian colonial y crucero nocturno por el río Perla.',
     ciudad: guangzhou._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1767324672653-84c017d85d8e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Gastronomía y Vistas', actividades: [
         { actividad: guangzhouActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '10:00' },
@@ -906,7 +906,7 @@ const seed = async () => {
     titulo: 'Cantón y Hong Kong Puerta a Puerta - 5 Días',
     descripcion: 'Circuito completo por Cantón con excursión gastronómica extendida. Dim sum, pato cantonés, medicina china, arquitectura colonial, parques y mercados durante 5 días inolvidables.',
     ciudad: guangzhou._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1753172115293-32b2a08f0798?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Río Perla', actividades: [
         { actividad: guangzhouActs[2]._id, orden: 1, horaInicio: '15:00', horaFin: '17:00' },
@@ -936,7 +936,7 @@ const seed = async () => {
     titulo: 'Hangzhou - Paraíso en la Tierra',
     descripcion: 'Marco Polo la llamó la ciudad más bella del mundo. 3 días entre el Lago del Oeste, templos budistas, plantaciones de té y una gastronomía refinada.',
     ciudad: hangzhou._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1751012325074-94e4fab31697?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Lago del Oeste', actividades: [
         { actividad: hangzhouActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -960,7 +960,7 @@ const seed = async () => {
     titulo: 'Hangzhou Express - 2 Días',
     descripcion: 'Lago del Oeste, té Longjing y cocina de Hangzhou: lo esencial en un fin de semana perfecto.',
     ciudad: hangzhou._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1743401434828-5a026d661211?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Lago y Espectáculo', actividades: [
         { actividad: hangzhouActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -978,7 +978,7 @@ const seed = async () => {
     titulo: 'Hangzhou Completo - 4 Días',
     descripcion: 'El circuito más completo por Hangzhou: cada rincón del Lago del Oeste, plantaciones de té, templos budistas, museos, pagodas y la mejor gastronomía del este de China.',
     ciudad: hangzhou._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1548427607-d0f8fda39066?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1748786919806-464841e61654?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'El Lago del Oeste', actividades: [
         { actividad: hangzhouActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1005,7 +1005,7 @@ const seed = async () => {
     titulo: 'Guilin y Yangshuo - Paisajes de Pintura',
     descripcion: '3 días entre las montañas kársticas más bellas del mundo: crucero por el río Li, arrozales en terrazas, rafting, cuevas y espectáculos nocturnos sobre el agua.',
     ciudad: guilin._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1773318901379-aac92fdf5611?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guilin Ciudad', actividades: [
         { actividad: guilinActs[6]._id, orden: 1, horaInicio: '09:00', horaFin: '10:30' },
@@ -1028,7 +1028,7 @@ const seed = async () => {
     titulo: 'Guilin Express - 2 Días',
     descripcion: 'Crucero por el río Li y exploración de Yangshuo en un fin de semana entre paisajes de ensueño.',
     ciudad: guilin._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1529937944600-d31ec1010777?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1559342825-3b44d9468086?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Guilin y Río Li', actividades: [
         { actividad: guilinActs[6]._id, orden: 1, horaInicio: '08:00', horaFin: '09:30' },
@@ -1046,7 +1046,7 @@ const seed = async () => {
     titulo: 'Guilin Completo con Terrazas de Longji - 5 Días',
     descripcion: 'La experiencia definitiva de Guilin: río Li, Yangshuo, arrozales en terrazas de Longji, cuevas, rafting y arte. Naturaleza en estado puro durante 5 días.',
     ciudad: guilin._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1559342825-3b44d9468086?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada a Guilin', actividades: [
         { actividad: guilinActs[6]._id, orden: 1, horaInicio: '14:00', horaFin: '15:30' },
@@ -1075,7 +1075,7 @@ const seed = async () => {
     titulo: 'Lhasa Espiritual - 3 Días',
     descripcion: 'Viaje al techo del mundo: Palacio Potala, templos sagrados, debates de monjes y paisajes tibetanos que transforman el alma. Una experiencia espiritual única.',
     ciudad: lhasa._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1741257091145-69d62cdf819a?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Aclimatación y Templos', actividades: [
         { actividad: lhasaActs[1]._id, orden: 1, horaInicio: '10:00', horaFin: '13:00' },
@@ -1097,7 +1097,7 @@ const seed = async () => {
     titulo: 'Lhasa Express - 2 Días',
     descripcion: 'Los imprescindibles del Tíbet en 2 días: Potala, Jokhang, Barkhor y la espiritualidad tibetana condensada.',
     ciudad: lhasa._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1476900543704-4312b7810781?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1782317341310-335b55dc6537?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Templos Sagrados', actividades: [
         { actividad: lhasaActs[1]._id, orden: 1, horaInicio: '10:00', horaFin: '13:00' },
@@ -1115,7 +1115,7 @@ const seed = async () => {
     titulo: 'Lhasa y Lago Namtso - 5 Días',
     descripcion: 'Tíbet en profundidad: Potala, monasterios, debate de monjes, lago sagrado Namtso a 4.700m y la espiritualidad más pura del planeta.',
     ciudad: lhasa._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1503641926155-5c17619a9e10?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1760326604065-a007f0b19646?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Aclimatación', actividades: [
         { actividad: lhasaActs[4]._id, orden: 1, horaInicio: '14:00', horaFin: '15:30' },
@@ -1144,7 +1144,7 @@ const seed = async () => {
     titulo: 'Dali Bohemia - 3 Días',
     descripcion: 'Yunnan alternativo: ciudad antigua, lago Erhai, cultura Bai, montañas Cangshan, tie-dye artesanal y cerveza artesanal con vistas a las montañas.',
     ciudad: dali._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad Antigua', actividades: [
         { actividad: daliActs[0]._id, orden: 1, horaInicio: '10:00', horaFin: '13:00' },
@@ -1167,7 +1167,7 @@ const seed = async () => {
     titulo: 'Dali Express - 2 Días',
     descripcion: 'Ciudad antigua, Tres Pagodas y lago Erhai en un fin de semana entre montañas y agua.',
     ciudad: dali._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1773318901073-3d9304c6f48b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad y Pagodas', actividades: [
         { actividad: daliActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '12:00' },
@@ -1185,7 +1185,7 @@ const seed = async () => {
     titulo: 'Dali y Cangshan - 4 Días',
     descripcion: 'Dali en profundidad: trekking por Cangshan, lago Erhai en bicicleta, artesanía Bai, mercados locales y atardeceres desde Shuanglang.',
     ciudad: dali._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1771967141873-8b714205f4bd?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Ciudad', actividades: [
         { actividad: daliActs[0]._id, orden: 1, horaInicio: '14:00', horaFin: '17:00' },
@@ -1211,7 +1211,7 @@ const seed = async () => {
     titulo: 'Xiamen y Gulangyu - 3 Días',
     descripcion: 'Isla de pianos, templos sobre el mar, tulou circulares y mariscos frescos. 3 días en la joya costera del sur de Fujian.',
     ciudad: xiamen._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1740982880907-8283141e8db6?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Gulangyu', actividades: [
         { actividad: xiamenActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '14:00' },
@@ -1234,7 +1234,7 @@ const seed = async () => {
     titulo: 'Xiamen Express - 2 Días',
     descripcion: 'Gulangyu y lo mejor de Xiamen en un fin de semana junto al mar.',
     ciudad: xiamen._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1784057098851-b31bb06b66e5?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Isla de Gulangyu', actividades: [
         { actividad: xiamenActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '14:00' },
@@ -1252,7 +1252,7 @@ const seed = async () => {
     titulo: 'Xiamen y Tulou de Fujian - 4 Días',
     descripcion: 'Costa, islas, té oolong y las increíbles casas circulares Tulou del pueblo Hakka (Patrimonio UNESCO). Xiamen y la esencia profunda de Fujian.',
     ciudad: xiamen._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1761667625209-e3f9145e93eb?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Gulangyu', actividades: [
         { actividad: xiamenActs[0]._id, orden: 1, horaInicio: '10:00', horaFin: '15:00' },
@@ -1278,7 +1278,7 @@ const seed = async () => {
     titulo: 'Suzhou - Jardines y Canales',
     descripcion: '3 días en la Venecia de Oriente: jardines Patrimonio UNESCO, canales en góndola, ópera kunqu nocturna y la tradición milenaria de la seda.',
     ciudad: suzhou._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1504567961542-e24d9439a724?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1765004775728-e99163f1767d?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardines Clásicos', actividades: [
         { actividad: suzhouActs[0]._id, orden: 1, horaInicio: '08:30', horaFin: '11:00' },
@@ -1300,7 +1300,7 @@ const seed = async () => {
     titulo: 'Suzhou Express - 2 Días',
     descripcion: 'Lo mejor de Suzhou en un fin de semana: jardín UNESCO, canales en góndola y ópera kunqu bajo las estrellas.',
     ciudad: suzhou._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1414609245224-afa02bfb3fda?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1726894369361-75f1ff62f366?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardines y Canales', actividades: [
         { actividad: suzhouActs[0]._id, orden: 1, horaInicio: '08:30', horaFin: '11:00' },
@@ -1318,7 +1318,7 @@ const seed = async () => {
     titulo: 'Suzhou y Tongli - 4 Días',
     descripcion: 'Suzhou a fondo: todos los jardines UNESCO, canales, seda, ópera kunqu, gastronomía refinada y excursión al pueblo acuático de Tongli.',
     ciudad: suzhou._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1464278533981-50106e6176b1?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1689827524021-7d99d37c55c7?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Jardín y Ópera', actividades: [
         { actividad: suzhouActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1345,7 +1345,7 @@ const seed = async () => {
     titulo: 'Lijiang - Ciudad Naxi y Montaña de Jade',
     descripcion: '3 días en el corazón de Yunnan: ciudad antigua Naxi, Montaña del Dragón de Jade a 4.680m, música ancestral y la garganta más profunda del mundo.',
     ciudad: lijiang._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1446292532430-3e76f6ab6444?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1677922069750-944be2b9ad20?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad Antigua', actividades: [
         { actividad: lijiangActs[0]._id, orden: 1, horaInicio: '10:00', horaFin: '13:00' },
@@ -1365,7 +1365,7 @@ const seed = async () => {
     titulo: 'Lijiang Express - 2 Días',
     descripcion: 'Ciudad antigua Naxi y Montaña del Dragón de Jade en un intenso fin de semana en Yunnan.',
     ciudad: lijiang._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1500259571355-332da5cb07aa?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1761667625209-e3f9145e93eb?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Ciudad y Cultura', actividades: [
         { actividad: lijiangActs[0]._id, orden: 1, horaInicio: '10:00', horaFin: '13:00' },
@@ -1382,7 +1382,7 @@ const seed = async () => {
     titulo: 'Lijiang Aventurera - Garganta y Lago Lugu - 5 Días',
     descripcion: 'Yunnan salvaje: ciudad antigua, Montaña de Jade, Garganta del Salto del Tigre, Lago Lugu con los Mosuo y música Dongba. Aventura y cultura.',
     ciudad: lijiang._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1782317341310-335b55dc6537?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada', actividades: [
         { actividad: lijiangActs[0]._id, orden: 1, horaInicio: '14:00', horaFin: '17:00' },
@@ -1410,7 +1410,7 @@ const seed = async () => {
     titulo: 'Zhangjiajie - Montañas de Avatar',
     descripcion: '3 días entre los pilares de piedra que inspiraron Pandora: parque nacional, puente de cristal, Montaña Tianmen y la gastronomía picante de Hunan.',
     ciudad: zhangjiajie._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1561031454-4f1331bd2a34?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Pilares de Avatar', actividades: [
         { actividad: zhangjiajieActs[0]._id, orden: 1, horaInicio: '07:30', horaFin: '14:30' },
@@ -1431,7 +1431,7 @@ const seed = async () => {
     titulo: 'Zhangjiajie Express - 2 Días',
     descripcion: 'Los pilares de Avatar y la Montaña Tianmen en un fin de semana de vértigo.',
     ciudad: zhangjiajie._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1561031454-4f1331bd2a34?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Parque Nacional', actividades: [
         { actividad: zhangjiajieActs[0]._id, orden: 1, horaInicio: '07:30', horaFin: '14:30' },
@@ -1448,7 +1448,7 @@ const seed = async () => {
     titulo: 'Zhangjiajie y Fenghuang - 5 Días',
     descripcion: 'Avatar, puente de cristal, Tianmen, la ciudad del Fénix sobre pilotes y la gastronomía picante de Hunan. Naturaleza e historia en 5 días épicos.',
     ciudad: zhangjiajie._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1761667625209-e3f9145e93eb?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Arroyo', actividades: [
         { actividad: zhangjiajieActs[3]._id, orden: 1, horaInicio: '13:00', horaFin: '17:00' },
@@ -1477,7 +1477,7 @@ const seed = async () => {
     titulo: 'Kunming - Eterna Primavera',
     descripcion: '3 días en la ciudad más agradable de China: Bosque de Piedra, lago Dian, diversidad étnica, mercados de flores y gastronomía única de Yunnan.',
     ciudad: kunming._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1758021358414-59e46a1f1147?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
         { actividad: kunmingActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '13:00' },
@@ -1498,7 +1498,7 @@ const seed = async () => {
     titulo: 'Kunming Express - 2 Días',
     descripcion: 'Bosque de Piedra y lo esencial de Kunming en un fin de semana primaveral.',
     ciudad: kunming._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1500534623283-312aade485b7?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1659466248885-8b7a03205661?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
         { actividad: kunmingActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '13:00' },
@@ -1514,7 +1514,7 @@ const seed = async () => {
     titulo: 'Kunming Completo - 4 Días',
     descripcion: 'Kunming al completo: Bosque de Piedra, pueblo étnico, mercado de flores, montañas, lago Dian y toda la gastronomía de Yunnan.',
     ciudad: kunming._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1561031454-4f1331bd2a34?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Bosque de Piedra', actividades: [
         { actividad: kunmingActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '13:00' },
@@ -1540,7 +1540,7 @@ const seed = async () => {
     titulo: 'Nanjing - Capital de Seis Dinastías',
     descripcion: '3 días de historia y naturaleza: mausoleo de Sun Yat-sen, murallas imperiales, templo de Confucio iluminado y la montaña Púrpura.',
     ciudad: nanjing._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1619275044672-8b95b2d80ce7?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Montaña Púrpura', actividades: [
         { actividad: nanjingActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1562,7 +1562,7 @@ const seed = async () => {
     titulo: 'Nanjing Express - 2 Días',
     descripcion: 'Mausoleo de Sun Yat-sen, muralla y templo nocturno de Confucio en un fin de semana histórico.',
     ciudad: nanjing._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1509624780899-f812439647e4?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Montaña y Mausoleo', actividades: [
         { actividad: nanjingActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1580,7 +1580,7 @@ const seed = async () => {
     titulo: 'Nanjing Completo - 4 Días',
     descripcion: 'Todo Nanjing: mausoleo, muralla, lago, montaña Púrpura, memorial, templo nocturno y los ginkgos dorados de otoño.',
     ciudad: nanjing._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1749834182098-43048a2571ae?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Montaña Púrpura', actividades: [
         { actividad: nanjingActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1607,7 +1607,7 @@ const seed = async () => {
     titulo: 'Dunhuang - Ruta de la Seda',
     descripcion: '3 días en el oasis del Gobi: las Cuevas de Mogao (1.000 años de arte budista), dunas doradas, camellos al atardecer y estrellas en el desierto.',
     ciudad: dunhuang._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1465056836900-8f1e940f1904?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1760020423741-500a95bc5237?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Cuevas de Mogao', actividades: [
         { actividad: dunhuangActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '12:00' },
@@ -1628,7 +1628,7 @@ const seed = async () => {
     titulo: 'Dunhuang Express - 2 Días',
     descripcion: 'Mogao y dunas: lo esencial de la Ruta de la Seda en un fin de semana en el desierto del Gobi.',
     ciudad: dunhuang._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1613757963897-3cc6dd4b671f?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Mogao', actividades: [
         { actividad: dunhuangActs[0]._id, orden: 1, horaInicio: '08:00', horaFin: '12:00' },
@@ -1645,7 +1645,7 @@ const seed = async () => {
     titulo: 'Dunhuang y el Gobi - 5 Días',
     descripcion: 'La experiencia completa de la Ruta de la Seda: Mogao, dunas, camellos, Paso de Jade, Yardang, estrellas y la magia del desierto durante 5 días.',
     ciudad: dunhuang._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1755417288410-38dec02df787?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada al Oasis', actividades: [
         { actividad: dunhuangActs[3]._id, orden: 1, horaInicio: '19:00', horaFin: '21:30' },
@@ -1674,7 +1674,7 @@ const seed = async () => {
     titulo: 'Sanya Tropical - 3 Días',
     descripcion: '3 días en el Hawái de China: playas de arena blanca, snorkel en Wuzhizhou, selva tropical, templo de Guanyin y mariscos frescos.',
     ciudad: sanya._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1496950866446-3253e1470e8e?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1784057098851-b31bb06b66e5?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Playa y Templo', actividades: [
         { actividad: sanyaActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '14:00' },
@@ -1695,7 +1695,7 @@ const seed = async () => {
     titulo: 'Sanya Express - 2 Días',
     descripcion: 'Playa, snorkel y mariscos: lo mejor de la isla tropical de Hainan en un fin de semana.',
     ciudad: sanya._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1756312091180-b591dd1559de?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Playa y Guanyin', actividades: [
         { actividad: sanyaActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '14:00' },
@@ -1712,7 +1712,7 @@ const seed = async () => {
     titulo: 'Sanya Aventura Tropical - 5 Días',
     descripcion: 'Hainan completo: todas las playas, isla Wuzhizhou, selva, surf, templo de Guanyin, ruta del coco y atardeceres tropicales durante 5 días.',
     ciudad: sanya._id, duracionDias: 5,
-    imagen: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1769931446194-ede80f4a1719?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Llegada y Playa', actividades: [
         { actividad: sanyaActs[0]._id, orden: 1, horaInicio: '14:00', horaFin: '18:00' },
@@ -1741,7 +1741,7 @@ const seed = async () => {
     titulo: 'Pingyao - Viaje al Pasado Imperial',
     descripcion: '3 días en la ciudad amurallada más auténtica de China: murallas Ming, primer banco, templos, vinagre artesanal, fideos y teatro inmersivo.',
     ciudad: pingyao._id, duracionDias: 3,
-    imagen: 'https://images.unsplash.com/photo-1527549993586-dff825b37782?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1576204557749-ca7052a2865a?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Muralla y Centro', actividades: [
         { actividad: pingyaoActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1763,7 +1763,7 @@ const seed = async () => {
     titulo: 'Pingyao Express - 2 Días',
     descripcion: 'Murallas, banco imperial y teatro inmersivo: la esencia de la China Ming en un fin de semana.',
     ciudad: pingyao._id, duracionDias: 2,
-    imagen: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1576631368362-bec8b131571b?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Muralla y Banco', actividades: [
         { actividad: pingyaoActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
@@ -1781,7 +1781,7 @@ const seed = async () => {
     titulo: 'Pingyao y Templos de Shanxi - 4 Días',
     descripcion: 'La China más profunda: murallas, bancos imperiales, templos de esculturas pintadas, vinagre, fideos cortados con cuchillo y noches en casas patio Qing.',
     ciudad: pingyao._id, duracionDias: 4,
-    imagen: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800&q=80',
+    imagen: 'https://images.unsplash.com/photo-1748786919806-464841e61654?w=800&q=80',
     dias: [
       { numeroDia: 1, titulo: 'Muralla y Centro', actividades: [
         { actividad: pingyaoActs[0]._id, orden: 1, horaInicio: '09:00', horaFin: '11:30' },
